@@ -1,0 +1,44 @@
+<RootWidgit>:
+    GridLayout:
+        cols: 3
+        GridLayout:
+            id: maze1
+            cols: 3
+            size_hint_x: .45
+            canvas:
+                Color:
+                    rgba: 0, 0, 1, 0.25
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+        GridLayout:
+            id: maze2
+            size_hint_x: .45
+            canvas:
+                Color:
+                    rgba: 0, 1, 0, 0.25
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+        GridLayout:
+            padding: 5, 5, 5, 5
+            rows: 9
+            size_hint_x: .1
+            canvas:
+                Color:
+                    rgba: 1, 0, 0, 0.25
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Button:
+                text: 'Train'
+            Button:
+                text: 'Solve'
+            Button:
+                text: 'Reset'
+            Label:
+            Label:
+            Label:
+            Label:
+            Label:
+            Label:
