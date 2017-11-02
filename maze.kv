@@ -2,17 +2,11 @@
     GridLayout:
         cols: 3
         GridLayout:
-            id: maze1
+            id: maze_board
             cols: 3
             size_hint_x: .45
-            canvas:
-                Color:
-                    rgba: 0, 0, 1, 0.25
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
         GridLayout:
-            id: maze2
+            id: value_board
             size_hint_x: .45
             canvas:
                 Color:

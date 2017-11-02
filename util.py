@@ -1,5 +1,3 @@
-from enum import Enum
-
 def build_matrix_walls():
     '''
     This function serves the purpose of generating a 3D matrix
