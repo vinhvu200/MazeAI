@@ -2,6 +2,7 @@ from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 import util
+import time
 
 from kivy.config import Config
 Config.set('graphics', 'width', '1250')
@@ -12,8 +13,7 @@ class RootWidgit(FloatLayout):
     def __init__(self):
         super(RootWidgit, self).__init__()
 
-        util.build_matrix_walls()
-        #self.testing()
+        self.mat_walls, self.ROWS, self.COLS = util.build_matrix_walls()
 
     def testing(self):
 
