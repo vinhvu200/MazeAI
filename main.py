@@ -29,8 +29,8 @@ class RootWidgit(FloatLayout):
         self.mat_walls, self.ROWS, self.COLS = self._build_matrix_walls(self.maze1)
 
         # Readjust rows and columns to fit walls in between for the board rows
-        self.BOARD_ROWS = self.ROWS * 2 + 1
-        self.BOARD_COLS = self.COLS * 2 + 1
+        self.MAZE_BOARD_ROWS = self.ROWS * 2 + 1
+        self.MAZE_BOARD_COLS = self.COLS * 2 + 1
 
         # Initialize the 2D maze matrix where 1 will indicate where the user is
         self.maze_board_mat = [[0 for _ in xrange(self.COLS)] for _ in xrange(self.ROWS)]
@@ -39,11 +39,12 @@ class RootWidgit(FloatLayout):
         # Initialize the 2D value matrix to perform reinforcement learning on
         self.value_board_mat = [[0 for _ in xrange(self.COLS)] for _ in xrange(self.ROWS)]
 
-        # Populate boards with the current matrices
-        self._populate_board()
+        # Populate boards with the current matrices and
+        # return maze_board_children_size
+        self.MAZE_BOARD_CHILDREN_SIZE = self._populate_board()
 
         # Fill the walls in for maze_board
-        #self._populate_walls()
+        self._populate_walls()
 
     def _build_matrix_walls(self, filename):
         '''
@@ -108,7 +109,7 @@ class RootWidgit(FloatLayout):
         '''
 
         # setting columns for the GridLayout
-        self.maze_board.cols = self.BOARD_COLS
+        self.maze_board.cols = self.MAZE_BOARD_COLS
         self.value_board.cols = self.COLS
 
         # populate value_board GridLayout
@@ -130,14 +131,13 @@ class RootWidgit(FloatLayout):
                 # Add button to our value_board gridlayout
                 self.value_board.add_widget(button)
 
-
         # populate maze_board GridLayout
-        for x in xrange(self.BOARD_ROWS):
+        for x in xrange(self.MAZE_BOARD_ROWS):
 
             # Creates the actual vertical path
             if x % 2 == 1:
                 # Handles horizontal wall widgits as well as the actual path
-                for y in xrange(self.BOARD_COLS):
+                for y in xrange(self.MAZE_BOARD_COLS):
 
                     # Creates actual path
                     if y % 2 == 1:
@@ -190,20 +190,16 @@ class RootWidgit(FloatLayout):
                     # would not save otherwise
                     button.disabled = True
 
+                    # Add to board
                     self.maze_board.add_widget(button)
 
+        maze_board_children_size = 0
+        for _ in self.maze_board.children:
+            maze_board_children_size += 1
+
+        return maze_board_children_size
+
     def _populate_walls(self):
-
-        label = self.maze_board.children[9]
-
-        print(type(label))
-        label.canvas.before.clear()
-        with label.canvas.before:
-            Color(1, 0, 0, 1)
-            Rectangle(pos=label.pos, size=label.size)
-
-        print(label.pos)
-        print(label.size)
 
         for x in xrange(self.ROWS):
             for y in xrange(self.COLS):
