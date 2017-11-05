@@ -9,7 +9,7 @@ from Model.BorderLabel import BorderLabel
 from Model.Direction import Direction
 
 from kivy.config import Config
-Config.set('graphics', 'width', '1250')
+Config.set('graphics', 'width', '1300')
 Config.set('graphics', 'height', '600')
 
 
@@ -43,7 +43,7 @@ class RootWidgit(FloatLayout):
         self._populate_board()
 
         # Fill the walls in for maze_board
-        self._populate_walls()
+        #self._populate_walls()
 
     def _build_matrix_walls(self, filename):
         '''
@@ -121,8 +121,8 @@ class RootWidgit(FloatLayout):
                                 background_disabled_normal='',
                                 disabled_color=[1, 1, 1, 1],
                                 background_normal='',
-                                background_color=[0, 0, 1, 1])
-                
+                                background_color=[0, 0, 1, 0.65])
+
                 # Disable button after creation because background_colors and such
                 # would not save otherwise
                 button.disabled=True
@@ -141,16 +141,57 @@ class RootWidgit(FloatLayout):
 
                     # Creates actual path
                     if y % 2 == 1:
-                        self.maze_board.add_widget(Label(text=str(self.maze_board_mat[x/2][y/2])))
+
+                        # Creating buttons for the widgits inside of gridlayouts
+                        # because they are more flexible to work with
+                        button = Button(text=str(self.maze_board_mat[x/2][y/2]),
+                                        background_disabled_normal='',
+                                        disabled_color=[1, 1, 1, 1],
+                                        background_normal='',
+                                        background_color=[0, 0, 1, 0.65])
+
+                        # Disable button after creation because background_colors and such
+                        # would not save otherwise
+                        button.disabled = True
+
+                        # Add to the board
+                        self.maze_board.add_widget(button)
+
                     # Creates wall
                     else:
-                        self.maze_board.add_widget(BorderLabel(size_hint=[0.1, 1]))
+
+                        # Creating buttons for the widgits inside of gridlayouts
+                        # because they are more flexible to work with
+                        button = Button(background_disabled_normal='',
+                                        disabled_color=[0, 0, 0, 1],
+                                        background_normal='',
+                                        background_color=[1, 1, 1, 1],
+                                        size_hint=[0.1, 1])
+
+                        # Disable button after creation because background_colors and such
+                        # would not save otherwise
+                        button.disabled = True
+
+                        # Add to board
+                        self.maze_board.add_widget(button)
+
             # create the vertical walls
             else:
                 for y in xrange(self.maze_board.cols):
-                    self.maze_board.add_widget(BorderLabel(size_hint=[0.1, 0.1]))
+                    # Creating buttons for the widgits inside of gridlayouts
+                    # because they are more flexible to work with
+                    button = Button(background_disabled_normal='',
+                                    disabled_color=[0, 0, 0, 1],
+                                    background_normal='',
+                                    background_color=[1, 1, 1, 1],
+                                    size_hint=[0.1, 0.1])
 
-    @mainthread
+                    # Disable button after creation because background_colors and such
+                    # would not save otherwise
+                    button.disabled = True
+
+                    self.maze_board.add_widget(button)
+
     def _populate_walls(self):
 
         label = self.maze_board.children[9]
@@ -160,10 +201,6 @@ class RootWidgit(FloatLayout):
         with label.canvas.before:
             Color(1, 0, 0, 1)
             Rectangle(pos=label.pos, size=label.size)
-
-        #with self.canvas.before:
-        #    Color(1, 1, 1, 0.25)
-        #    Rectangle(pos=self.pos, size=self.size)
 
         print(label.pos)
         print(label.size)
