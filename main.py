@@ -16,6 +16,8 @@ Config.set('graphics', 'height', '600')
 class RootWidgit(FloatLayout):
 
     maze1 = 'maze1.txt'
+    wall_color = [.627, .321, .094, 1]
+    path_color = [0, 0, 1, 1]
 
     def __init__(self):
         super(RootWidgit, self).__init__()
@@ -183,7 +185,7 @@ class RootWidgit(FloatLayout):
                     button = Button(background_disabled_normal='',
                                     disabled_color=[0, 0, 0, 1],
                                     background_normal='',
-                                    background_color=[1, 1, 1, 1],
+                                    background_color=self.wall_color,
                                     size_hint=[0.1, 0.1])
 
                     # Disable button after creation because background_colors and such
@@ -200,17 +202,82 @@ class RootWidgit(FloatLayout):
         return maze_board_children_size
 
     def _populate_walls(self):
+        '''
+        This function serves the purpose of populating walls and the
+        intermediate paths between squares. This is done using the
+        mat_wall matrix which tells you whether there is a wall NORTH,
+        EAST, SOUTH, or WEST.
 
-        for x in xrange(self.ROWS):
-            for y in xrange(self.COLS):
-                if self.mat_walls[x][y][Direction.NORTH.value] == 1:
-                    pass
-                if self.mat_walls[x][y][Direction.EAST.value] == 1:
-                    pass
-                if self.mat_walls[x][y][Direction.SOUTH.value] == 1:
-                    pass
-                if self.mat_walls[x][y][Direction.WEST.value] == 1:
-                    pass
+        IMPORTANT: The walls to be filled are children of the maze_board
+        GridLayout. Position 0 is the bottom right square NOT the top RIGHT
+        so adjustments are made accordingly.
+        :return:
+        '''
+
+        # Looping through rows and columns of the ROWS and COLS of the board
+        # NOT the maze_board ROWS and COLS. maze_board rows and cols include
+        # walls itself which we are trying to fill
+        for row in xrange(self.ROWS):
+            for col in xrange(self.COLS):
+
+                # This is the current position for the maze_board GridLayout
+                current_pos = self._get_child_index(row, col)
+
+                # NORTH wall condition
+                # If exists, find the adjusted position
+                # then fill it with self.wall_color otherwise self.path_color
+                # This applies for the rest of the wall conditions
+                if self.mat_walls[row][col][Direction.NORTH.value] == 1:
+                    adjusted_pos = current_pos + self.MAZE_BOARD_COLS
+                    self.maze_board.children[adjusted_pos].background_color = self.wall_color
+                else:
+                    adjusted_pos = current_pos + self.MAZE_BOARD_COLS
+                    self.maze_board.children[adjusted_pos].background_color = self.path_color
+
+                # EAST wall condition
+                if self.mat_walls[row][col][Direction.EAST.value] == 1:
+                    adjusted_pos = current_pos - 1
+                    self.maze_board.children[adjusted_pos].background_color = self.wall_color
+                else:
+                    adjusted_pos = current_pos - 1
+                    self.maze_board.children[adjusted_pos].background_color = self.path_color
+
+                # SOUTH wall condition
+                if self.mat_walls[row][col][Direction.SOUTH.value] == 1:
+                    adjusted_pos = current_pos - self.MAZE_BOARD_COLS
+                    self.maze_board.children[adjusted_pos].background_color = self.wall_color
+                else:
+                    adjusted_pos = current_pos - self.MAZE_BOARD_COLS
+                    self.maze_board.children[adjusted_pos].background_color = self.path_color
+
+                # WEST wall condition
+                if self.mat_walls[row][col][Direction.WEST.value] == 1:
+                    adjusted_pos = current_pos + 1
+                    self.maze_board.children[adjusted_pos].background_color = self.wall_color
+                else:
+                    adjusted_pos = current_pos + 1
+                    self.maze_board.children[adjusted_pos].background_color = self.path_color
+
+    def _get_child_index(self, row, col):
+        '''
+        - This function serves the purpose of getting the child_index for
+        maze_board gridlayout.
+        :param row:
+        :param col:
+        :return:
+        '''
+        # Calculate how many rows to go down and
+        # columns to go over
+        row = (2 * row + 1) * self.MAZE_BOARD_ROWS
+        col = (2 * col + 1) % self.MAZE_BOARD_COLS
+
+        # Add the rows and columns to get a pseduo position
+        pos = row + col
+
+        # Position has to be readjusted because child[0]
+        # starts on bottom right
+        real_pos = self.MAZE_BOARD_CHILDREN_SIZE - pos - 1
+        return real_pos
 
 class MazeApp(App):
 
