@@ -156,11 +156,11 @@ class RootWidgit(FloatLayout):
                         # would not save otherwise
                         button.disabled = True
 
-                        # Add to the board
-                        self.maze_board.add_widget(button)
-
                         # update maze_board children size
                         self.MAZE_BOARD_CHILDREN_SIZE += 1
+
+                        # Add to the board
+                        self.maze_board.add_widget(button)
 
                     # Creates wall
                     else:
@@ -177,11 +177,11 @@ class RootWidgit(FloatLayout):
                         # would not save otherwise
                         button.disabled = True
 
-                        # Add to board
-                        self.maze_board.add_widget(button)
-
                         # update maze_board children size
                         self.MAZE_BOARD_CHILDREN_SIZE += 1
+
+                        # Add to board
+                        self.maze_board.add_widget(button)
 
             # create the vertical walls
             else:
@@ -198,17 +198,11 @@ class RootWidgit(FloatLayout):
                     # would not save otherwise
                     button.disabled = True
 
-                    # Add to board
-                    self.maze_board.add_widget(button)
-
                     # update maze_board children size
                     self.MAZE_BOARD_CHILDREN_SIZE += 1
 
-        #maze_board_children_size = 0
-        #for _ in self.maze_board.children:
-        #    maze_board_children_size += 1
-
-        #return maze_board_children_size
+                    # Add to board
+                    self.maze_board.add_widget(button)
 
     def _populate_walls(self):
         '''
@@ -223,8 +217,9 @@ class RootWidgit(FloatLayout):
         :return:
         '''
 
-        pos = self._get_child_index(3, 3)
-        print(self.maze_board.children[pos].pos)
+        #pos = self._get_child_index(3, 3)
+        #print(self.maze_board.children[pos].pos)
+        #print(self.MAZE_BOARD_ROWS)
 
         # Looping through rows and columns of the ROWS and COLS of the board
         # NOT the maze_board ROWS and COLS. maze_board rows and cols include
@@ -296,7 +291,9 @@ class RootWidgit(FloatLayout):
         pass
 
     def on_children(self, obj, value):
-        print(self.MAZE_BOARD_CHILDREN_SIZE)
+        max_children = self.MAZE_BOARD_ROWS * self.MAZE_BOARD_COLS
+        if self.MAZE_BOARD_CHILDREN_SIZE == max_children:
+            print('BOARD IS FINISHED')
 
 class MazeApp(App):
 
