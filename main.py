@@ -1,11 +1,6 @@
 from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.label import Label
 from kivy.uix.button import Button
-from kivy.graphics import Color, Rectangle
-from kivy.clock import mainthread
-
-from Model.BorderLabel import BorderLabel
 from Model.Direction import Direction
 
 from kivy.config import Config
@@ -18,9 +13,10 @@ class RootWidgit(FloatLayout):
     maze1 = 'maze1.txt'
     wall_color = [.627, .321, .094, 1]
     path_color = [0, 0, 1, 1]
+    MAZE_BOARD_CHILDREN_SIZE = 0
 
-    def __init__(self):
-        super(RootWidgit, self).__init__()
+    def __init__(self, **kwargs):
+        super(RootWidgit, self).__init__(**kwargs)
 
         # Get the maze_board and value_board GridLayout from .kv file
         self.maze_board = self.ids.maze_board
@@ -34,6 +30,10 @@ class RootWidgit(FloatLayout):
         self.MAZE_BOARD_ROWS = self.ROWS * 2 + 1
         self.MAZE_BOARD_COLS = self.COLS * 2 + 1
 
+        # Bind maze_board children to check when all children are
+        # finished being add
+        self.maze_board.bind(children=self.on_children)
+
         # Initialize the 2D maze matrix where 1 will indicate where the user is
         self.maze_board_mat = [[0 for _ in xrange(self.COLS)] for _ in xrange(self.ROWS)]
         self.maze_board_mat[0][2] = 1
@@ -41,9 +41,9 @@ class RootWidgit(FloatLayout):
         # Initialize the 2D value matrix to perform reinforcement learning on
         self.value_board_mat = [[0 for _ in xrange(self.COLS)] for _ in xrange(self.ROWS)]
 
-        # Populate boards with the current matrices and
-        # return maze_board_children_size
-        self.MAZE_BOARD_CHILDREN_SIZE = self._populate_board()
+        # Populate boards with the current matrices and update
+        # the maze_board_children_size
+        self._populate_board()
 
         # Fill the walls in for maze_board
         self._populate_walls()
@@ -159,6 +159,9 @@ class RootWidgit(FloatLayout):
                         # Add to the board
                         self.maze_board.add_widget(button)
 
+                        # update maze_board children size
+                        self.MAZE_BOARD_CHILDREN_SIZE += 1
+
                     # Creates wall
                     else:
 
@@ -176,6 +179,9 @@ class RootWidgit(FloatLayout):
 
                         # Add to board
                         self.maze_board.add_widget(button)
+
+                        # update maze_board children size
+                        self.MAZE_BOARD_CHILDREN_SIZE += 1
 
             # create the vertical walls
             else:
@@ -195,11 +201,14 @@ class RootWidgit(FloatLayout):
                     # Add to board
                     self.maze_board.add_widget(button)
 
-        maze_board_children_size = 0
-        for _ in self.maze_board.children:
-            maze_board_children_size += 1
+                    # update maze_board children size
+                    self.MAZE_BOARD_CHILDREN_SIZE += 1
 
-        return maze_board_children_size
+        #maze_board_children_size = 0
+        #for _ in self.maze_board.children:
+        #    maze_board_children_size += 1
+
+        #return maze_board_children_size
 
     def _populate_walls(self):
         '''
@@ -213,6 +222,9 @@ class RootWidgit(FloatLayout):
         so adjustments are made accordingly.
         :return:
         '''
+
+        pos = self._get_child_index(3, 3)
+        print(self.maze_board.children[pos].pos)
 
         # Looping through rows and columns of the ROWS and COLS of the board
         # NOT the maze_board ROWS and COLS. maze_board rows and cols include
@@ -266,6 +278,7 @@ class RootWidgit(FloatLayout):
         :param col:
         :return:
         '''
+
         # Calculate how many rows to go down and
         # columns to go over
         row = (2 * row + 1) * self.MAZE_BOARD_ROWS
@@ -278,6 +291,12 @@ class RootWidgit(FloatLayout):
         # starts on bottom right
         real_pos = self.MAZE_BOARD_CHILDREN_SIZE - pos - 1
         return real_pos
+
+    def on_property(self, obj, value):
+        pass
+
+    def on_children(self, obj, value):
+        print(self.MAZE_BOARD_CHILDREN_SIZE)
 
 class MazeApp(App):
 
