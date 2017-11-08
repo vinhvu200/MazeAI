@@ -2,6 +2,7 @@ from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.button import Button
 from Model.Direction import Direction
+from kivy.graphics import Rectangle, Color
 
 from kivy.config import Config
 Config.set('graphics', 'width', '1300')
@@ -11,9 +12,12 @@ Config.set('graphics', 'height', '600')
 class RootWidgit(FloatLayout):
 
     maze1 = 'maze1.txt'
+    INITIAL_ROW = 0
+    INITIAL_COL = 2
     wall_color = [.627, .321, .094, 1]
     path_color = [0, 0, 1, 1]
     MAZE_BOARD_CHILDREN_SIZE = 0
+    walk_length = 0
 
     def __init__(self, **kwargs):
         super(RootWidgit, self).__init__(**kwargs)
@@ -29,10 +33,6 @@ class RootWidgit(FloatLayout):
         # Readjust rows and columns to fit walls in between for the board rows
         self.MAZE_BOARD_ROWS = self.ROWS * 2 + 1
         self.MAZE_BOARD_COLS = self.COLS * 2 + 1
-
-        # Bind maze_board children to check when all children are
-        # finished being add
-        self.maze_board.bind(children=self.on_children)
 
         # Initialize the 2D maze matrix where 1 will indicate where the user is
         self.maze_board_mat = [[0 for _ in xrange(self.COLS)] for _ in xrange(self.ROWS)]
@@ -151,6 +151,8 @@ class RootWidgit(FloatLayout):
                                         disabled_color=[1, 1, 1, 1],
                                         background_normal='',
                                         background_color=[0, 0, 1, 0.65])
+
+                        button.bind(pos=self.on_property)
 
                         # Disable button after creation because background_colors and such
                         # would not save otherwise
@@ -288,12 +290,9 @@ class RootWidgit(FloatLayout):
         return real_pos
 
     def on_property(self, obj, value):
-        pass
-
-    def on_children(self, obj, value):
-        max_children = self.MAZE_BOARD_ROWS * self.MAZE_BOARD_COLS
-        if self.MAZE_BOARD_CHILDREN_SIZE == max_children:
-            print('BOARD IS FINISHED')
+        y1 = self.maze_board.children[self._get_child_index(0,2)].pos[1]
+        y2 = self.maze_board.children[self._get_child_index(1,2)].pos[1]
+        self.walk_length = y1 - y2
 
 class MazeApp(App):
 
