@@ -3,10 +3,11 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.button import Button
 from Model.Direction import Direction
 from kivy.graphics import Rectangle, Color
+from kivy.clock import Clock
 
 from kivy.config import Config
-Config.set('graphics', 'width', '1300')
-Config.set('graphics', 'height', '600')
+Config.set('graphics', 'width', '1100')
+Config.set('graphics', 'height', '500')
 
 
 class RootWidgit(FloatLayout):
@@ -25,6 +26,10 @@ class RootWidgit(FloatLayout):
         # Get the maze_board and value_board GridLayout from .kv file
         self.maze_board = self.ids.maze_board
         self.value_board = self.ids.value_board
+
+        # Get the character image
+        self.character = self.ids.character
+        self.character.pos = [300, 300]
 
         # Generate the 3D matrix containing the walls along with ROWS
         # and COLS of the board
@@ -151,8 +156,6 @@ class RootWidgit(FloatLayout):
                                         disabled_color=[1, 1, 1, 1],
                                         background_normal='',
                                         background_color=[0, 0, 1, 0.65])
-
-                        button.bind(pos=self.on_property)
 
                         # Disable button after creation because background_colors and such
                         # would not save otherwise
@@ -289,15 +292,68 @@ class RootWidgit(FloatLayout):
         real_pos = self.MAZE_BOARD_CHILDREN_SIZE - pos - 1
         return real_pos
 
-    def on_property(self, obj, value):
-        y1 = self.maze_board.children[self._get_child_index(0,2)].pos[1]
-        y2 = self.maze_board.children[self._get_child_index(1,2)].pos[1]
+    def _get_walk_length(self, dt):
+        '''
+        This function serves the purpose of getting the walk length from
+        one square to the next. It is a callback because the GridLayout
+        must be set up first before being able to properly calculate
+        :param dt:
+        :return:
+        '''
+
+        # Grab the two indices based on matrix rows and columns
+        initial_index = self._get_child_index(self.INITIAL_ROW, self.INITIAL_COL)
+        end_index = self._get_child_index(self.INITIAL_ROW + 1, self.INITIAL_COL)
+
+        # Get the two y coordinates for those indices
+        y1 = self.maze_board.children[initial_index].pos[1]
+        y2 = self.maze_board.children[end_index].pos[1]
+
+        # Calculate the walk_length
         self.walk_length = y1 - y2
+        print(self.walk_length)
+
+    def _place_character(self, dt):
+        '''
+        This callback serves the purpose of calculating the character's position
+        and then placing the character there.
+        :param dt:
+        :return:
+        '''
+
+        # Get the index for initial position of where the position is
+        # supposed to be
+        index = self._get_child_index(self.INITIAL_ROW, self.INITIAL_COL)
+
+        # Get the x,y size of the gridlayout square
+        square_size = self.maze_board.children[index].size
+        square_x = square_size[0] / 2
+        square_y = square_size[1] / 2
+
+        # Get the x,y size of character (represented as an image)
+        char_size = self.character.size
+        char_x = char_size[0] / 2
+        char_y = char_size[1] / 2
+
+        # Get the x,y position of the initial square
+        initial_pos = self.maze_board.children[index].pos
+        initial_x = initial_pos[0]
+        initial_y = initial_pos[1]
+
+        # Calculate the x,y position to place the character
+        x = initial_x + square_x - char_x
+        y = initial_y + square_y - char_y
+
+        # Place character
+        self.character.pos = [x, y]
 
 class MazeApp(App):
 
     def build(self):
-        return RootWidgit()
+        root = RootWidgit()
+        Clock.schedule_once(root._get_walk_length, 1)
+        Clock.schedule_once(root._place_character, 1)
+        return root
 
 if __name__ == "__main__":
     MazeApp().run()
