@@ -2,6 +2,7 @@ from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.button import Button
 from Model.Direction import Direction
+from Model.Sprite import Sprite
 from kivy.graphics import Rectangle, Color
 from kivy.clock import Clock
 
@@ -26,9 +27,6 @@ class RootWidgit(FloatLayout):
         # Get the maze_board and value_board GridLayout from .kv file
         self.maze_board = self.ids.maze_board
         self.value_board = self.ids.value_board
-
-        # Get the character image
-        self.character = self.ids.character
 
         # Generate the 3D matrix containing the walls along with ROWS
         # and COLS of the board
@@ -165,14 +163,21 @@ class RootWidgit(FloatLayout):
         index = self._get_child_index(self.INITIAL_ROW, self.INITIAL_COL)
 
         # Get the x,y size of the gridlayout square
+        # and use that to calculate the x,y adjustments
         square_size = self.maze_board.children[index].size
-        square_x = square_size[0] / 2
-        square_y = square_size[1] / 2
+        square_x_adjust = square_size[0] / 2
+        square_y_adjust = square_size[1] / 2
 
-        # Get the x,y size of character (represented as an image)
-        char_size = self.character.size
-        char_x = char_size[0] / 2
-        char_y = char_size[1] / 2
+        # Get the sprite x,y size based on ratio
+        # of the actual square
+        ratio = 0.7
+        sprite_size_x = square_size[0] * ratio
+        sprite_size_y = square_size[1] * ratio
+
+        # Use the sprite size to calculate x,y
+        # adjustment position
+        sprite_x_adjust = sprite_size_x / 2
+        sprite_y_adjust = sprite_size_y / 2
 
         # Get the x,y position of the initial square
         initial_pos = self.maze_board.children[index].pos
@@ -180,11 +185,14 @@ class RootWidgit(FloatLayout):
         initial_y = initial_pos[1]
 
         # Calculate the x,y position to place the character
-        x = initial_x + square_x - char_x
-        y = initial_y + square_y - char_y
+        x = initial_x + square_x_adjust - sprite_x_adjust
+        y = initial_y + square_y_adjust - sprite_y_adjust
 
-        # Place character
-        self.character.pos = [x, y]
+        sprite = Sprite(source='Images/p1_stand.png',
+                        size=[sprite_size_x, sprite_size_y],
+                        pos=[x, y])
+        self.add_widget(sprite)
+
 
     def _populate_maze_board(self):
         '''
