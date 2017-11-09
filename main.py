@@ -29,7 +29,6 @@ class RootWidgit(FloatLayout):
 
         # Get the character image
         self.character = self.ids.character
-        self.character.pos = [300, 300]
 
         # Generate the 3D matrix containing the walls along with ROWS
         # and COLS of the board
@@ -46,9 +45,12 @@ class RootWidgit(FloatLayout):
         # Initialize the 2D value matrix to perform reinforcement learning on
         self.value_board_mat = [[0 for _ in xrange(self.COLS)] for _ in xrange(self.ROWS)]
 
-        # Populate boards with the current matrices and update
+        # Populate value_board with the appropriate matrices
+        self._populate_value_board()
+
+        # Populate maze_boards with the current matrices and update
         # the maze_board_children_size
-        self._populate_board()
+        self._populate_maze_board()
 
         # Fill the walls in for maze_board
         self._populate_walls()
@@ -103,26 +105,19 @@ class RootWidgit(FloatLayout):
         # return matrix, rows, cols
         return mat_walls, rows, cols
 
-    def _populate_board(self):
+    def _populate_value_board(self):
         '''
-        This function serves the purpose of populating the GridLayouts set up in
-        the .kv file.
-        - The value_board GridLayout is straight forward since it just takes
-        the values from the matrix and plugs it in.
-        - The maze_board is a bit different because we have to adjust it to
-        add walls in-between
-
-        :return: None
+        This function serves the purpose of setting up the value_board
+        GridLayout to match the value_board_mat
+        :return:
         '''
-
-        # setting columns for the GridLayout
-        self.maze_board.cols = self.MAZE_BOARD_COLS
+        
+        # Set up the columns
         self.value_board.cols = self.COLS
 
         # populate value_board GridLayout
         for x in xrange(self.ROWS):
             for y in xrange(self.COLS):
-
                 # Creating buttons for the widgits inside of gridlayouts
                 # because they are more flexible to work with
                 button = Button(text=str(self.value_board_mat[x][y]),
@@ -133,10 +128,23 @@ class RootWidgit(FloatLayout):
 
                 # Disable button after creation because background_colors and such
                 # would not save otherwise
-                button.disabled=True
+                button.disabled = True
 
                 # Add button to our value_board gridlayout
                 self.value_board.add_widget(button)
+
+    def _populate_maze_board(self):
+        '''
+        This function serves the purpose of populating the GridLayouts set up in
+        the .kv file.
+        - The maze_board is adjusted to add walls in between them and then fill
+        them according to the maze_board_mat
+
+        :return: None
+        '''
+
+        # setting columns for the GridLayout
+        self.maze_board.cols = self.MAZE_BOARD_COLS
 
         # populate maze_board GridLayout
         for x in xrange(self.MAZE_BOARD_ROWS):
@@ -346,6 +354,7 @@ class RootWidgit(FloatLayout):
 
         # Place character
         self.character.pos = [x, y]
+
 
 class MazeApp(App):
 
