@@ -55,6 +55,10 @@ class RootWidgit(FloatLayout):
         # Fill the walls in for maze_board
         self._populate_walls()
 
+    def callback_setup(self, dt):
+        self._get_walk_length()
+        self._place_character()
+
     def _build_matrix_walls(self, filename):
         '''
         This function serves the purpose of generating a 3D matrix
@@ -105,33 +109,82 @@ class RootWidgit(FloatLayout):
         # return matrix, rows, cols
         return mat_walls, rows, cols
 
-    def _populate_value_board(self):
+    def _get_child_index(self, row, col):
         '''
-        This function serves the purpose of setting up the value_board
-        GridLayout to match the value_board_mat
+        - This function serves the purpose of getting the child_index for
+        maze_board gridlayout.
+        :param row:
+        :param col:
         :return:
         '''
-        
-        # Set up the columns
-        self.value_board.cols = self.COLS
 
-        # populate value_board GridLayout
-        for x in xrange(self.ROWS):
-            for y in xrange(self.COLS):
-                # Creating buttons for the widgits inside of gridlayouts
-                # because they are more flexible to work with
-                button = Button(text=str(self.value_board_mat[x][y]),
-                                background_disabled_normal='',
-                                disabled_color=[1, 1, 1, 1],
-                                background_normal='',
-                                background_color=[0, 0, 1, 0.65])
+        # Calculate how many rows to go down and
+        # columns to go over
+        row = (2 * row + 1) * self.MAZE_BOARD_ROWS
+        col = (2 * col + 1) % self.MAZE_BOARD_COLS
 
-                # Disable button after creation because background_colors and such
-                # would not save otherwise
-                button.disabled = True
+        # Add the rows and columns to get a pseduo position
+        pos = row + col
 
-                # Add button to our value_board gridlayout
-                self.value_board.add_widget(button)
+        # Position has to be readjusted because child[0]
+        # starts on bottom right
+        real_pos = self.MAZE_BOARD_CHILDREN_SIZE - pos - 1
+        return real_pos
+
+    def _get_walk_length(self):
+        '''
+        This function serves the purpose of getting the walk length from
+        one square to the next. It is a callback because the GridLayout
+        must be set up first before being able to properly calculate
+        :param dt:
+        :return:
+        '''
+
+        # Grab the two indices based on matrix rows and columns
+        initial_index = self._get_child_index(self.INITIAL_ROW, self.INITIAL_COL)
+        end_index = self._get_child_index(self.INITIAL_ROW + 1, self.INITIAL_COL)
+
+        # Get the two y coordinates for those indices
+        y1 = self.maze_board.children[initial_index].pos[1]
+        y2 = self.maze_board.children[end_index].pos[1]
+
+        # Calculate the walk_length
+        self.walk_length = y1 - y2
+        print(self.walk_length)
+
+    def _place_character(self):
+        '''
+        This callback serves the purpose of calculating the character's position
+        and then placing the character there.
+        :param dt:
+        :return:
+        '''
+
+        # Get the index for initial position of where the position is
+        # supposed to be
+        index = self._get_child_index(self.INITIAL_ROW, self.INITIAL_COL)
+
+        # Get the x,y size of the gridlayout square
+        square_size = self.maze_board.children[index].size
+        square_x = square_size[0] / 2
+        square_y = square_size[1] / 2
+
+        # Get the x,y size of character (represented as an image)
+        char_size = self.character.size
+        char_x = char_size[0] / 2
+        char_y = char_size[1] / 2
+
+        # Get the x,y position of the initial square
+        initial_pos = self.maze_board.children[index].pos
+        initial_x = initial_pos[0]
+        initial_y = initial_pos[1]
+
+        # Calculate the x,y position to place the character
+        x = initial_x + square_x - char_x
+        y = initial_y + square_y - char_y
+
+        # Place character
+        self.character.pos = [x, y]
 
     def _populate_maze_board(self):
         '''
@@ -217,6 +270,34 @@ class RootWidgit(FloatLayout):
                     # Add to board
                     self.maze_board.add_widget(button)
 
+    def _populate_value_board(self):
+        '''
+        This function serves the purpose of setting up the value_board
+        GridLayout to match the value_board_mat
+        :return:
+        '''
+
+        # Set up the columns
+        self.value_board.cols = self.COLS
+
+        # populate value_board GridLayout
+        for x in xrange(self.ROWS):
+            for y in xrange(self.COLS):
+                # Creating buttons for the widgits inside of gridlayouts
+                # because they are more flexible to work with
+                button = Button(text=str(self.value_board_mat[x][y]),
+                                background_disabled_normal='',
+                                disabled_color=[1, 1, 1, 1],
+                                background_normal='',
+                                background_color=[0, 0, 1, 0.65])
+
+                # Disable button after creation because background_colors and such
+                # would not save otherwise
+                button.disabled = True
+
+                # Add button to our value_board gridlayout
+                self.value_board.add_widget(button)
+
     def _populate_walls(self):
         '''
         This function serves the purpose of populating walls and the
@@ -278,90 +359,12 @@ class RootWidgit(FloatLayout):
                     adjusted_pos = current_pos + 1
                     self.maze_board.children[adjusted_pos].background_color = self.path_color
 
-    def _get_child_index(self, row, col):
-        '''
-        - This function serves the purpose of getting the child_index for
-        maze_board gridlayout.
-        :param row:
-        :param col:
-        :return:
-        '''
-
-        # Calculate how many rows to go down and
-        # columns to go over
-        row = (2 * row + 1) * self.MAZE_BOARD_ROWS
-        col = (2 * col + 1) % self.MAZE_BOARD_COLS
-
-        # Add the rows and columns to get a pseduo position
-        pos = row + col
-
-        # Position has to be readjusted because child[0]
-        # starts on bottom right
-        real_pos = self.MAZE_BOARD_CHILDREN_SIZE - pos - 1
-        return real_pos
-
-    def _get_walk_length(self, dt):
-        '''
-        This function serves the purpose of getting the walk length from
-        one square to the next. It is a callback because the GridLayout
-        must be set up first before being able to properly calculate
-        :param dt:
-        :return:
-        '''
-
-        # Grab the two indices based on matrix rows and columns
-        initial_index = self._get_child_index(self.INITIAL_ROW, self.INITIAL_COL)
-        end_index = self._get_child_index(self.INITIAL_ROW + 1, self.INITIAL_COL)
-
-        # Get the two y coordinates for those indices
-        y1 = self.maze_board.children[initial_index].pos[1]
-        y2 = self.maze_board.children[end_index].pos[1]
-
-        # Calculate the walk_length
-        self.walk_length = y1 - y2
-        print(self.walk_length)
-
-    def _place_character(self, dt):
-        '''
-        This callback serves the purpose of calculating the character's position
-        and then placing the character there.
-        :param dt:
-        :return:
-        '''
-
-        # Get the index for initial position of where the position is
-        # supposed to be
-        index = self._get_child_index(self.INITIAL_ROW, self.INITIAL_COL)
-
-        # Get the x,y size of the gridlayout square
-        square_size = self.maze_board.children[index].size
-        square_x = square_size[0] / 2
-        square_y = square_size[1] / 2
-
-        # Get the x,y size of character (represented as an image)
-        char_size = self.character.size
-        char_x = char_size[0] / 2
-        char_y = char_size[1] / 2
-
-        # Get the x,y position of the initial square
-        initial_pos = self.maze_board.children[index].pos
-        initial_x = initial_pos[0]
-        initial_y = initial_pos[1]
-
-        # Calculate the x,y position to place the character
-        x = initial_x + square_x - char_x
-        y = initial_y + square_y - char_y
-
-        # Place character
-        self.character.pos = [x, y]
-
 
 class MazeApp(App):
 
     def build(self):
         root = RootWidgit()
-        Clock.schedule_once(root._get_walk_length, 1)
-        Clock.schedule_once(root._place_character, 1)
+        Clock.schedule_once(root.callback_setup, 1)
         return root
 
 if __name__ == "__main__":
