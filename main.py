@@ -3,7 +3,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.button import Button
 from Model.Direction import Direction
 from Model.Sprite import Sprite
-from Model.Wall import Wall
+from Model.Path import Path
 from kivy.graphics import Rectangle, Color
 from kivy.clock import Clock
 
@@ -219,30 +219,24 @@ class RootWidgit(FloatLayout):
                     # Creates actual path
                     if y % 2 == 1:
 
-                        # Creating buttons for the widgits inside of gridlayouts
-                        # because they are more flexible to work with
-                        button = Button(text=str(self.maze_board_mat[x/2][y/2]),
-                                        background_disabled_normal='',
-                                        disabled_color=[1, 1, 1, 1],
-                                        background_normal='',
-                                        background_color=[0, 0, 1, 0.65])
+                        # Create path block
+                        path = Path()
 
-                        # Disable button after creation because background_colors and such
-                        # would not save otherwise
-                        button.disabled = True
+                        # Paths are buttons which need to be disabled
+                        path.disabled = True
 
                         # update maze_board children size
                         self.MAZE_BOARD_CHILDREN_SIZE += 1
 
                         # Add to the board
-                        self.maze_board.add_widget(button)
+                        self.maze_board.add_widget(path)
 
                     # Creates wall
                     else:
 
                         # Create and add wall into the GridLayout
                         # Walls are Buttons which need to be disabled
-                        wall = Wall(size_hint_x=0.1, size_hint_y=1)
+                        wall = Path(wall=True, size_hint_x=0.1, size_hint_y=1)
                         wall.disabled = True
 
                         # update maze_board children size
@@ -256,7 +250,7 @@ class RootWidgit(FloatLayout):
                 for y in xrange(self.maze_board.cols):
                     # Creating the wall and adding it
                     # Walls are Buttons which need to be disabled
-                    wall = Wall(size_hint_x=0.1, size_hint_y=0.1)
+                    wall = Path(wall=True, size_hint_x=0.1, size_hint_y=0.1)
                     wall.disabled = True
 
                     # update maze_board children size
@@ -306,10 +300,6 @@ class RootWidgit(FloatLayout):
         :return:
         '''
 
-        #pos = self._get_child_index(3, 3)
-        #print(self.maze_board.children[pos].pos)
-        #print(self.MAZE_BOARD_ROWS)
-
         # Looping through rows and columns of the ROWS and COLS of the board
         # NOT the maze_board ROWS and COLS. maze_board rows and cols include
         # walls itself which we are trying to fill
@@ -321,38 +311,38 @@ class RootWidgit(FloatLayout):
 
                 # NORTH wall condition
                 # If exists, find the adjusted position
-                # then fill it with self.wall_color otherwise self.path_color
-                # This applies for the rest of the wall conditions
+                # then call .set_path() to change to path_color
+                # otherwise call .set_wall() to change to wall_color
                 if self.mat_walls[row][col][Direction.NORTH.value] == 1:
                     adjusted_pos = current_pos + self.MAZE_BOARD_COLS
-                    self.maze_board.children[adjusted_pos].background_color = self.wall_color
+                    self.maze_board.children[adjusted_pos].set_wall()
                 else:
                     adjusted_pos = current_pos + self.MAZE_BOARD_COLS
-                    self.maze_board.children[adjusted_pos].background_color = self.path_color
+                    self.maze_board.children[adjusted_pos].set_path()
 
                 # EAST wall condition
                 if self.mat_walls[row][col][Direction.EAST.value] == 1:
                     adjusted_pos = current_pos - 1
-                    self.maze_board.children[adjusted_pos].background_color = self.wall_color
+                    self.maze_board.children[adjusted_pos].set_wall()
                 else:
                     adjusted_pos = current_pos - 1
-                    self.maze_board.children[adjusted_pos].background_color = self.path_color
+                    self.maze_board.children[adjusted_pos].set_path()
 
                 # SOUTH wall condition
                 if self.mat_walls[row][col][Direction.SOUTH.value] == 1:
                     adjusted_pos = current_pos - self.MAZE_BOARD_COLS
-                    self.maze_board.children[adjusted_pos].background_color = self.wall_color
+                    self.maze_board.children[adjusted_pos].set_wall()
                 else:
                     adjusted_pos = current_pos - self.MAZE_BOARD_COLS
-                    self.maze_board.children[adjusted_pos].background_color = self.path_color
+                    self.maze_board.children[adjusted_pos].set_path()
 
                 # WEST wall condition
                 if self.mat_walls[row][col][Direction.WEST.value] == 1:
                     adjusted_pos = current_pos + 1
-                    self.maze_board.children[adjusted_pos].background_color = self.wall_color
+                    self.maze_board.children[adjusted_pos].set_wall()
                 else:
                     adjusted_pos = current_pos + 1
-                    self.maze_board.children[adjusted_pos].background_color = self.path_color
+                    self.maze_board.children[adjusted_pos].set_path()
 
 
 class MazeApp(App):
