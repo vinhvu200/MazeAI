@@ -3,6 +3,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.button import Button
 from Model.Direction import Direction
 from Model.Sprite import Sprite
+from Model.Wall import Wall
 from kivy.graphics import Rectangle, Color
 from kivy.clock import Clock
 
@@ -239,44 +240,30 @@ class RootWidgit(FloatLayout):
                     # Creates wall
                     else:
 
-                        # Creating buttons for the widgits inside of gridlayouts
-                        # because they are more flexible to work with
-                        button = Button(background_disabled_normal='',
-                                        disabled_color=[0, 0, 0, 1],
-                                        background_normal='',
-                                        background_color=[1, 1, 1, 1],
-                                        size_hint=[0.1, 1])
-
-                        # Disable button after creation because background_colors and such
-                        # would not save otherwise
-                        button.disabled = True
+                        # Create and add wall into the GridLayout
+                        # Walls are Buttons which need to be disabled
+                        wall = Wall(size_hint_x=0.1, size_hint_y=1)
+                        wall.disabled = True
 
                         # update maze_board children size
                         self.MAZE_BOARD_CHILDREN_SIZE += 1
 
                         # Add to board
-                        self.maze_board.add_widget(button)
+                        self.maze_board.add_widget(wall)
 
             # create the vertical walls
             else:
                 for y in xrange(self.maze_board.cols):
-                    # Creating buttons for the widgits inside of gridlayouts
-                    # because they are more flexible to work with
-                    button = Button(background_disabled_normal='',
-                                    disabled_color=[0, 0, 0, 1],
-                                    background_normal='',
-                                    background_color=self.wall_color,
-                                    size_hint=[0.1, 0.1])
-
-                    # Disable button after creation because background_colors and such
-                    # would not save otherwise
-                    button.disabled = True
+                    # Creating the wall and adding it
+                    # Walls are Buttons which need to be disabled
+                    wall = Wall(size_hint_x=0.1, size_hint_y=0.1)
+                    wall.disabled = True
 
                     # update maze_board children size
                     self.MAZE_BOARD_CHILDREN_SIZE += 1
 
                     # Add to board
-                    self.maze_board.add_widget(button)
+                    self.maze_board.add_widget(wall)
 
     def _populate_value_board(self):
         '''
