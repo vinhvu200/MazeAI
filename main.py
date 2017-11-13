@@ -17,10 +17,9 @@ class RootWidgit(FloatLayout):
     maze1 = 'maze1.txt'
     INITIAL_ROW = 0
     INITIAL_COL = 2
-    wall_color = [.627, .321, .094, 1]
-    path_color = [0, 0, 1, 1]
     MAZE_BOARD_CHILDREN_SIZE = 0
     walk_length = 0
+    character = Sprite()
 
     def __init__(self, **kwargs):
         super(RootWidgit, self).__init__(**kwargs)
@@ -28,6 +27,13 @@ class RootWidgit(FloatLayout):
         # Get the maze_board and value_board GridLayout from .kv file
         self.maze_board = self.ids.maze_board
         self.value_board = self.ids.value_board
+
+        # Get Buttons from .kv file
+        self.start_button = self.ids.start_button
+        self.start_button.on_press = self.start
+
+        # Create main character
+        self.character = Sprite(source='Images/p1_stand.png')
 
         # Generate the 3D matrix containing the walls along with ROWS
         # and COLS of the board
@@ -55,8 +61,40 @@ class RootWidgit(FloatLayout):
         self._populate_walls()
 
     def callback_setup(self, dt):
+        '''
+        This function servers the purpose of getting the walk_length for the character
+        and placing the character. It is a callback because it needs the GridLayout to
+        finish calculating everything first.
+        :param dt:
+        :return:
+        '''
         self._get_walk_length()
         self._place_character()
+
+    def start(self):
+        self.character.animate()
+
+    def _get_child_index(self, row, col):
+        '''
+        - This function serves the purpose of getting the child_index for
+        maze_board gridlayout.
+        :param row:
+        :param col:
+        :return:
+        '''
+
+        # Calculate how many rows to go down and
+        # columns to go over
+        row = (2 * row + 1) * self.MAZE_BOARD_ROWS
+        col = (2 * col + 1) % self.MAZE_BOARD_COLS
+
+        # Add the rows and columns to get a pseduo position
+        pos = row + col
+
+        # Position has to be readjusted because child[0]
+        # starts on bottom right
+        real_pos = self.MAZE_BOARD_CHILDREN_SIZE - pos - 1
+        return real_pos
 
     def _build_matrix_walls(self, filename):
         '''
@@ -108,33 +146,10 @@ class RootWidgit(FloatLayout):
         # return matrix, rows, cols
         return mat_walls, rows, cols
 
-    def _get_child_index(self, row, col):
-        '''
-        - This function serves the purpose of getting the child_index for
-        maze_board gridlayout.
-        :param row:
-        :param col:
-        :return:
-        '''
-
-        # Calculate how many rows to go down and
-        # columns to go over
-        row = (2 * row + 1) * self.MAZE_BOARD_ROWS
-        col = (2 * col + 1) % self.MAZE_BOARD_COLS
-
-        # Add the rows and columns to get a pseduo position
-        pos = row + col
-
-        # Position has to be readjusted because child[0]
-        # starts on bottom right
-        real_pos = self.MAZE_BOARD_CHILDREN_SIZE - pos - 1
-        return real_pos
-
     def _get_walk_length(self):
         '''
         This function serves the purpose of getting the walk length from
-        one square to the next. It is a callback because the GridLayout
-        must be set up first before being able to properly calculate
+        one square to the next both in x and y direction.
         :param dt:
         :return:
         '''
@@ -147,9 +162,8 @@ class RootWidgit(FloatLayout):
         y1 = self.maze_board.children[initial_index].pos[1]
         y2 = self.maze_board.children[end_index].pos[1]
 
-        # Calculate the walk_length
-        self.walk_length = y1 - y2
-        print(self.walk_length)
+        # Calculate the walk_length in y direction
+        self.character.walk_length_y = y1 - y2
 
     def _place_character(self):
         '''
@@ -192,8 +206,9 @@ class RootWidgit(FloatLayout):
         sprite = Sprite(source='Images/p1_stand.png',
                         size=[sprite_size_x, sprite_size_y],
                         pos=[x, y])
-        self.add_widget(sprite)
-
+        self.character.size = [sprite_size_x, sprite_size_y]
+        self.character.pos = [x, y]
+        self.add_widget(self.character)
 
     def _populate_maze_board(self):
         '''
