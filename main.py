@@ -154,13 +154,25 @@ class RootWidgit(FloatLayout):
         :return:
         '''
 
-        # Grab the two indices based on matrix rows and columns
+        # Get initial index
         initial_index = self._get_child_index(self.INITIAL_ROW, self.INITIAL_COL)
-        end_index = self._get_child_index(self.INITIAL_ROW + 1, self.INITIAL_COL)
+
+        # Get end index for x direction
+        end_index_x = self._get_child_index(self.INITIAL_ROW, self.INITIAL_COL-1)
+
+        # Get the two x coordinates for those indices
+        x1 = self.maze_board.children[initial_index].pos[0]
+        x2 = self.maze_board.children[end_index_x].pos[0]
+
+        # Calculate the walk_length in x direction
+        self.character.walk_length_x = x1 - x2
+
+        # Get end index for y direction
+        end_index_y = self._get_child_index(self.INITIAL_ROW + 1, self.INITIAL_COL)
 
         # Get the two y coordinates for those indices
         y1 = self.maze_board.children[initial_index].pos[1]
-        y2 = self.maze_board.children[end_index].pos[1]
+        y2 = self.maze_board.children[end_index_y].pos[1]
 
         # Calculate the walk_length in y direction
         self.character.walk_length_y = y1 - y2
