@@ -21,7 +21,6 @@ class RootWidgit(FloatLayout):
     INITIAL_COL = 2
     MAZE_BOARD_CHILDREN_SIZE = 0
     walk_length = 0
-    character = Sprite()
 
     def __init__(self, **kwargs):
         super(RootWidgit, self).__init__(**kwargs)
@@ -34,7 +33,8 @@ class RootWidgit(FloatLayout):
         self.start_button = self.ids.start_button
 
         # Create main character
-        self.character = Sprite(source='Images/p1_stand.png')
+        self.character = Sprite(stand_source='Images/p1_stand.png',
+                                walk_source='Images/p1_walk.zip')
 
         # Set up the keyboard and bind it
         self._keyboard = Window.request_keyboard(
@@ -229,7 +229,7 @@ class RootWidgit(FloatLayout):
 
         # Get the sprite x,y size based on ratio
         # of the actual square
-        ratio = 0.7
+        ratio = 0.8
         sprite_size_x = square_size[0] * ratio
         sprite_size_y = square_size[1] * ratio
 
@@ -247,9 +247,6 @@ class RootWidgit(FloatLayout):
         x = initial_x + square_x_adjust - sprite_x_adjust
         y = initial_y + square_y_adjust - sprite_y_adjust
 
-        sprite = Sprite(source='Images/p1_stand.png',
-                        size=[sprite_size_x, sprite_size_y],
-                        pos=[x, y])
         self.character.size = [sprite_size_x, sprite_size_y]
         self.character.pos = [x, y]
         self.add_widget(self.character)
