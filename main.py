@@ -6,10 +6,12 @@ from Model.Sprite import Sprite
 from Model.Path import Path
 from kivy.graphics import Rectangle, Color
 from kivy.clock import Clock
-
 from kivy.config import Config
+
 Config.set('graphics', 'width', '1100')
 Config.set('graphics', 'height', '500')
+
+from kivy.core.window import Window
 
 
 class RootWidgit(FloatLayout):
@@ -30,10 +32,14 @@ class RootWidgit(FloatLayout):
 
         # Get Buttons from .kv file
         self.start_button = self.ids.start_button
-        self.start_button.on_press = self.start
 
         # Create main character
         self.character = Sprite(source='Images/p1_stand.png')
+
+        # Set up the keyboard and bind it
+        self._keyboard = Window.request_keyboard(
+            self._keyboard_closed, self, 'text')
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
         # Generate the 3D matrix containing the walls along with ROWS
         # and COLS of the board
@@ -70,9 +76,6 @@ class RootWidgit(FloatLayout):
         '''
         self._get_walk_length()
         self._place_character()
-
-    def start(self):
-        self.character.animate()
 
     def _get_child_index(self, row, col):
         '''
@@ -176,6 +179,35 @@ class RootWidgit(FloatLayout):
 
         # Calculate the walk_length in y direction
         self.character.walk_length_y = y1 - y2
+
+    def _keyboard_closed(self):
+        print('My keyboard have been closed!')
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        '''
+        This function serves the purpose of handling keyboard events
+        to move the character based on the keys: w, a, s, d.
+        '''
+
+        # Conditions to determine which direction to move character
+        # NORTH
+        if keycode[1] == 'w':
+            self.character.animate_walk(Direction.NORTH)
+        # WEST
+        elif keycode[1] == 'a':
+            self.character.animate_walk(Direction.WEST)
+        # SOUTH
+        elif keycode[1] == 's':
+            self.character.animate_walk(Direction.SOUTH)
+        # EAST
+        elif keycode[1] == 'd':
+            self.character.animate_walk(Direction.EAST)
+
+        # Return True to accept the key. Otherwise, it will be used by
+        # the system.
+        return True
 
     def _place_character(self):
         '''
