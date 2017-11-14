@@ -200,7 +200,8 @@ class RootWidgit(FloatLayout):
             self.character.animate_walk(Direction.WEST)
         # SOUTH
         elif keycode[1] == 's':
-            self.character.animate_walk(Direction.SOUTH)
+            #self.character.animate_walk(Direction.SOUTH)
+            self.character.animate_bump_wall(Direction.SOUTH)
         # EAST
         elif keycode[1] == 'd':
             self.character.animate_walk(Direction.EAST)

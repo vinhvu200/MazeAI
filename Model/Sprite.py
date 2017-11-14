@@ -22,7 +22,7 @@ class Sprite(Image):
         self.walk_length_x = 0
 
         # How fast to animate the walking
-        self.anim_delay = 0.035
+        self.anim_delay = 0.025
 
         # Two image source to determine whether the
         # sprite is standing or walking
@@ -32,14 +32,54 @@ class Sprite(Image):
         # Setting the source defaultint to standing
         self.source = self.stand_source
 
+    def animate_bump_wall(self, direction):
+        '''
+        This function takes the direction of where the
+        sprite would like to move and then calculate the
+        distance to "bump" into the wall.
+        '''
+
+        # These attempt positions are to be changed
+        # depending on which direction the character
+        # is moving in
+        attempt_x = self.pos[0]
+        attempt_y = self.pos[1]
+
+        # Adjust the walk_length to make the character walk
+        # far enough to "bump" into a wall
+        ratio = .1
+        adjusted_walk_length_x = ratio * self.walk_length_x
+        adjusted_walk_length_y = ratio * self.walk_length_y
+
+        # Conditions to determine how the attempted position will
+        # be changed based on Direction
+        if direction == Direction.NORTH:
+            attempt_y = attempt_y + adjusted_walk_length_y
+        if direction == Direction.WEST:
+            attempt_x = attempt_x - adjusted_walk_length_x
+        if direction == Direction.SOUTH:
+            attempt_y = attempt_y - adjusted_walk_length_y
+        if direction == Direction.EAST:
+            attempt_y = attempt_y + adjusted_walk_length_x
+
+        # Move a minimal distance to "bump" a wall
+        attempt_animation = Animation(pos=(attempt_x, attempt_y), duration=0.25)
+        # Move back to original position
+        original_animation = Animation(pos=(self.pos[0], self.pos[1]), duration=0.25)
+        # Do the animation sequentially
+        animation = attempt_animation + original_animation
+        # When animation is complete, switch back to standing
+        animation.bind(on_complete=self.end_animation)
+
+        # Start the walking animation
+        self.source = self.walk_source
+        animation.start(self)
+
     def animate_walk(self, direction):
         '''
         This function servers the purpose of animating the
         sprite's walk in one direction.
-        :param direction:
-        :return:
         '''
-        self.source=self.walk_source
 
         # Get the current x,y postion
         pos_x = self.pos[0]
@@ -67,6 +107,9 @@ class Sprite(Image):
         # so that we know when to switch back to self.stand_source
         animation = Animation(pos=(pos_x, pos_y), duration=1)
         animation.bind(on_complete=self.end_animation)
+
+        # Start walking animation
+        self.source = self.walk_source
         animation.start(self)
 
     def end_animation(self, widget, item):
