@@ -4,7 +4,7 @@ from kivy.animation import Animation
 
 class Sprite(Image):
 
-    def __init__(self, stand_source, walk_source, **kwargs):
+    def __init__(self, stand_source, walk_source, current_row, current_col, **kwargs):
         super(Sprite, self).__init__(**kwargs)
 
         # Must have this so it can be placed anywhere on
@@ -13,8 +13,8 @@ class Sprite(Image):
 
         # This is to reference the maze_board_mat to
         # know where the character is
-        self.current_row = 0
-        self.current_col = 0
+        self.current_row = current_row
+        self.current_col = current_col
 
         # This is how far to walk in the x,y direction
         # to land in the middle of each square
@@ -60,7 +60,7 @@ class Sprite(Image):
         if direction == Direction.SOUTH:
             attempt_y = attempt_y - adjusted_walk_length_y
         if direction == Direction.EAST:
-            attempt_y = attempt_y + adjusted_walk_length_x
+            attempt_x = attempt_x + adjusted_walk_length_x
 
         # Move a minimal distance to "bump" a wall
         attempt_animation = Animation(pos=(attempt_x, attempt_y), duration=0.25)
@@ -88,7 +88,7 @@ class Sprite(Image):
         # Conditions to properly calculate position to move
         # NORTH
         if direction == Direction.NORTH:
-            self.current_row += 1
+            self.current_row -= 1
             pos_y = self.pos[1] + self.walk_length_y
         # WEST
         elif direction == Direction.WEST:
@@ -96,7 +96,7 @@ class Sprite(Image):
             pos_x = self.pos[0] - self.walk_length_x
         # SOUTH
         elif direction == Direction.SOUTH:
-            self.current_row -= 1
+            self.current_row += 1
             pos_y = self.pos[1] - self.walk_length_y
         # EAST
         elif direction == Direction.EAST:

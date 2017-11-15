@@ -34,7 +34,9 @@ class RootWidgit(FloatLayout):
 
         # Create main character
         self.character = Sprite(stand_source='Images/p1_stand.png',
-                                walk_source='Images/p1_walk.zip')
+                                walk_source='Images/p1_walk.zip',
+                                current_row=self.INITIAL_ROW,
+                                current_col=self.INITIAL_COL)
 
         # Set up the keyboard and bind it
         self._keyboard = Window.request_keyboard(
@@ -76,28 +78,6 @@ class RootWidgit(FloatLayout):
         '''
         self._get_walk_length()
         self._place_character()
-
-    def _get_child_index(self, row, col):
-        '''
-        - This function serves the purpose of getting the child_index for
-        maze_board gridlayout.
-        :param row:
-        :param col:
-        :return:
-        '''
-
-        # Calculate how many rows to go down and
-        # columns to go over
-        row = (2 * row + 1) * self.MAZE_BOARD_ROWS
-        col = (2 * col + 1) % self.MAZE_BOARD_COLS
-
-        # Add the rows and columns to get a pseduo position
-        pos = row + col
-
-        # Position has to be readjusted because child[0]
-        # starts on bottom right
-        real_pos = self.MAZE_BOARD_CHILDREN_SIZE - pos - 1
-        return real_pos
 
     def _build_matrix_walls(self, filename):
         '''
@@ -149,6 +129,28 @@ class RootWidgit(FloatLayout):
         # return matrix, rows, cols
         return mat_walls, rows, cols
 
+    def _get_child_index(self, row, col):
+        '''
+        - This function serves the purpose of getting the child_index for
+        maze_board gridlayout.
+        :param row:
+        :param col:
+        :return:
+        '''
+
+        # Calculate how many rows to go down and
+        # columns to go over
+        row = (2 * row + 1) * self.MAZE_BOARD_ROWS
+        col = (2 * col + 1) % self.MAZE_BOARD_COLS
+
+        # Add the rows and columns to get a pseduo position
+        pos = row + col
+
+        # Position has to be readjusted because child[0]
+        # starts on bottom right
+        real_pos = self.MAZE_BOARD_CHILDREN_SIZE - pos - 1
+        return real_pos
+
     def _get_walk_length(self):
         '''
         This function serves the purpose of getting the walk length from
@@ -192,19 +194,41 @@ class RootWidgit(FloatLayout):
         '''
 
         # Conditions to determine which direction to move character
-        # NORTH
+        # Three options for validity of move: True, False, None
+        # True: There are no walls; therefore, you can walk through
+        # False: There is a wall; animate "bumping" into wall
+        # None: Character is now out of bound
+        # NORTH CONDITION
         if keycode[1] == 'w':
-            self.character.animate_walk(Direction.NORTH)
+            valid_move = self._valid_move(self.character.current_row, self.character.current_col,
+                                Direction.NORTH)
+            if valid_move:
+                self.character.animate_walk(Direction.NORTH)
+            if valid_move is False:
+                self.character.animate_bump_wall(Direction.NORTH)
         # WEST
         elif keycode[1] == 'a':
-            self.character.animate_walk(Direction.WEST)
+            valid_move = self._valid_move(self.character.current_row, self.character.current_col,
+                                          Direction.WEST)
+            if valid_move:
+                self.character.animate_walk(Direction.WEST)
+            if valid_move is False:
+                self.character.animate_bump_wall(Direction.WEST)
         # SOUTH
         elif keycode[1] == 's':
-            #self.character.animate_walk(Direction.SOUTH)
-            self.character.animate_bump_wall(Direction.SOUTH)
+            valid_move = self._valid_move(self.character.current_row, self.character.current_col,
+                                          Direction.SOUTH)
+            if valid_move:
+                self.character.animate_walk(Direction.SOUTH)
+            if valid_move is False:
+                self.character.animate_bump_wall(Direction.SOUTH)
         # EAST
         elif keycode[1] == 'd':
-            self.character.animate_walk(Direction.EAST)
+            if self._valid_move(self.character.current_row, self.character.current_col,
+                                Direction.EAST) is True:
+                self.character.animate_walk(Direction.EAST)
+            else:
+                self.character.animate_bump_wall(Direction.EAST)
 
         # Return True to accept the key. Otherwise, it will be used by
         # the system.
@@ -400,6 +424,30 @@ class RootWidgit(FloatLayout):
                 else:
                     adjusted_pos = current_pos + 1
                     self.maze_board.children[adjusted_pos].set_path()
+
+    def _valid_move(self, current_row, current_col, direction):
+        '''
+        This function takes character's current row and columns and
+        determine whether there is a wall blocking the direction that
+        they intend to move in
+        :param current_row: sprite's current row
+        :param current_col: sprite's current col
+        :param direction: sprite's intended direction (Direction enum)
+        :return:
+        '''
+
+        # If the character is out of bound, return None
+        if current_row >= self.ROWS:
+            return None
+        if current_col >= self.COLS:
+            return None
+
+        # If there is no wall; the move is valid
+        if self.mat_walls[current_row][current_col][direction.value] == 0:
+            return True
+        # If there is a wall; move is invalid
+        else:
+            return False
 
 
 class MazeApp(App):
