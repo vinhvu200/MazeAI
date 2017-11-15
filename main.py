@@ -38,9 +38,7 @@ class RootWidgit(FloatLayout):
 
         # Create main character
         self.character = Sprite(current_row=self.INITIAL_ROW,
-                                current_col=self.INITIAL_COL,
-                                keyboard=self._keyboard,
-                                _on_keyboard_down=self._on_keyboard_down)
+                                current_col=self.INITIAL_COL)
 
         # Generate the 3D matrix containing the walls along with ROWS
         # and COLS of the board
