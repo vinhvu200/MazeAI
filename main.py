@@ -7,11 +7,9 @@ from Model.Path import Path
 from kivy.graphics import Rectangle, Color
 from kivy.clock import Clock
 from kivy.config import Config
-from time import time
-
+from kivy.animation import Animation
 Config.set('graphics', 'width', '1100')
 Config.set('graphics', 'height', '500')
-
 from kivy.core.window import Window
 
 
@@ -36,7 +34,7 @@ class RootWidgit(FloatLayout):
         # Set up the keyboard and bind it
         self._keyboard = Window.request_keyboard(
             self._keyboard_closed, self, 'text')
-        self._keyboard.bind(on_key_down=self._on_keyboard_down,)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
         # Create main character
         self.character = Sprite(current_row=self.INITIAL_ROW,
@@ -130,6 +128,21 @@ class RootWidgit(FloatLayout):
         # return matrix, rows, cols
         return mat_walls, rows, cols
 
+    def _end_animation(self, widget, item):
+        '''
+        - This binding method is used to stop the walking animation
+         and switch back to the standing animation when it is done
+         walking from point A to B.
+        - It rebinds the keyboard again as well. Keyboard is unbinded
+        earlier to stop actions in middle of animation
+        '''
+
+        # Switches back to just standing
+        self.character.set_standing()
+
+        # Bind keyboard again after animation is done
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+
     def _get_child_index(self, row, col):
         '''
         - This function serves the purpose of getting the child_index for
@@ -193,6 +206,7 @@ class RootWidgit(FloatLayout):
         This function serves the purpose of handling keyboard events
         to move the character based on the keys: w, a, s, d.
         '''
+        animate = Animation()
 
         # Conditions to determine which direction to move character
         # Three options for validity of move: True, False, None
@@ -204,32 +218,49 @@ class RootWidgit(FloatLayout):
             valid_move = self._valid_move(self.character.current_row, self.character.current_col,
                                 Direction.NORTH)
             if valid_move:
-                self.character.animate_walk(Direction.NORTH)
+                # Get animation for walking
+                animate = self.character.get_walk_animation(Direction.NORTH)
             if valid_move is False:
-                self.character.animate_bump_wall(Direction.NORTH)
+                # Get animation for wall_bump
+                animate = self.character.get_bump_wall_animation(Direction.NORTH)
         # WEST
         elif keycode[1] == 'a':
             valid_move = self._valid_move(self.character.current_row, self.character.current_col,
                                           Direction.WEST)
             if valid_move:
-                self.character.animate_walk(Direction.WEST)
+                # Get animation for walking
+                animate = self.character.get_walk_animation(Direction.WEST)
             if valid_move is False:
-                self.character.animate_bump_wall(Direction.WEST)
+                # Get animation for wall_bump
+                animate = self.character.get_bump_wall_animation(Direction.WEST)
         # SOUTH
         elif keycode[1] == 's':
             valid_move = self._valid_move(self.character.current_row, self.character.current_col,
                                           Direction.SOUTH)
             if valid_move:
-                self.character.animate_walk(Direction.SOUTH)
+                # Get animation for walking
+                animate = self.character.get_walk_animation(Direction.SOUTH)
             if valid_move is False:
-                self.character.animate_bump_wall(Direction.SOUTH)
+                # Get animation for wall_bump
+                animate = self.character.get_bump_wall_animation(Direction.SOUTH)
         # EAST
         elif keycode[1] == 'd':
             if self._valid_move(self.character.current_row, self.character.current_col,
                                 Direction.EAST) is True:
-                self.character.animate_walk(Direction.EAST)
+                # Get animation for walking
+                animate = self.character.get_walk_animation(Direction.EAST)
             else:
-                self.character.animate_bump_wall(Direction.EAST)
+                # Get animation for wall_bump
+                animate = self.character.get_bump_wall_animation(Direction.EAST)
+
+        # Bind the animation
+        animate.bind(on_complete=self._end_animation)
+
+        # Start animation
+        animate.start(self.character)
+
+        # Unbind keyboard to stop action in middle of animation
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
 
         # Return True to accept the key. Otherwise, it will be used by
         # the system.
