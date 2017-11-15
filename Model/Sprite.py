@@ -2,9 +2,10 @@ from kivy.uix.image import Image
 from Direction import Direction
 from kivy.animation import Animation
 
+
 class Sprite(Image):
 
-    def __init__(self, current_row, current_col, **kwargs):
+    def __init__(self, current_row, current_col, keyboard, _on_keyboard_down, **kwargs):
         super(Sprite, self).__init__(**kwargs)
 
         # Declare the image path for sprite standing/walking
@@ -30,6 +31,10 @@ class Sprite(Image):
 
         # Setting the source defaultint to standing
         self.source = self.stand_source
+
+        # Set up the keyboard and the binding method
+        self._keyboard = keyboard
+        self._on_keyboard_down = _on_keyboard_down
 
     def animate_bump_wall(self, direction):
         '''
@@ -74,6 +79,9 @@ class Sprite(Image):
         self.source = self.walk_source
         animation.start(self)
 
+        # Unbind keyboard to stop action in middle of animation
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+
     def animate_walk(self, direction):
         '''
         This function servers the purpose of animating the
@@ -111,6 +119,20 @@ class Sprite(Image):
         self.source = self.walk_source
         animation.start(self)
 
+        # Unbind keyboard to stop action in middle of animation
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+
     def end_animation(self, widget, item):
+        '''
+        - This binding method is used to stop the walking animation
+         and switch back to the standing animation when it is done
+         walking from point A to B.
+        - It rebinds the keyboard again as well. Keyboard is unbinded
+        earlier to stop actions in middle of animation
+        '''
+
         # Switches back to just standing
         self.source = self.stand_source
+
+        # Bind keyboard again after animation is done
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)

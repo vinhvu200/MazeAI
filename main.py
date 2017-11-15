@@ -7,6 +7,7 @@ from Model.Path import Path
 from kivy.graphics import Rectangle, Color
 from kivy.clock import Clock
 from kivy.config import Config
+from time import time
 
 Config.set('graphics', 'width', '1100')
 Config.set('graphics', 'height', '500')
@@ -32,14 +33,16 @@ class RootWidgit(FloatLayout):
         # Get Buttons from .kv file
         self.start_button = self.ids.start_button
 
-        # Create main character
-        self.character = Sprite(current_row=self.INITIAL_ROW,
-                                current_col=self.INITIAL_COL)
-
         # Set up the keyboard and bind it
         self._keyboard = Window.request_keyboard(
             self._keyboard_closed, self, 'text')
-        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down,)
+
+        # Create main character
+        self.character = Sprite(current_row=self.INITIAL_ROW,
+                                current_col=self.INITIAL_COL,
+                                keyboard=self._keyboard,
+                                _on_keyboard_down=self._on_keyboard_down)
 
         # Generate the 3D matrix containing the walls along with ROWS
         # and COLS of the board
