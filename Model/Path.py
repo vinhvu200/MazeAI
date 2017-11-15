@@ -4,7 +4,7 @@ from kivy.uix.button import Button
 class Path(Button):
     '''
     - This class sets up a button as either a wall or a path.
-    - Walls and Paths are indicated by just their color
+    - Walls and Paths are indicated by just their background image
     - Remember to disable the button after it is initialized.
     It does not work when you try to disable it in the constructor
     '''
@@ -12,31 +12,31 @@ class Path(Button):
     def __init__(self, size_hint_x=1, size_hint_y=1, wall=False, **kwargs):
         super(Path, self).__init__(**kwargs)
 
-        # Two colors to identify wall or path
-        self.wall_color = [.627, .321, .094, 1]
-        self.path_color = [0, 0, 1, 1]
+        # Image source for either path or wall
+        self.path_source = 'Images/path.png'
+        self.wall_source = 'Images/wall.png'
 
         # Set up for button
         self.background_disabled_normal = ''
+        self.background_disabled_normal = self.path_source
         self.disabled_color = [0, 0, 0, 1]
         self.background_normal = ''
-        self.background_color = self.path_color
         self.size_hint = [size_hint_x, size_hint_y]
 
-        # Defaults as a path
+        # If wall condition is True, then change to wall_source
         if wall is True:
-            self.background_color = self.wall_color
+            self.background_disabled_normal = self.wall_source
 
-    def set_path(self):
+    def set_path_background(self):
         '''
-        This function sets the background_color to the path_color
-        :return:
+        This function sets the background_image to path image
+        :return: None
         '''
-        self.background_color = self.path_color
+        self.background_disabled_normal = self.path_source
 
-    def set_wall(self):
+    def set_wall_background(self):
         '''
-        This function sets the background_color to the wall_color
-        :return:
+        This function sets the background_image to wall image
+        :return: None
         '''
-        self.background_color = self.wall_color
+        self.background_disabled_normal = self.wall_source

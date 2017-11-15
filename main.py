@@ -392,38 +392,38 @@ class RootWidgit(FloatLayout):
 
                 # NORTH wall condition
                 # If exists, find the adjusted position
-                # then call .set_path() to change to path_color
-                # otherwise call .set_wall() to change to wall_color
+                # then call .set_path_background() to change the background image
+                # otherwise call .set_wall_background() to change to wall_color
                 if self.mat_walls[row][col][Direction.NORTH.value] == 1:
                     adjusted_pos = current_pos + self.MAZE_BOARD_COLS
-                    self.maze_board.children[adjusted_pos].set_wall()
+                    self.maze_board.children[adjusted_pos].set_wall_background()
                 else:
                     adjusted_pos = current_pos + self.MAZE_BOARD_COLS
-                    self.maze_board.children[adjusted_pos].set_path()
+                    self.maze_board.children[adjusted_pos].set_path_background()
 
                 # EAST wall condition
                 if self.mat_walls[row][col][Direction.EAST.value] == 1:
                     adjusted_pos = current_pos - 1
-                    self.maze_board.children[adjusted_pos].set_wall()
+                    self.maze_board.children[adjusted_pos].set_wall_background()
                 else:
                     adjusted_pos = current_pos - 1
-                    self.maze_board.children[adjusted_pos].set_path()
+                    self.maze_board.children[adjusted_pos].set_path_background()
 
                 # SOUTH wall condition
                 if self.mat_walls[row][col][Direction.SOUTH.value] == 1:
                     adjusted_pos = current_pos - self.MAZE_BOARD_COLS
-                    self.maze_board.children[adjusted_pos].set_wall()
+                    self.maze_board.children[adjusted_pos].set_wall_background()
                 else:
                     adjusted_pos = current_pos - self.MAZE_BOARD_COLS
-                    self.maze_board.children[adjusted_pos].set_path()
+                    self.maze_board.children[adjusted_pos].set_path_background()
 
                 # WEST wall condition
                 if self.mat_walls[row][col][Direction.WEST.value] == 1:
                     adjusted_pos = current_pos + 1
-                    self.maze_board.children[adjusted_pos].set_wall()
+                    self.maze_board.children[adjusted_pos].set_wall_background()
                 else:
                     adjusted_pos = current_pos + 1
-                    self.maze_board.children[adjusted_pos].set_path()
+                    self.maze_board.children[adjusted_pos].set_path_background()
 
     def _valid_move(self, current_row, current_col, direction):
         '''
