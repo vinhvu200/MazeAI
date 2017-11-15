@@ -33,9 +33,7 @@ class RootWidgit(FloatLayout):
         self.start_button = self.ids.start_button
 
         # Create main character
-        self.character = Sprite(stand_source='Images/p1_stand.png',
-                                walk_source='Images/p1_walk.zip',
-                                current_row=self.INITIAL_ROW,
+        self.character = Sprite(current_row=self.INITIAL_ROW,
                                 current_col=self.INITIAL_COL)
 
         # Set up the keyboard and bind it

@@ -4,8 +4,12 @@ from kivy.animation import Animation
 
 class Sprite(Image):
 
-    def __init__(self, stand_source, walk_source, current_row, current_col, **kwargs):
+    def __init__(self, current_row, current_col, **kwargs):
         super(Sprite, self).__init__(**kwargs)
+
+        # Declare the image path for sprite standing/walking
+        self.stand_source = 'Images/p1_stand.png'
+        self.walk_source = 'Images/p1_walk.zip'
 
         # Must have this so it can be placed anywhere on
         # the board without restriction of FloatLayout
@@ -23,11 +27,6 @@ class Sprite(Image):
 
         # How fast to animate the walking
         self.anim_delay = 0.025
-
-        # Two image source to determine whether the
-        # sprite is standing or walking
-        self.stand_source = stand_source
-        self.walk_source = walk_source
 
         # Setting the source defaultint to standing
         self.source = self.stand_source
