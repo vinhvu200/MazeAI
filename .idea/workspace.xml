@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="813541fc-2551-4d15-a628-07c281ec43c3" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Model/TDSquare.py" afterPath="$PROJECT_DIR$/Model/TDSquare.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.py" afterPath="$PROJECT_DIR$/main.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -20,8 +21,8 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="328">
-              <caret line="66" column="30" lean-forward="false" selection-start-line="66" selection-start-column="30" selection-end-line="66" selection-end-column="30" />
+            <state relative-caret-position="151">
+              <caret line="82" column="8" lean-forward="false" selection-start-line="82" selection-start-column="10" selection-end-line="86" selection-end-column="37" />
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
               </folding>
@@ -32,8 +33,8 @@
       <file leaf-file-name="TDSquare.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Model/TDSquare.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="600">
-              <caret line="40" column="61" lean-forward="false" selection-start-line="40" selection-start-column="61" selection-end-line="40" selection-end-column="61" />
+            <state relative-caret-position="345">
+              <caret line="23" column="35" lean-forward="false" selection-start-line="23" selection-start-column="35" selection-end-line="23" selection-end-column="35" />
               <folding />
             </state>
           </provider>
@@ -91,12 +92,14 @@
       <find>value_board_mat</find>
       <find>_get_child_index</find>
       <find>MAZE_BOARD_CHILDREN_SIZE</find>
+      <find>directions</find>
     </findStrings>
     <replaceStrings>
       <replace>_populate_maze_board</replace>
       <replace>.set_wall_background</replace>
       <replace>_get_child_index_maze_board</replace>
       <replace>maze_board_children_size</replace>
+      <replace>direction_values</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -734,16 +737,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Model/TDSquare.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="600">
-          <caret line="40" column="61" lean-forward="false" selection-start-line="40" selection-start-column="61" selection-end-line="40" selection-end-column="61" />
+        <state relative-caret-position="345">
+          <caret line="23" column="35" lean-forward="false" selection-start-line="23" selection-start-column="35" selection-end-line="23" selection-end-column="35" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="328">
-          <caret line="66" column="30" lean-forward="false" selection-start-line="66" selection-start-column="30" selection-end-line="66" selection-end-column="30" />
+        <state relative-caret-position="151">
+          <caret line="82" column="8" lean-forward="false" selection-start-line="82" selection-start-column="10" selection-end-line="86" selection-end-column="37" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
           </folding>

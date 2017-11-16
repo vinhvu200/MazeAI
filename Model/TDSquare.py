@@ -13,16 +13,17 @@ class TDSquare(Button):
         self.background_normal = ''
         self.background_color = [0, 0, 1, 0.65]
 
-        # Directions go [NORTH, EAST, SOUTH, WEST]
-        self.directions = [0, 0, 0, 0]
+        # direction_values go [NORTH, EAST, SOUTH, WEST]
+        self.direction_values = [0, 0, 0, 0]
 
         # Set reward and text
         self.reward = 0
-        self.text = 'R: {}\n' \
-                    'N: {} - E: {}\n' \
-                    'S: {} - W: {}'.format(str(self.reward), str(self.directions[0]),
-                                   str(self.directions[1]), str(self.directions[2]),
-                                   str(self.directions[3]))
+        self.text = 'N: {}\n' \
+                    'E: {}\n' \
+                    'S: {}\n' \
+                    'W: {}'.format(str(self.direction_values[0]),
+                                   str(self.direction_values[1]), str(self.direction_values[2]),
+                                   str(self.direction_values[3]))
 
     def update(self):
         '''
@@ -30,11 +31,12 @@ class TDSquare(Button):
         and direction values
         :return: None
         '''
-        self.text = 'R: {}\n' \
-                    'N: {} - E: {}\n' \
-                    'S: {} - W: {}'.format(str(self.reward), str(self.directions[0]),
-                                           str(self.directions[1]), str(self.directions[2]),
-                                           str(self.directions[3]))
+        self.text = 'N: {}\n' \
+                    'E: {}\n' \
+                    'S: {}\n' \
+                    'W: {}'.format(str(self.direction_values[0]),
+                                   str(self.direction_values[1]), str(self.direction_values[2]),
+                                   str(self.direction_values[3]))
 
     def set_reward(self, reward):
         '''
