@@ -25,6 +25,7 @@ class RootWidgit(FloatLayout):
     maze_board_children_size = 0
     walk_length = 0
     animate = Animation()
+    learn_flag = False
 
     def __init__(self, **kwargs):
         super(RootWidgit, self).__init__(**kwargs)
@@ -35,6 +36,11 @@ class RootWidgit(FloatLayout):
 
         # Get Buttons from .kv file
         self.start_button = self.ids.start_button
+        self.test_button = self.ids.test_button
+
+        # Bind Buttons from .kv file
+        self.start_button.bind(on_press=self._start)
+        self.test_button.bind(on_press=self._test)
 
         # Set up the keyboard and bind it
         self._keyboard = Window.request_keyboard(
@@ -67,6 +73,13 @@ class RootWidgit(FloatLayout):
         # Fill the walls in for maze_board
         self._populate_walls()
 
+    def _test(self, dt):
+
+        self.remove_widget(self.character)
+        self.character = Sprite(current_row=self.INITIAL_ROW,
+                                current_col=self.INITIAL_COL)
+        self.callback_setup(None)
+
     def callback_setup(self, dt):
         '''
         This function servers the purpose of getting the walk_length for the character
@@ -86,11 +99,11 @@ class RootWidgit(FloatLayout):
         :return:
         '''
 
-        # if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
-        #     self.remove_widget(self.character)
-        #     self.character = Sprite(current_row=self.INITIAL_ROW,
-        #                             current_col=self.INITIAL_COL)
-        #     self._place_character()
+        if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
+            self.remove_widget(self.character)
+            self.character = Sprite(current_row=self.INITIAL_ROW,
+                                    current_col=self.INITIAL_COL)
+            self.callback_setup(None)
 
         # Get child_index to obtain the td_square from the value_board
         child_index = self._get_child_index_value_board(self.character.current_row,
@@ -104,7 +117,7 @@ class RootWidgit(FloatLayout):
         # Choose appropriate animation based on max_index
         # IMPORTANT: After this is called, the character will
         # have updated its rows and columns
-        self._animate(current_max_index)
+        valid_flag = self._animate(current_max_index)
 
         # Get the new updated td_square
         child_index = self._get_child_index_value_board(self.character.current_row,
@@ -112,7 +125,68 @@ class RootWidgit(FloatLayout):
         new_td_square = self.value_board.children[child_index]
 
         # Calculate updates for the current_td_square
-        self._calculate_update(current_td_square, new_td_square, current_max_index)
+        self._calculate_update(current_td_square, new_td_square, current_max_index, valid_flag)
+
+    def _animate(self, max_index):
+        '''
+        - This function takes the max_index which is the "best" move
+        of the four on the current td_square and then animates what
+        that move would look like.
+        - Returns a valid_flag to determine whether the move made was
+        valid. Valid means it did not bump into a wall. Invalid means
+        bumping into a wall.
+        :param max_index:
+        :return: Boolean
+        '''
+
+        valid_flag = True
+        # Calculate animation
+        if Direction.NORTH.value == max_index:
+
+            valid_move = self._valid_move(self.character.current_row, self.character.current_col,
+                                          Direction.NORTH)
+            if valid_move:
+                # Get animation for walking
+                self.animate = self.character.get_walk_animation(Direction.NORTH)
+            if valid_move is False:
+                # Get animation for wall_bump
+                self.animate = self.character.get_bump_wall_animation(Direction.NORTH)
+                valid_flag = False
+        elif Direction.EAST.value == max_index:
+
+            valid_move = self._valid_move(self.character.current_row, self.character.current_col,
+                                          Direction.EAST)
+            if valid_move:
+                # Get animation for walking
+                self.animate = self.character.get_walk_animation(Direction.EAST)
+            if valid_move is False:
+                # Get animation for wall_bump
+                self.animate = self.character.get_bump_wall_animation(Direction.EAST)
+                valid_flag = False
+        elif Direction.SOUTH.value == max_index:
+            valid_move = self._valid_move(self.character.current_row, self.character.current_col,
+                                          Direction.SOUTH)
+            if valid_move:
+                # Get animation for walking
+                self.animate = self.character.get_walk_animation(Direction.SOUTH)
+            if valid_move is False:
+                # Get animation for wall_bump
+                self.animate = self.character.get_bump_wall_animation(Direction.SOUTH)
+                valid_flag = False
+        elif Direction.WEST.value == max_index:
+            valid_move = self._valid_move(self.character.current_row, self.character.current_col,
+                                          Direction.WEST)
+            if valid_move:
+                # Get animation for walking
+                self.animate = self.character.get_walk_animation(Direction.WEST)
+            if valid_move is False:
+                # Get animation for wall_bump
+                self.animate = self.character.get_bump_wall_animation(Direction.WEST)
+                valid_flag = False
+
+        self.animate.bind(on_complete=self._end_animation)
+        self.animate.start(self.character)
+        return valid_flag
 
     def _build_matrix_walls(self, filename):
         '''
@@ -164,62 +238,11 @@ class RootWidgit(FloatLayout):
         # return matrix, rows, cols
         return mat_walls, rows, cols
 
-    def _animate(self, max_index):
+    def _calculate_update(self, current_td_square, new_td_square, current_max_index, valid_flag):
         '''
-        This function takes the max_index which is the "best" move
-        of the four on the current td_square and then animates what
-        that move would look like.
-        :param max_index:
-        :return:
-        '''
-
-        # Calculate animation
-        if Direction.NORTH.value == max_index:
-
-            valid_move = self._valid_move(self.character.current_row, self.character.current_col,
-                                          Direction.NORTH)
-            if valid_move:
-                # Get animation for walking
-                self.animate = self.character.get_walk_animation(Direction.NORTH)
-            if valid_move is False:
-                # Get animation for wall_bump
-                self.animate = self.character.get_bump_wall_animation(Direction.NORTH)
-        elif Direction.EAST.value == max_index:
-
-            valid_move = self._valid_move(self.character.current_row, self.character.current_col,
-                                          Direction.EAST)
-            if valid_move:
-                # Get animation for walking
-                self.animate = self.character.get_walk_animation(Direction.EAST)
-            if valid_move is False:
-                # Get animation for wall_bump
-                self.animate = self.character.get_bump_wall_animation(Direction.EAST)
-        elif Direction.SOUTH.value == max_index:
-            valid_move = self._valid_move(self.character.current_row, self.character.current_col,
-                                          Direction.SOUTH)
-            if valid_move:
-                # Get animation for walking
-                self.animate = self.character.get_walk_animation(Direction.SOUTH)
-            if valid_move is False:
-                # Get animation for wall_bump
-                self.animate = self.character.get_bump_wall_animation(Direction.SOUTH)
-        elif Direction.WEST.value == max_index:
-            valid_move = self._valid_move(self.character.current_row, self.character.current_col,
-                                          Direction.WEST)
-            if valid_move:
-                # Get animation for walking
-                self.animate = self.character.get_walk_animation(Direction.WEST)
-            if valid_move is False:
-                # Get animation for wall_bump
-                self.animate = self.character.get_bump_wall_animation(Direction.WEST)
-
-        self.animate.bind(on_complete=self._end_animation)
-        self.animate.start(self.character)
-
-    def _calculate_update(self, current_td_square, new_td_square, current_max_index):
-        '''
-        Using Q-learning, the character updates its current td_square direction_values
+        - Using Q-learning, the character updates its current td_square direction_values
         accordingly so that the next move can be chosen.
+        - Valid flag used to increase penalty when bumping walls
         :param current_td_square: TDSquare
         :param new_td_square: TDSquare
         :param current_max_index: integer
@@ -230,6 +253,8 @@ class RootWidgit(FloatLayout):
         lr = 0.5
         d = 1
         cost = 0.04
+        if valid_flag is False:
+            cost *= 2
 
         # Current td_square value of the "best" move grabbed from the current_max_index
         current_val = current_td_square.direction_values[current_max_index]
@@ -261,8 +286,8 @@ class RootWidgit(FloatLayout):
         # Bind keyboard again after animation is done
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
-        #Clock.schedule_once(self.learn, 1)
-        self.learn(None)
+        if self.learn_flag is True:
+            self.learn(None)
 
     def _get_child_index_maze_board(self, row, col):
         '''
@@ -608,6 +633,10 @@ class RootWidgit(FloatLayout):
                     adjusted_pos = current_pos + 1
                     self.maze_board.children[adjusted_pos].set_path_background()
 
+    def _start(self, dt):
+        self.learn_flag = True
+        self.learn(None)
+
     def _valid_move(self, current_row, current_col, direction):
         '''
         This function takes character's current row and columns and
@@ -637,7 +666,7 @@ class MazeApp(App):
     def build(self):
         root = RootWidgit()
         Clock.schedule_once(root.callback_setup, 1)
-        Clock.schedule_once(root.learn, 1.5)
+        #Clock.schedule_once(root.learn, 1.5)
         return root
 
 if __name__ == "__main__":
