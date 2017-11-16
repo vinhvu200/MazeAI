@@ -4,6 +4,7 @@ from kivy.uix.button import Button
 from Model.Direction import Direction
 from Model.Sprite import Sprite
 from Model.Path import Path
+from Model.TDSquare import TDSquare
 from kivy.graphics import Rectangle, Color
 from kivy.clock import Clock
 from kivy.config import Config
@@ -18,8 +19,11 @@ class RootWidgit(FloatLayout):
     maze1 = 'maze1.txt'
     INITIAL_ROW = 0
     INITIAL_COL = 2
-    MAZE_BOARD_CHILDREN_SIZE = 0
+    END_ROW = 4
+    END_COL = 2
+    maze_board_children_size = 0
     walk_length = 0
+    animate = Animation()
 
     def __init__(self, **kwargs):
         super(RootWidgit, self).__init__(**kwargs)
@@ -51,9 +55,6 @@ class RootWidgit(FloatLayout):
         # Initialize the 2D maze matrix where 1 will indicate where the user is
         self.maze_board_mat = [[0 for _ in xrange(self.COLS)] for _ in xrange(self.ROWS)]
         self.maze_board_mat[0][2] = 1
-
-        # Initialize the 2D value matrix to perform reinforcement learning on
-        self.value_board_mat = [[0 for _ in xrange(self.COLS)] for _ in xrange(self.ROWS)]
 
         # Populate value_board with the appropriate matrices
         self._populate_value_board()
@@ -141,7 +142,7 @@ class RootWidgit(FloatLayout):
         # Bind keyboard again after animation is done
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
-    def _get_child_index(self, row, col):
+    def _get_child_index_maze_board(self, row, col):
         '''
         - This function serves the purpose of getting the child_index for
         maze_board gridlayout.
@@ -160,8 +161,33 @@ class RootWidgit(FloatLayout):
 
         # Position has to be readjusted because child[0]
         # starts on bottom right
-        real_pos = self.MAZE_BOARD_CHILDREN_SIZE - pos - 1
+        real_pos = self.maze_board_children_size - pos - 1
         return real_pos
+
+    def _get_child_index_value_board(self, row, col):
+        '''
+        This function gets the child index for self.value_board,
+        given a row and column. This is needed because the GridLayout
+        children starts [0] at the bottom right which is not what
+        we need.
+        :param row: integer
+        :param col: integer
+        :return: integer, child_index
+        '''
+
+        # Determines how many rows to go down and columns to go across
+        row = row * self.ROWS
+        col = col % self.COLS
+
+        # Add the two
+        pos = row + col
+
+        # Adjust it by subtracting the total children_size
+        value_board_children_size = self.ROWS * self.COLS
+        child_index = value_board_children_size - pos - 1
+
+        # return proper index
+        return child_index
 
     def _get_walk_length(self):
         '''
@@ -172,10 +198,10 @@ class RootWidgit(FloatLayout):
         '''
 
         # Get initial index
-        initial_index = self._get_child_index(self.INITIAL_ROW, self.INITIAL_COL)
+        initial_index = self._get_child_index_maze_board(self.INITIAL_ROW, self.INITIAL_COL)
 
         # Get end index for x direction
-        end_index_x = self._get_child_index(self.INITIAL_ROW, self.INITIAL_COL-1)
+        end_index_x = self._get_child_index_maze_board(self.INITIAL_ROW, self.INITIAL_COL-1)
 
         # Get the two x coordinates for those indices
         x1 = self.maze_board.children[initial_index].pos[0]
@@ -185,7 +211,7 @@ class RootWidgit(FloatLayout):
         self.character.walk_length_x = x1 - x2
 
         # Get end index for y direction
-        end_index_y = self._get_child_index(self.INITIAL_ROW + 1, self.INITIAL_COL)
+        end_index_y = self._get_child_index_maze_board(self.INITIAL_ROW + 1, self.INITIAL_COL)
 
         # Get the two y coordinates for those indices
         y1 = self.maze_board.children[initial_index].pos[1]
@@ -204,7 +230,6 @@ class RootWidgit(FloatLayout):
         This function serves the purpose of handling keyboard events
         to move the character based on the keys: w, a, s, d.
         '''
-        animate = Animation()
 
         # Conditions to determine which direction to move character
         # Three options for validity of move: True, False, None
@@ -217,45 +242,45 @@ class RootWidgit(FloatLayout):
                                 Direction.NORTH)
             if valid_move:
                 # Get animation for walking
-                animate = self.character.get_walk_animation(Direction.NORTH)
+                self.animate = self.character.get_walk_animation(Direction.NORTH)
             if valid_move is False:
                 # Get animation for wall_bump
-                animate = self.character.get_bump_wall_animation(Direction.NORTH)
+                self.animate = self.character.get_bump_wall_animation(Direction.NORTH)
         # WEST
         elif keycode[1] == 'a':
             valid_move = self._valid_move(self.character.current_row, self.character.current_col,
                                           Direction.WEST)
             if valid_move:
                 # Get animation for walking
-                animate = self.character.get_walk_animation(Direction.WEST)
+                self.animate = self.character.get_walk_animation(Direction.WEST)
             if valid_move is False:
                 # Get animation for wall_bump
-                animate = self.character.get_bump_wall_animation(Direction.WEST)
+                self.animate = self.character.get_bump_wall_animation(Direction.WEST)
         # SOUTH
         elif keycode[1] == 's':
             valid_move = self._valid_move(self.character.current_row, self.character.current_col,
                                           Direction.SOUTH)
             if valid_move:
                 # Get animation for walking
-                animate = self.character.get_walk_animation(Direction.SOUTH)
+                self.animate = self.character.get_walk_animation(Direction.SOUTH)
             if valid_move is False:
                 # Get animation for wall_bump
-                animate = self.character.get_bump_wall_animation(Direction.SOUTH)
+                self.animate = self.character.get_bump_wall_animation(Direction.SOUTH)
         # EAST
         elif keycode[1] == 'd':
             if self._valid_move(self.character.current_row, self.character.current_col,
                                 Direction.EAST) is True:
                 # Get animation for walking
-                animate = self.character.get_walk_animation(Direction.EAST)
+                self.animate = self.character.get_walk_animation(Direction.EAST)
             else:
                 # Get animation for wall_bump
-                animate = self.character.get_bump_wall_animation(Direction.EAST)
+                self.animate = self.character.get_bump_wall_animation(Direction.EAST)
 
         # Bind the animation
-        animate.bind(on_complete=self._end_animation)
+        self.animate.bind(on_complete=self._end_animation)
 
         # Start animation
-        animate.start(self.character)
+        self.animate.start(self.character)
 
         # Unbind keyboard to stop action in middle of animation
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
@@ -274,7 +299,7 @@ class RootWidgit(FloatLayout):
 
         # Get the index for initial position of where the position is
         # supposed to be
-        index = self._get_child_index(self.INITIAL_ROW, self.INITIAL_COL)
+        index = self._get_child_index_maze_board(self.INITIAL_ROW, self.INITIAL_COL)
 
         # Get the x,y size of the gridlayout square
         # and use that to calculate the x,y adjustments
@@ -337,7 +362,7 @@ class RootWidgit(FloatLayout):
                         path.disabled = True
 
                         # update maze_board children size
-                        self.MAZE_BOARD_CHILDREN_SIZE += 1
+                        self.maze_board_children_size += 1
 
                         # Add to the board
                         self.maze_board.add_widget(path)
@@ -351,7 +376,7 @@ class RootWidgit(FloatLayout):
                         wall.disabled = True
 
                         # update maze_board children size
-                        self.MAZE_BOARD_CHILDREN_SIZE += 1
+                        self.maze_board_children_size += 1
 
                         # Add to board
                         self.maze_board.add_widget(wall)
@@ -365,38 +390,39 @@ class RootWidgit(FloatLayout):
                     wall.disabled = True
 
                     # update maze_board children size
-                    self.MAZE_BOARD_CHILDREN_SIZE += 1
+                    self.maze_board_children_size += 1
 
                     # Add to board
                     self.maze_board.add_widget(wall)
 
     def _populate_value_board(self):
         '''
-        This function serves the purpose of setting up the value_board
-        GridLayout to match the value_board_mat
+        This function serves the purpose of populating the value board (GridLayout)
+        with TDSquare objects (which inherit from Button). It will set
+        the rewards for the completion square as well which will be 1
         :return:
         '''
 
         # Set up the columns
         self.value_board.cols = self.COLS
 
-        # populate value_board GridLayout
         for x in xrange(self.ROWS):
             for y in xrange(self.COLS):
-                # Creating buttons for the widgits inside of gridlayouts
-                # because they are more flexible to work with
-                button = Button(text=str(self.value_board_mat[x][y]),
-                                background_disabled_normal='',
-                                disabled_color=[1, 1, 1, 1],
-                                background_normal='',
-                                background_color=[0, 0, 1, 0.65])
 
-                # Disable button after creation because background_colors and such
-                # would not save otherwise
-                button.disabled = True
+                # Create a td_square to add
+                td_square = TDSquare()
 
-                # Add button to our value_board gridlayout
-                self.value_board.add_widget(button)
+                # TDSquares are button that need to be disabled
+                td_square.disabled = True
+
+                # Add td_square to our value_board gridlayout
+                self.value_board.add_widget(td_square)
+
+        # Find the end square and set its reward to 1
+        child_index = self._get_child_index_value_board(self.END_ROW, self.END_COL)
+        self.value_board.children[child_index].reward = 1
+        self.value_board.children[child_index].update()
+
 
     def _populate_walls(self):
         '''
@@ -418,7 +444,7 @@ class RootWidgit(FloatLayout):
             for col in xrange(self.COLS):
 
                 # This is the current position for the maze_board GridLayout
-                current_pos = self._get_child_index(row, col)
+                current_pos = self._get_child_index_maze_board(row, col)
 
                 # NORTH wall condition
                 # If exists, find the adjusted position
@@ -478,7 +504,6 @@ class RootWidgit(FloatLayout):
         # If there is a wall; move is invalid
         else:
             return False
-
 
 class MazeApp(App):
 
