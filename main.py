@@ -79,6 +79,12 @@ class RootWidgit(FloatLayout):
         self._place_character()
 
     def learn(self, dt):
+        '''
+        This function should be continuously call for the character to slowly learn the maze.
+        It is scheduled again in self._end_animation binding.
+        :param dt:
+        :return:
+        '''
 
         # if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
         #     self.remove_widget(self.character)
@@ -107,8 +113,6 @@ class RootWidgit(FloatLayout):
 
         # Calculate updates for the current_td_square
         self._calculate_update(current_td_square, new_td_square, current_max_index)
-
-
 
     def _build_matrix_walls(self, filename):
         '''
@@ -161,6 +165,13 @@ class RootWidgit(FloatLayout):
         return mat_walls, rows, cols
 
     def _animate(self, max_index):
+        '''
+        This function takes the max_index which is the "best" move
+        of the four on the current td_square and then animates what
+        that move would look like.
+        :param max_index:
+        :return:
+        '''
 
         # Calculate animation
         if Direction.NORTH.value == max_index:
@@ -206,12 +217,21 @@ class RootWidgit(FloatLayout):
         self.animate.start(self.character)
 
     def _calculate_update(self, current_td_square, new_td_square, current_max_index):
+        '''
+        Using Q-learning, the character updates its current td_square direction_values
+        accordingly so that the next move can be chosen.
+        :param current_td_square: TDSquare
+        :param new_td_square: TDSquare
+        :param current_max_index: integer
+        :return:
+        '''
 
         # learning_rate, discount, and cost
         lr = 0.5
         d = 1
         cost = 0.04
 
+        # Current td_square value of the "best" move grabbed from the current_max_index
         current_val = current_td_square.direction_values[current_max_index]
 
         # new td_square reward
@@ -220,7 +240,10 @@ class RootWidgit(FloatLayout):
         # Find the max_value of the direction_values and its index of new_td_square
         new_max_val = max(new_td_square.direction_values)
 
-        current_td_square.direction_values[current_max_index] += lr * (reward + new_max_val - current_val - cost)
+        # Q-learning equation
+        current_td_square.direction_values[current_max_index] += lr * (reward + d*new_max_val - current_val - cost)
+
+        # Update the value_board text to see what is happening
         current_td_square.update()
 
     def _end_animation(self, widget, item):
