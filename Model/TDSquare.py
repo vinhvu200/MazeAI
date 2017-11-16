@@ -21,9 +21,10 @@ class TDSquare(Button):
         self.text = 'N: {}\n' \
                     'E: {}\n' \
                     'S: {}\n' \
-                    'W: {}'.format(str(self.direction_values[0]),
-                                   str(self.direction_values[1]), str(self.direction_values[2]),
-                                   str(self.direction_values[3]))
+                    'W: {}'.format(str(round(self.direction_values[0], 2)),
+                                   str(round(self.direction_values[1], 2)),
+                                   str(round(self.direction_values[2], 2)),
+                                   str(round(self.direction_values[3], 2)))
 
     def update(self):
         '''
@@ -34,9 +35,10 @@ class TDSquare(Button):
         self.text = 'N: {}\n' \
                     'E: {}\n' \
                     'S: {}\n' \
-                    'W: {}'.format(str(self.direction_values[0]),
-                                   str(self.direction_values[1]), str(self.direction_values[2]),
-                                   str(self.direction_values[3]))
+                    'W: {}'.format(str(round(self.direction_values[0], 2)),
+                                   str(round(self.direction_values[1], 2)),
+                                   str(round(self.direction_values[2], 2)),
+                                   str(round(self.direction_values[3], 2)))
 
     def set_reward(self, reward):
         '''

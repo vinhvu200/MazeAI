@@ -254,7 +254,7 @@ class RootWidgit(FloatLayout):
         d = 1
         cost = 0.04
         if valid_flag is False:
-            cost *= 2
+            cost *= 2.5
 
         # Current td_square value of the "best" move grabbed from the current_max_index
         current_val = current_td_square.direction_values[current_max_index]
