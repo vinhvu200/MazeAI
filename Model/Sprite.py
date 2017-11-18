@@ -27,7 +27,12 @@ class Sprite(Image):
         self.walk_length_x = 0
 
         # How fast to animate the walking
-        self.anim_delay = 0.025
+        # self.anim_delay = 0.025
+        # self.walk_duration = 1
+        # self.bump_wall_duration = 0.25
+        self.anim_delay = 0.001
+        self.walk_duration = 0.15
+        self.bump_wall_duration = 0.01
 
         # Setting the source defaultint to standing
         self.source = self.stand_source
@@ -65,9 +70,9 @@ class Sprite(Image):
             attempt_x = attempt_x + adjusted_walk_length_x
 
         # Move a minimal distance to "bump" a wall
-        attempt_animation = Animation(pos=(attempt_x, attempt_y), duration=0.25)
+        attempt_animation = Animation(pos=(attempt_x, attempt_y), duration=self.bump_wall_duration)
         # Move back to original position
-        original_animation = Animation(pos=(self.pos[0], self.pos[1]), duration=0.25)
+        original_animation = Animation(pos=(self.pos[0], self.pos[1]), duration=self.bump_wall_duration)
         # Do the animation sequentially
         animation = attempt_animation + original_animation
 
@@ -109,7 +114,7 @@ class Sprite(Image):
 
         # Set the positions for the animation, and bind on_complete
         # so that we know when to switch back to self.stand_source
-        animation = Animation(pos=(pos_x, pos_y), duration=1)
+        animation = Animation(pos=(pos_x, pos_y), duration=self.walk_duration)
 
         # Start the walking animation
         self.source = self.walk_source
@@ -121,3 +126,15 @@ class Sprite(Image):
 
     def set_walking(self):
         self.source = self.walk_source
+        
+    def speed_up(self):
+        if self.anim_delay > 0:
+            self.walk_duration -= 0.15
+            self.bump_wall_duration -= 0.05
+            self.anim_delay -= .00025
+
+    def slow_down(self):
+        if self.anim_delay < 0.025:
+            self.walk_duration += 0.05
+            self.bump_wall_duration += 0.025
+            self.anim_delay += 0.005

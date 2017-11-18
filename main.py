@@ -1,6 +1,7 @@
 from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.button import Button
+from kivy.uix.image import Image
 from Model.Direction import Direction
 from Model.Sprite import Sprite
 from Model.Path import Path
@@ -10,6 +11,7 @@ from kivy.clock import Clock
 from kivy.config import Config
 from kivy.animation import Animation
 import time
+import random
 Config.set('graphics', 'width', '1100')
 Config.set('graphics', 'height', '500')
 from kivy.core.window import Window
@@ -36,11 +38,13 @@ class RootWidgit(FloatLayout):
 
         # Get Buttons from .kv file
         self.start_button = self.ids.start_button
-        self.test_button = self.ids.test_button
+        self.speed_up_button = self.ids.speed_up_button
+        self.slow_down_button = self.ids.slow_down_button
 
         # Bind Buttons from .kv file
         self.start_button.bind(on_press=self._start)
-        self.test_button.bind(on_press=self._test)
+        self.speed_up_button.bind(on_press=self._speed_up)
+        self.slow_down_button.bind(on_press=self._slow_down)
 
         # Set up the keyboard and bind it
         self._keyboard = Window.request_keyboard(
@@ -73,13 +77,6 @@ class RootWidgit(FloatLayout):
         # Fill the walls in for maze_board
         self._populate_walls()
 
-    def _test(self, dt):
-
-        self.remove_widget(self.character)
-        self.character = Sprite(current_row=self.INITIAL_ROW,
-                                current_col=self.INITIAL_COL)
-        self.callback_setup(None)
-
     def callback_setup(self, dt):
         '''
         This function servers the purpose of getting the walk_length for the character
@@ -90,42 +87,68 @@ class RootWidgit(FloatLayout):
         '''
         self._get_walk_length()
         self._place_character()
+        if self.learn_flag is False:
+            self._add_arrow()
 
     def learn(self, dt):
         '''
-        This function should be continuously call for the character to slowly learn the maze.
+        - This function should be continuously call for the character to slowly learn the maze.
         It is scheduled again in self._end_animation binding.
+        - If the character made it to the end, shuffle it around to another square
         :param dt:
+        :return: None
+        '''
+
+        # If character made it to the end, randomly shuffle it to
+        # another square
+        if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
+            self.remove_widget(self.character)
+
+            row = random.randint(0, self.ROWS-1)
+            col = random.randint(0, self.COLS-1)
+
+            self.character = Sprite(current_row=row,
+                                    current_col=col)
+            self.callback_setup(None)
+            self.learn(None)
+
+        # Otherwise, have it learn the maze
+        else:
+            # Get child_index to obtain the td_square from the value_board
+            child_index = self._get_child_index_value_board(self.character.current_row,
+                                                            self.character.current_col)
+            current_td_square = self.value_board.children[child_index]
+
+            # Find the max_value of the direction_values and its index of the current_td_square
+            current_max_value = max(current_td_square.direction_values)
+            current_max_index = current_td_square.direction_values.index(current_max_value)
+
+            # Choose appropriate animation based on max_index
+            # IMPORTANT: After this is called, the character will
+            # have updated its rows and columns
+            valid_flag = self._animate(current_max_index)
+
+            # Get the new updated td_square
+            child_index = self._get_child_index_value_board(self.character.current_row,
+                                                            self.character.current_col)
+            new_td_square = self.value_board.children[child_index]
+
+            # Calculate updates for the current_td_square
+            self._calculate_update(current_td_square, new_td_square, current_max_index, valid_flag)
+
+    def _add_arrow(self):
+        '''
+        This function adds an Image widget to each button to represent arrows of
+        where the AI will move to if they land on that square. It constantly changes
+        as it is being updated.
         :return:
         '''
 
-        if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
-            self.remove_widget(self.character)
-            self.character = Sprite(current_row=self.INITIAL_ROW,
-                                    current_col=self.INITIAL_COL)
-            self.callback_setup(None)
-
-        # Get child_index to obtain the td_square from the value_board
-        child_index = self._get_child_index_value_board(self.character.current_row,
-                                                        self.character.current_col)
-        current_td_square = self.value_board.children[child_index]
-
-        # Find the max_value of the direction_values and its index of the current_td_square
-        current_max_value = max(current_td_square.direction_values)
-        current_max_index = current_td_square.direction_values.index(current_max_value)
-
-        # Choose appropriate animation based on max_index
-        # IMPORTANT: After this is called, the character will
-        # have updated its rows and columns
-        valid_flag = self._animate(current_max_index)
-
-        # Get the new updated td_square
-        child_index = self._get_child_index_value_board(self.character.current_row,
-                                                        self.character.current_col)
-        new_td_square = self.value_board.children[child_index]
-
-        # Calculate updates for the current_td_square
-        self._calculate_update(current_td_square, new_td_square, current_max_index, valid_flag)
+        # Add image to each of the child (Button) of the value_board
+        for children in self.value_board.children:
+            image = Image(source='Images/arrow_north.png', x=children.x,
+                          y=children.y)
+            children.add_widget(image)
 
     def _animate(self, max_index):
         '''
@@ -253,8 +276,10 @@ class RootWidgit(FloatLayout):
         lr = 0.5
         d = 1
         cost = 0.04
+
+        # Increase penalty for bumping into wall
         if valid_flag is False:
-            cost *= 2.5
+            cost *= 10
 
         # Current td_square value of the "best" move grabbed from the current_max_index
         current_val = current_td_square.direction_values[current_max_index]
@@ -444,9 +469,10 @@ class RootWidgit(FloatLayout):
         :return:
         '''
 
-        # Get the index for initial position of where the position is
-        # supposed to be
-        index = self._get_child_index_maze_board(self.INITIAL_ROW, self.INITIAL_COL)
+        # Get index of character
+        row = self.character.current_row
+        col = self.character.current_col
+        index = self._get_child_index_maze_board(row, col)
 
         # Get the x,y size of the gridlayout square
         # and use that to calculate the x,y adjustments
@@ -568,7 +594,7 @@ class RootWidgit(FloatLayout):
         # Find the end square and set its reward to 1
         child_index = self._get_child_index_value_board(self.END_ROW, self.END_COL)
         self.value_board.children[child_index].reward = 1
-        self.value_board.children[child_index].update()
+        #self.value_board.children[child_index].update()
 
         # Change value direction of value of initial square
         # to negative so that it can't move up
@@ -632,6 +658,12 @@ class RootWidgit(FloatLayout):
                 else:
                     adjusted_pos = current_pos + 1
                     self.maze_board.children[adjusted_pos].set_path_background()
+
+    def _slow_down(self, dt):
+        self.character.slow_down()
+
+    def _speed_up(self, dt):
+        self.character.speed_up()
 
     def _start(self, dt):
         self.learn_flag = True
