@@ -2,14 +2,17 @@ from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.button import Button
 from kivy.uix.image import Image
+from kivy.uix.widget import Widget
+from kivy.graphics import Rectangle, Color, Ellipse
+from kivy.uix.label import Label
+from kivy.clock import Clock
+from kivy.config import Config
+from kivy.animation import Animation
 from Model.Direction import Direction
 from Model.Sprite import Sprite
 from Model.Path import Path
 from Model.TDSquare import TDSquare
-from kivy.graphics import Rectangle, Color
-from kivy.clock import Clock
-from kivy.config import Config
-from kivy.animation import Animation
+from Model.TDIndicator import TDIndicator
 import time
 import random
 Config.set('graphics', 'width', '1100')
@@ -146,9 +149,17 @@ class RootWidgit(FloatLayout):
 
         # Add image to each of the child (Button) of the value_board
         for children in self.value_board.children:
-            image = Image(source='Images/arrow_north.png', x=children.x,
-                          y=children.y)
+
+            # Create td_indicator to be added into children of value_board
+            #td_indicator = TDIndicator(x=children.x, y=children.y, size=(children.size[0]*0.50, children.size[1]*0.50))
+            td_indicator = TDIndicator(x=children.x, y=children.y,
+                                       size=children.size)
+            image = Image(source='Images/arrow_north.png', x=children.x, y=children.y,
+                          size=children.size)
+            children.add_widget(td_indicator)
             children.add_widget(image)
+
+            td_indicator.draw()
 
     def _animate(self, max_index):
         '''
