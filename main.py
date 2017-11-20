@@ -156,8 +156,11 @@ class RootWidgit(FloatLayout):
                                        size=children.size)
 
             # The image source will show arrow of where it will move next
-            image = Image(source='Images/arrow_north.png', x=children.x, y=children.y,
-                          size=children.size)
+            # image = Image(source='Images/arrow_north.png', x=children.x, y=children.y,
+            #               size=children.size)
+
+            image = Image(x=children.x, y=children.y,
+                          size=children.size, opacity=0)
 
             # Add the two widgets
             children.add_widget(td_indicator)

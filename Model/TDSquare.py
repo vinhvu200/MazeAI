@@ -5,6 +5,11 @@ from kivy.uix.image import Image
 class TDSquare(Button):
 
     def __init__(self, **kwargs):
+        '''
+        NOTE: Children[0] is a Kivy Image
+              Children[1] is a TDIndicator Model
+        :param kwargs:
+        '''
 
         super(TDSquare, self).__init__(**kwargs)
 
@@ -19,7 +24,7 @@ class TDSquare(Button):
         self.background_disabled_normal = ''
         self.disabled_color = [1, 1, 1, 1]
         self.background_normal = ''
-        self.background_color = [0, 0, 1, 0.5]
+        self.background_color = [0.862, 0.862, 0.862, 1]
 
         # direction_values go [NORTH, EAST, SOUTH, WEST]
         self.direction_values = [0, 0, 0, 0]
@@ -51,7 +56,12 @@ class TDSquare(Button):
         max_val = max(self.direction_values)
         max_index = self.direction_values.index(max_val)
 
+        if self.children[0].opacity == 0:
+            self.children[0].opacity = 1
+
         self.children[0].source = self.background_images[max_index]
+        self.children[1].set_strength(max_val)
+        self.children[1].draw()
 
     def set_reward(self, reward):
         '''
