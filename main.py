@@ -91,7 +91,7 @@ class RootWidgit(FloatLayout):
         self._get_walk_length()
         self._place_character()
         if self.learn_flag is False:
-            self._add_arrow()
+            self._add_TDSquare_children()
 
     def learn(self, dt):
         '''
@@ -139,10 +139,11 @@ class RootWidgit(FloatLayout):
             # Calculate updates for the current_td_square
             self._calculate_update(current_td_square, new_td_square, current_max_index, valid_flag)
 
-    def _add_arrow(self):
+    def _add_TDSquare_children(self):
         '''
         This function adds an Image widget to each button to represent arrows of
-        where the AI will move to if they land on that square. It constantly changes
+        where the AI will move to if they land on that square. It also adds an
+        indicator to show how strong the decision is. It constantly changes
         as it is being updated.
         :return:
         '''
@@ -151,14 +152,18 @@ class RootWidgit(FloatLayout):
         for children in self.value_board.children:
 
             # Create td_indicator to be added into children of value_board
-            #td_indicator = TDIndicator(x=children.x, y=children.y, size=(children.size[0]*0.50, children.size[1]*0.50))
             td_indicator = TDIndicator(x=children.x, y=children.y,
                                        size=children.size)
+
+            # The image source will show arrow of where it will move next
             image = Image(source='Images/arrow_north.png', x=children.x, y=children.y,
                           size=children.size)
+
+            # Add the two widgets
             children.add_widget(td_indicator)
             children.add_widget(image)
 
+            # Draw out the indicator
             td_indicator.draw()
 
     def _animate(self, max_index):
