@@ -102,18 +102,35 @@ class RootWidgit(FloatLayout):
         :return: None
         '''
 
-        # If character made it to the end, randomly shuffle it to
-        # another square
+        # Termination state: When character made it to the end.
+        # Randomly place character onto new square, increment episodes
+        # and increment epsilon
         if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
+
+            # Decay epsilon
+            if self.epsilon > 0:
+                self.epsilon -= 0.025
+
+            # Increment episodes
+            self.episodes += 1
+
+            # Remove character
             self.remove_widget(self.character)
 
+            # Generate new placement for character
             row = random.randint(0, self.ROWS-1)
             col = random.randint(0, self.COLS-1)
 
+            # Spawn new character at new location
             self.character = Sprite(current_row=row,
                                     current_col=col)
+
+            # Set up callback and start continue learning
             self.callback_setup(None)
             self.learn(None)
+
+            print('Episodes -- {}'.format(self.episodes))
+            print('Epsilon -- {}'.format(self.epsilon))
 
         # Otherwise, have it learn the maze
         else:
@@ -127,11 +144,11 @@ class RootWidgit(FloatLayout):
 
             # Case where we take appropriate move
             if rand_num < self.epsilon:
-                max_val = max(current_td_square.direction_values)
-                index = current_td_square.direction_values.index(max_val)
+                index = random.randint(0, 3)
             # Case for random move
             else:
-                index = random.randint(0,3)
+                max_val = max(current_td_square.direction_values)
+                index = current_td_square.direction_values.index(max_val)
 
             # SPECIAL CASE
             # If character is in the initial position, it cannot move upward
