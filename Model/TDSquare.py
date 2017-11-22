@@ -29,6 +29,9 @@ class TDSquare(Button):
         # direction_values go [NORTH, EAST, SOUTH, WEST]
         self.direction_values = [0, 0, 0, 0]
 
+        # Eligibility_trace go [NORTH, EAST, SOUTH, WEST]
+        self.eligibility_trace = [0, 0, 0, 0]
+
         # Set reward and text
         self.reward = 0
         # self.text = 'N: {}\n' \
