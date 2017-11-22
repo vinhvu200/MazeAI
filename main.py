@@ -31,6 +31,10 @@ class RootWidgit(FloatLayout):
     walk_length = 0
     animate = Animation()
     learn_flag = False
+    episodes = 0
+
+    # Handles exploration
+    epsilon = 0.5
 
     def __init__(self, **kwargs):
         super(RootWidgit, self).__init__(**kwargs)
@@ -118,14 +122,29 @@ class RootWidgit(FloatLayout):
                                                             self.character.current_col)
             current_td_square = self.value_board.children[child_index]
 
-            # Find the max_value of the direction_values and its index of the current_td_square
-            current_max_value = max(current_td_square.direction_values)
-            current_max_index = current_td_square.direction_values.index(current_max_value)
+            # Generate random number to determine epsilon greedy
+            rand_num = random.uniform(0, 1)
 
-            # Choose appropriate animation based on max_index
+            # Case where we take appropriate move
+            if rand_num < self.epsilon:
+                max_val = max(current_td_square.direction_values)
+                index = current_td_square.direction_values.index(max_val)
+            # Case for random move
+            else:
+                index = random.randint(0,3)
+
+            # SPECIAL CASE
+            # If character is in the initial position, it cannot move upward
+            # otherwise it will cause an error
+            if self.character.current_row == self.INITIAL_ROW and \
+                self.character.current_col == self.INITIAL_COL and \
+                index == Direction.NORTH.value:
+                    index += 1
+
+            # Choose appropriate animation based on index
             # IMPORTANT: After this is called, the character will
             # have updated its rows and columns
-            valid_flag = self._animate(current_max_index)
+            valid_flag = self._animate(index)
 
             # Get the new updated td_square
             child_index = self._get_child_index_value_board(self.character.current_row,
@@ -133,7 +152,7 @@ class RootWidgit(FloatLayout):
             new_td_square = self.value_board.children[child_index]
 
             # Calculate updates for the current_td_square
-            self._calculate_update(current_td_square, new_td_square, current_max_index, valid_flag)
+            self._calculate_update(current_td_square, new_td_square, index, valid_flag)
 
     def _add_TDSquare_children(self):
         '''
