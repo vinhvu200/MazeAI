@@ -126,15 +126,3 @@ class Sprite(Image):
 
     def set_walking(self):
         self.source = self.walk_source
-        
-    def speed_up(self):
-        if self.anim_delay > 0:
-            self.walk_duration -= 0.15
-            self.bump_wall_duration -= 0.05
-            self.anim_delay -= .00025
-
-    def slow_down(self):
-        if self.anim_delay < 0.025:
-            self.walk_duration += 0.05
-            self.bump_wall_duration += 0.025
-            self.anim_delay += 0.005

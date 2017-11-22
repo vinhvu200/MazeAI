@@ -41,13 +41,9 @@ class RootWidgit(FloatLayout):
 
         # Get Buttons from .kv file
         self.start_button = self.ids.start_button
-        self.speed_up_button = self.ids.speed_up_button
-        self.slow_down_button = self.ids.slow_down_button
 
         # Bind Buttons from .kv file
         self.start_button.bind(on_press=self._start)
-        self.speed_up_button.bind(on_press=self._speed_up)
-        self.slow_down_button.bind(on_press=self._slow_down)
 
         # Set up the keyboard and bind it
         self._keyboard = Window.request_keyboard(
@@ -677,12 +673,6 @@ class RootWidgit(FloatLayout):
                 else:
                     adjusted_pos = current_pos + 1
                     self.maze_board.children[adjusted_pos].set_path_background()
-
-    def _slow_down(self, dt):
-        self.character.slow_down()
-
-    def _speed_up(self, dt):
-        self.character.speed_up()
 
     def _start(self, dt):
         self.learn_flag = True
