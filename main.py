@@ -36,6 +36,7 @@ class RootWidgit(FloatLayout):
 
     learn_flag = False
     learn_lambda_flag = False
+    td_children_flag = False
     mat_walls = [[[]]]
 
     # Maze Board GridLayout Parameters
@@ -88,8 +89,9 @@ class RootWidgit(FloatLayout):
         '''
         self._get_walk_length()
         self._place_character()
-        if self.learn_flag is False:
+        if self.td_children_flag is False:
             self._add_TDSquare_children()
+        self.td_children_flag = True
 
     def learn(self, dt):
         '''
@@ -563,6 +565,18 @@ class RootWidgit(FloatLayout):
         # are pressed
         animate_flag = False
 
+        # This boolean checks if the AI bumped into a wall or not
+        valid_move = False
+
+        # The decision the AI will make
+        action_index = 0
+
+        # AI's current row/col before moving
+        curr_row = self.character.current_row
+        curr_col = self.character.current_col
+
+        # animate_flag, valid_move, action_index = self._handle_keyboard_action()
+
         # Conditions to determine which direction to move character
         # Three options for validity of move: True, False, None
         # True: There are no walls; therefore, you can walk through
@@ -573,6 +587,7 @@ class RootWidgit(FloatLayout):
             animate_flag = True
             valid_move = self._valid_move(self.character.current_row, self.character.current_col,
                                 Direction.NORTH)
+            action_index = Direction.NORTH.value
             if valid_move:
                 # Get animation for walking
                 self.animate = self.character.get_walk_animation(Direction.NORTH)
@@ -584,6 +599,7 @@ class RootWidgit(FloatLayout):
             animate_flag = True
             valid_move = self._valid_move(self.character.current_row, self.character.current_col,
                                           Direction.WEST)
+            action_index = Direction.WEST.value
             if valid_move:
                 # Get animation for walking
                 self.animate = self.character.get_walk_animation(Direction.WEST)
@@ -595,6 +611,7 @@ class RootWidgit(FloatLayout):
             animate_flag = True
             valid_move = self._valid_move(self.character.current_row, self.character.current_col,
                                           Direction.SOUTH)
+            action_index = Direction.SOUTH.value
             if valid_move:
                 # Get animation for walking
                 self.animate = self.character.get_walk_animation(Direction.SOUTH)
@@ -604,8 +621,10 @@ class RootWidgit(FloatLayout):
         # EAST
         elif keycode[1] == 'd':
             animate_flag = True
-            if self._valid_move(self.character.current_row, self.character.current_col,
-                                Direction.EAST) is True:
+            valid_move = self._valid_move(self.character.current_row, self.character.current_col,
+                                          Direction.EAST)
+            action_index = Direction.EAST.value
+            if valid_move:
                 # Get animation for walking
                 self.animate = self.character.get_walk_animation(Direction.EAST)
             else:
@@ -614,6 +633,7 @@ class RootWidgit(FloatLayout):
 
         # Only complete these commands if any of the desired keys are pressed
         if animate_flag is True:
+
             # Bind the animation
             self.animate.bind(on_complete=self._end_animation)
 
@@ -622,6 +642,9 @@ class RootWidgit(FloatLayout):
 
             # Unbind keyboard to stop action in middle of animation
             self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+
+            # Update the value_board accordingly
+            self._update_value_board(valid_move, curr_row, curr_col, action_index)
 
         # Return True to accept the key. Otherwise, it will be used by
         # the system.
@@ -835,6 +858,8 @@ class RootWidgit(FloatLayout):
         :return: None
         '''
 
+        self.td_children_flag = False
+
         # Stop character movement
         self.learn_flag = False
 
@@ -877,7 +902,10 @@ class RootWidgit(FloatLayout):
 
         # Set up callback and start continue learning
         self.callback_setup(None)
-        self.learn_q_learn_lambda(None)
+
+        # Continue learning if already doing so
+        if self.learn_lambda_flag is True:
+            self.learn_q_learn_lambda(None)
 
         print('Episodes -- {}'.format(self.episodes))
         print('Epsilon -- {}'.format(self.epsilon))
@@ -925,6 +953,38 @@ class RootWidgit(FloatLayout):
         # self.learn(None)
         self.learn_lambda_flag = True
         self.learn_q_learn_lambda(None)
+
+    def _update_value_board(self, valid_flag, current_row, current_col, action_index):
+
+        print('current row/col -- {} / {}'.format(current_row, current_col))
+        print('new row/col -- {} / {}'.format(self.character.current_row, self.character.current_col))
+        # Get current td_square
+        child_index = self._get_child_index_value_board(current_row,
+                                                        current_col)
+        current_td_square = self.value_board.children[child_index]
+
+        # Get new td_square
+        child_index = self._get_child_index_value_board(self.character.current_row,
+                                                        self.character.current_col)
+        new_td_square = self.value_board.children[child_index]
+
+        # Get the best action index for that square
+        _, best_action_index = self._determine_action(current_td_square)
+
+        # Calculate the q_value (valid_flag determines whether
+        # the AI hit the wall or not)
+        q_val = self._calculate_q_val(current_td_square, new_td_square, action_index, valid_flag)
+
+        # Increase eligibility trace
+        current_td_square.eligibility_trace[action_index] += 1
+
+        # Update values in accordance to Q-lambda
+        self._calculate_update_lambda(q_val, action_index, best_action_index)
+
+        if self.character.current_row == self.END_ROW and \
+           self.character.current_col == self.END_COL:
+
+                self._reset_character_q_learn_lambda()
 
     def _valid_move(self, current_row, current_col, direction):
         '''
