@@ -23,18 +23,29 @@ from kivy.core.window import Window
 class RootWidgit(FloatLayout):
 
     maze1 = 'maze1.txt'
+
+    ROWS = 0
+    COLS = 0
+
     INITIAL_ROW = 0
     INITIAL_COL = 2
+
     END_ROW = 4
     END_COL = 2
-    maze_board_children_size = 0
     walk_length = 0
-    animate = Animation()
+
     learn_flag = False
     learn_lambda_flag = False
-    episodes = 0
+    mat_walls = [[[]]]
 
-    # Handles exploration
+    # Maze Board GridLayout Parameters
+    maze_board_mat = [[]]
+    MAZE_BOARD_ROWS = 0
+    MAZE_BOARD_COLS = 0
+    maze_board_children_size = 0
+
+    # RL parameters
+    episodes = 0
     epsilon = 0.0
     discount = 0.9
     _lambda = 0.9
@@ -49,9 +60,11 @@ class RootWidgit(FloatLayout):
 
         # Get Buttons from .kv file
         self.start_button = self.ids.start_button
+        self.reset_button = self.ids.reset_button
 
         # Bind Buttons from .kv file
         self.start_button.bind(on_press=self._start)
+        self.reset_button.bind(on_press=self._reset)
 
         # Set up the keyboard and bind it
         self._keyboard = Window.request_keyboard(
@@ -62,27 +75,8 @@ class RootWidgit(FloatLayout):
         self.character = Sprite(current_row=self.INITIAL_ROW,
                                 current_col=self.INITIAL_COL)
 
-        # Generate the 3D matrix containing the walls along with ROWS
-        # and COLS of the board
-        self.mat_walls, self.ROWS, self.COLS = self._build_matrix_walls(self.maze1)
-
-        # Readjust rows and columns to fit walls in between for the board rows
-        self.MAZE_BOARD_ROWS = self.ROWS * 2 + 1
-        self.MAZE_BOARD_COLS = self.COLS * 2 + 1
-
-        # Initialize the 2D maze matrix where 1 will indicate where the user is
-        self.maze_board_mat = [[0 for _ in xrange(self.COLS)] for _ in xrange(self.ROWS)]
-        self.maze_board_mat[0][2] = 1
-
-        # Populate value_board with the appropriate matrices
-        self._populate_value_board()
-
-        # Populate maze_boards with the current matrices and update
-        # the maze_board_children_size
-        self._populate_maze_board()
-
-        # Fill the walls in for maze_board
-        self._populate_walls()
+        # Pass in the maze1.txt file to set up
+        self._setup_maze(self.maze1)
 
     def callback_setup(self, dt):
         '''
@@ -701,6 +695,9 @@ class RootWidgit(FloatLayout):
         :return: None
         '''
 
+        # Set maze_board's children size back to 0
+        self.maze_board_children_size = 0
+
         # setting columns for the GridLayout
         self.maze_board.cols = self.MAZE_BOARD_COLS
 
@@ -845,7 +842,69 @@ class RootWidgit(FloatLayout):
                     adjusted_pos = current_pos + 1
                     self.maze_board.children[adjusted_pos].set_path_background()
 
+    def _reset(self, dt):
+        '''
+        This callback resets the current maze to its initial position
+
+        :param dt:
+        :return: None
+        '''
+
+        # Stop character movement
+        self.learn_flag = False
+
+        # Clear the GridLayout of its childrens
+        self.value_board.clear_widgets()
+        self.maze_board.clear_widgets()
+
+        # Remove character
+        self.remove_widget(self.character)
+
+        # Set character up at initial location
+        self.character = Sprite(current_row=self.INITIAL_ROW,
+                                current_col=self.INITIAL_COL)
+
+        self._setup_maze(self.maze1)
+
+    def _setup_maze(self, maze):
+        '''
+        This function sets up the maze according to the .txt file
+        passed in.
+
+        :param maze: .txt file defining the maze
+        :return:
+        '''
+
+        # Generate the 3D matrix containing the walls along with ROWS
+        # and COLS of the board
+        self.mat_walls, self.ROWS, self.COLS = self._build_matrix_walls(maze)
+
+        # Readjust rows and columns to fit walls in between for the board rows
+        self.MAZE_BOARD_ROWS = self.ROWS * 2 + 1
+        self.MAZE_BOARD_COLS = self.COLS * 2 + 1
+
+        # Initialize the 2D maze matrix where 1 will indicate where the user is
+        self.maze_board_mat = [[0 for _ in xrange(self.COLS)] for _ in xrange(self.ROWS)]
+        self.maze_board_mat[0][2] = 1
+
+        # Populate value_board with the appropriate matrices
+        self._populate_value_board()
+
+        # Populate maze_boards with the current matrices and update
+        # the maze_board_children_size
+        self._populate_maze_board()
+
+        # Fill the walls in for maze_board
+        self._populate_walls()
+
+        Clock.schedule_once(self.callback_setup, 1)
+
     def _start(self, dt):
+        '''
+        This callback is binded to the start button to start learning
+        :param dt:
+        :return:
+        '''
         self.learn_flag = True
         # self.learn(None)
         self.learn_lambda_flag = True
@@ -879,8 +938,6 @@ class MazeApp(App):
 
     def build(self):
         root = RootWidgit()
-        Clock.schedule_once(root.callback_setup, 1)
-        #Clock.schedule_once(root.learn, 1.5)
         return root
 
 if __name__ == "__main__":
