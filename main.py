@@ -580,6 +580,10 @@ class RootWidgit(FloatLayout):
         to move the character based on the keys: w, a, s, d.
         '''
 
+        # Make sure the actions are only completed if desired keys
+        # are pressed
+        animate_flag = False
+
         # Conditions to determine which direction to move character
         # Three options for validity of move: True, False, None
         # True: There are no walls; therefore, you can walk through
@@ -587,6 +591,7 @@ class RootWidgit(FloatLayout):
         # None: Character is now out of bound
         # NORTH CONDITION
         if keycode[1] == 'w':
+            animate_flag = True
             valid_move = self._valid_move(self.character.current_row, self.character.current_col,
                                 Direction.NORTH)
             if valid_move:
@@ -597,6 +602,7 @@ class RootWidgit(FloatLayout):
                 self.animate = self.character.get_bump_wall_animation(Direction.NORTH)
         # WEST
         elif keycode[1] == 'a':
+            animate_flag = True
             valid_move = self._valid_move(self.character.current_row, self.character.current_col,
                                           Direction.WEST)
             if valid_move:
@@ -607,6 +613,7 @@ class RootWidgit(FloatLayout):
                 self.animate = self.character.get_bump_wall_animation(Direction.WEST)
         # SOUTH
         elif keycode[1] == 's':
+            animate_flag = True
             valid_move = self._valid_move(self.character.current_row, self.character.current_col,
                                           Direction.SOUTH)
             if valid_move:
@@ -617,6 +624,7 @@ class RootWidgit(FloatLayout):
                 self.animate = self.character.get_bump_wall_animation(Direction.SOUTH)
         # EAST
         elif keycode[1] == 'd':
+            animate_flag = True
             if self._valid_move(self.character.current_row, self.character.current_col,
                                 Direction.EAST) is True:
                 # Get animation for walking
@@ -625,14 +633,16 @@ class RootWidgit(FloatLayout):
                 # Get animation for wall_bump
                 self.animate = self.character.get_bump_wall_animation(Direction.EAST)
 
-        # Bind the animation
-        self.animate.bind(on_complete=self._end_animation)
+        # Only complete these commands if any of the desired keys are pressed
+        if animate_flag is True:
+            # Bind the animation
+            self.animate.bind(on_complete=self._end_animation)
 
-        # Start animation
-        self.animate.start(self.character)
+            # Start animation
+            self.animate.start(self.character)
 
-        # Unbind keyboard to stop action in middle of animation
-        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+            # Unbind keyboard to stop action in middle of animation
+            self._keyboard.unbind(on_key_down=self._on_keyboard_down)
 
         # Return True to accept the key. Otherwise, it will be used by
         # the system.
