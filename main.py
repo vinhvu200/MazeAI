@@ -46,7 +46,7 @@ class RootWidgit(FloatLayout):
 
     # RL parameters
     episodes = 0
-    epsilon = 0.0
+    epsilon = 1.0
     discount = 0.9
     _lambda = 0.9
     learning_rate = 0.5
@@ -105,30 +105,7 @@ class RootWidgit(FloatLayout):
         # and increment epsilon
         if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
 
-            # Decay epsilon
-            if self.epsilon > 0:
-                self.epsilon -= 0.025
-
-            # Increment episodes
-            self.episodes += 1
-
-            # Remove character
-            self.remove_widget(self.character)
-
-            # Generate new placement for character
-            row = random.randint(0, self.ROWS-1)
-            col = random.randint(0, self.COLS-1)
-
-            # Spawn new character at new location
-            self.character = Sprite(current_row=row,
-                                    current_col=col)
-
-            # Set up callback and start continue learning
-            self.callback_setup(None)
-            self.learn(None)
-
-            print('Episodes -- {}'.format(self.episodes))
-            print('Epsilon -- {}'.format(self.epsilon))
+            self._reset_character_q_learn_lambda()
 
         # Otherwise, have it learn the maze
         else:
@@ -137,107 +114,16 @@ class RootWidgit(FloatLayout):
                                                             self.character.current_col)
             current_td_square = self.value_board.children[child_index]
 
-            # Generate random number to determine epsilon greedy
-            rand_num = random.uniform(0, 1)
-
-            # Case where we take random move
-            if rand_num < self.epsilon:
-                index = random.randint(0, 3)
-            # Case where we take "best" move
-            else:
-                max_val = max(current_td_square.direction_values)
-                index = current_td_square.direction_values.index(max_val)
+            # action_index is the index to be used while
+            # best_action_index is the "best" move possible
+            action_index, best_action_index = self._determine_action(current_td_square)
 
             # SPECIAL CASE
             # If character is in the initial position, it cannot move upward
             # otherwise it will cause an error
             if self.character.current_row == self.INITIAL_ROW and \
                 self.character.current_col == self.INITIAL_COL and \
-                index == Direction.NORTH.value:
-                    index += 1
-
-            # Choose appropriate animation based on index
-            # IMPORTANT: After this is called, the character will
-            # have updated its rows and columns
-            valid_flag = self._animate(index)
-
-            # Get the new updated td_square
-            child_index = self._get_child_index_value_board(self.character.current_row,
-                                                            self.character.current_col)
-            new_td_square = self.value_board.children[child_index]
-
-            # Calculate updates for the current_td_square
-            self._calculate_update(current_td_square, new_td_square, index, valid_flag)
-
-    def learn_q_learn_lambda(self, dt):
-        '''
-        Have character learn through Q-learn-lambda with
-        backward view eligibility trace
-        :param dt:
-        :return:
-        '''
-
-        # Termination state: When character made it to the end.
-        # Randomly place character onto new square, increment episodes
-        # and increment epsilon
-        if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
-
-            # Reset eligibility trace
-            for td_square in self.value_board.children:
-                td_square.reset_eligibility_trace()
-
-            # Decay epsilon
-            if self.epsilon > 0:
-                self.epsilon -= 0.025
-
-            # Increment episodes
-            self.episodes += 1
-
-            # Remove character
-            self.remove_widget(self.character)
-
-            # Generate new placement for character
-            row = random.randint(0, self.ROWS - 1)
-            col = random.randint(0, self.COLS - 1)
-
-            # Spawn new character at new location
-            self.character = Sprite(current_row=row,
-                                    current_col=col)
-
-            # Set up callback and start continue learning
-            self.callback_setup(None)
-            self.learn_q_learn_lambda(None)
-
-            print('Episodes -- {}'.format(self.episodes))
-            print('Epsilon -- {}'.format(self.epsilon))
-
-        else:
-            # Get child_index to obtain the td_square from the value_board
-            child_index = self._get_child_index_value_board(self.character.current_row,
-                                                            self.character.current_col)
-            current_td_square = self.value_board.children[child_index]
-
-            # Generate random number to determine epsilon greedy
-            rand_num = random.uniform(0, 1)
-
-            # Case where we take random move
-            if rand_num < self.epsilon:
-                action_index = random.randint(0, 3)
-            # Case where we take "best" move
-            else:
-                max_val = max(current_td_square.direction_values)
-                action_index = current_td_square.direction_values.index(max_val)
-
-            # Max_index holds the "best" move
-            max_val = max(current_td_square.direction_values)
-            best_action_index = current_td_square.direction_values.index(max_val)
-
-            # SPECIAL CASE
-            # If character is in the initial position, it cannot move upward
-            # otherwise it will cause an error
-            if self.character.current_row == self.INITIAL_ROW and \
-                            self.character.current_col == self.INITIAL_COL and \
-                            action_index == Direction.NORTH.value:
+                action_index == Direction.NORTH.value:
 
                 while action_index == Direction.NORTH.value:
                     action_index = random.randint(0, 3)
@@ -252,10 +138,61 @@ class RootWidgit(FloatLayout):
                                                             self.character.current_col)
             new_td_square = self.value_board.children[child_index]
 
+            # Calculate updates for the current_td_square
+            self._calculate_update(current_td_square, new_td_square, action_index, valid_flag)
+
+    def learn_q_learn_lambda(self, dt):
+        '''
+        Have character learn through Q-learn-lambda with
+        backward view eligibility trace
+        :param dt:
+        :return:
+        '''
+
+        # Termination state: When character made it to the end.
+        # Randomly place character onto new square, increment episodes
+        # and increment epsilon
+        if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
+            self._reset_character_q_learn_lambda()
+
+        else:
+            # Get child_index to obtain the td_square from the value_board
+            child_index = self._get_child_index_value_board(self.character.current_row,
+                                                            self.character.current_col)
+            current_td_square = self.value_board.children[child_index]
+
+            # action_index is the index to be used while
+            # best_action_index is the "best" move possible
+            action_index, best_action_index = self._determine_action(current_td_square)
+
+            # SPECIAL CASE
+            # If character is in the initial position, it cannot move upward
+            # otherwise it will cause an error
+            if self.character.current_row == self.INITIAL_ROW and \
+                            self.character.current_col == self.INITIAL_COL and \
+                            action_index == Direction.NORTH.value:
+
+                while action_index == Direction.NORTH.value:
+                    action_index = random.randint(0, 3)
+
+            # Choose appropriate animation based on index
+            # IMPORTANT: After this is called, the character will
+            # have already updated its rows and columns
+            valid_flag = self._animate(action_index)
+
+            # Get the new updated td_square
+            child_index = self._get_child_index_value_board(self.character.current_row,
+                                                            self.character.current_col)
+            new_td_square = self.value_board.children[child_index]
+
+            # Calculate the q_value (valid_flag determines whether
+            # the AI hit the wall or not)
             q_val = self._calculate_q_val(current_td_square, new_td_square, action_index, valid_flag)
 
+            # Increase eligibility trace
             current_td_square.eligibility_trace[action_index] += 1
 
+            # Update values in accordance to Q-lambda
             self._calculate_update_lambda(q_val, action_index, best_action_index)
 
     def _add_TDSquare_children(self):
@@ -399,7 +336,17 @@ class RootWidgit(FloatLayout):
         # return matrix, rows, cols
         return mat_walls, rows, cols
 
-    def _calculate_q_val(self, current_td_square, new_td_square, index, valid_flag):
+    def _calculate_q_val(self, current_td_square, new_td_square, action_index, valid_flag):
+        '''
+        This function calculates the Q_value.
+
+        :param current_td_square: TDSquare
+        :param new_td_square:  TDSquare
+        :param action_index: integer, chosen action
+        :param valid_flag: boolean, determines whether AI hit a wall or not
+        :return:
+        '''
+
         # learning_rate, discount, and cost
         lr = 0.5
         d = 1
@@ -410,7 +357,7 @@ class RootWidgit(FloatLayout):
             cost *= 10
 
         # Current td_square value of the "best" move grabbed from the current_max_index
-        current_val = current_td_square.direction_values[index]
+        current_val = current_td_square.direction_values[action_index]
 
         # new td_square reward
         reward = new_td_square.reward
@@ -418,6 +365,7 @@ class RootWidgit(FloatLayout):
         # Find the max_value of the direction_values and its index of new_td_square
         new_max_val = max(new_td_square.direction_values)
 
+        # Equation
         q_val = lr * (reward + d*new_max_val - current_val - cost)
 
         return q_val
@@ -475,6 +423,33 @@ class RootWidgit(FloatLayout):
                     td_square.eligibility_trace[direction.value] = 0
 
                 td_square.update()
+
+    def _determine_action(self, current_td_square):
+        '''
+        This function uses epsilon greedy to choose its next move.
+        The action_index is the move chosen while best_action_index
+        is the "best" move at the moment
+        :param current_td_square: the td_square the character is currently on
+        :return:
+        '''
+
+        # Generate random number to determine epsilon greedy
+        rand_num = random.uniform(0, 1)
+
+        # Case where we take random move
+        if rand_num < self.epsilon:
+            max_val = max(current_td_square.direction_values)
+            action_index = current_td_square.direction_values.index(max_val)
+        # Case where we take "best" move
+        else:
+            action_index = random.randint(0, 3)
+
+        # Max_index holds the "best" move
+        max_val = max(current_td_square.direction_values)
+        best_action_index = current_td_square.direction_values.index(max_val)
+
+        # return indices
+        return action_index, best_action_index
 
     def _end_animation(self, widget, item):
         '''
@@ -875,6 +850,37 @@ class RootWidgit(FloatLayout):
                                 current_col=self.INITIAL_COL)
 
         self._setup_maze(self.maze1)
+
+    def _reset_character_q_learn_lambda(self):
+
+        # Reset eligibility trace
+        for td_square in self.value_board.children:
+            td_square.reset_eligibility_trace()
+
+        # Decay epsilon
+        if self.epsilon < 1:
+            self.epsilon += 0.025
+
+        # Increment episodes
+        self.episodes += 1
+
+        # Remove character
+        self.remove_widget(self.character)
+
+        # Generate new placement for character
+        row = random.randint(0, self.ROWS - 1)
+        col = random.randint(0, self.COLS - 1)
+
+        # Spawn new character at new location
+        self.character = Sprite(current_row=row,
+                                current_col=col)
+
+        # Set up callback and start continue learning
+        self.callback_setup(None)
+        self.learn_q_learn_lambda(None)
+
+        print('Episodes -- {}'.format(self.episodes))
+        print('Epsilon -- {}'.format(self.epsilon))
 
     def _setup_maze(self, maze):
         '''
