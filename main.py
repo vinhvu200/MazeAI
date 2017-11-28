@@ -170,11 +170,21 @@ class RootWidgit(FloatLayout):
             self._calculate_update(current_td_square, new_td_square, index, valid_flag)
 
     def learn_q_learn_lambda(self, dt):
+        '''
+        Have character learn through Q-learn-lambda with
+        backward view eligibility trace
+        :param dt:
+        :return:
+        '''
 
         # Termination state: When character made it to the end.
         # Randomly place character onto new square, increment episodes
         # and increment epsilon
         if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
+
+            # Reset eligibility trace
+            for td_square in self.value_board.children:
+                td_square.reset_eligibility_trace()
 
             # Decay epsilon
             if self.epsilon > 0:

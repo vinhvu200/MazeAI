@@ -73,3 +73,6 @@ class TDSquare(Button):
         :return: None
         '''
         self.reward = reward
+
+    def reset_eligibility_trace(self):
+        self.eligibility_trace = [0, 0, 0, 0]
