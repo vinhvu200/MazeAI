@@ -35,7 +35,7 @@ class RootWidgit(FloatLayout):
     episodes = 0
 
     # Handles exploration
-    epsilon = 0.5
+    epsilon = 0.0
     discount = 0.9
     _lambda = 0.9
     learning_rate = 0.5
@@ -234,7 +234,9 @@ class RootWidgit(FloatLayout):
             if self.character.current_row == self.INITIAL_ROW and \
                             self.character.current_col == self.INITIAL_COL and \
                             action_index == Direction.NORTH.value:
-                action_index += 3
+
+                while action_index == Direction.NORTH.value:
+                    action_index = random.randint(0, 3)
 
             # Choose appropriate animation based on index
             # IMPORTANT: After this is called, the character will
@@ -773,7 +775,7 @@ class RootWidgit(FloatLayout):
         # Change value direction of value of initial square
         # to negative so that it can't move up
         child_index = self._get_child_index_value_board(self.INITIAL_ROW, self.INITIAL_COL)
-        self.value_board.children[child_index].direction_values[0] = -1
+        self.value_board.children[child_index].direction_values[0] = -100
 
 
     def _populate_walls(self):
