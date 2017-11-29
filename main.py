@@ -7,6 +7,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
 from Model.Enum.Direction import Direction
 from Model.Enum.Speed import Speed
+from Model.Enum.LearnMethod import LearnMethod
 from Model.Path import Path
 from Model.Sprite import Sprite
 from Model.TDIndicator import TDIndicator
@@ -29,6 +30,8 @@ class RootWidgit(FloatLayout):
     END_COL = 2
 
     character_speed = Speed.NORMAL
+    learn_method = LearnMethod.Q
+
     learn_flag = False
     learn_lambda_flag = False
     td_children_flag = False
@@ -58,11 +61,13 @@ class RootWidgit(FloatLayout):
         self.learn_toggle_button = self.ids.learn_toggle_button
         self.reset_button = self.ids.reset_button
         self.speed_button = self.ids.speed_button
+        self.learn_method_button = self.ids.learn_method_button
 
         # Bind Buttons from .kv file
         self.learn_toggle_button.bind(on_press=self._learn_toggle)
         self.reset_button.bind(on_press=self._reset)
         self.speed_button.bind(on_press=self._toggle_speed)
+        self.learn_method_button.bind(on_press=self._toggle_learn_method)
 
         # Set up the keyboard and bind it
         self._keyboard = Window.request_keyboard(
@@ -91,7 +96,7 @@ class RootWidgit(FloatLayout):
             self._add_TDSquare_children()
         self.td_children_flag = True
 
-    def learn_q_learn(self, dt):
+    def learn_q(self, dt):
         '''
         - This function should be continuously call for the character to slowly learn the maze.
         It is scheduled again in self._end_animation binding.
@@ -105,7 +110,7 @@ class RootWidgit(FloatLayout):
         # and increment epsilon
         if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
 
-            self._reset_character_q_learn_lambda()
+            self._reset_character()
 
         # Otherwise, have it learn the maze
         else:
@@ -141,7 +146,7 @@ class RootWidgit(FloatLayout):
             # Calculate updates for the current_td_square
             self._calculate_update(current_td_square, new_td_square, action_index, valid_flag)
 
-    def learn_q_learn_lambda(self, dt):
+    def learn_q_lambda(self, dt):
         '''
         Have character learn through Q-learn-lambda with
         backward view eligibility trace
@@ -153,7 +158,7 @@ class RootWidgit(FloatLayout):
         # Randomly place character onto new square, increment episodes
         # and increment epsilon
         if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
-            self._reset_character_q_learn_lambda()
+            self._reset_character()
 
         else:
             # Get child_index to obtain the td_square from the value_board
@@ -406,6 +411,14 @@ class RootWidgit(FloatLayout):
         current_td_square.update()
 
     def _calculate_update_lambda(self, q_val, action_index, best_index):
+        '''
+        This function upates all the td_square in the value_board following
+        Q-lambda learning.
+        :param q_val: float
+        :param action_index: int
+        :param best_index: int
+        :return:
+        '''
 
         for td_square in self.value_board.children:
 
@@ -467,8 +480,11 @@ class RootWidgit(FloatLayout):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
         if self.learn_flag is True:
-            #self.learn_q_learn(None)
-            self.learn_q_learn_lambda(None)
+
+            if self.learn_method is LearnMethod.Q:
+                self.learn_q(None)
+            elif self.learn_method is LearnMethod.Q_lambda:
+                self.learn_q_lambda(None)
 
     def _get_child_index_maze_board(self, row, col):
         '''
@@ -642,15 +658,17 @@ class RootWidgit(FloatLayout):
         # Condition to get AI to start learning
         if self.learn_toggle_button.text == 'Learn':
             self.learn_flag = True
-            # self.learn_q_learn(None)
-            self.learn_lambda_flag = True
-            self.learn_q_learn_lambda(None)
+
+            if self.learn_method is LearnMethod.Q:
+                self.learn_q(None)
+            elif self.learn_method is LearnMethod.Q_lambda:
+                self.learn_q_lambda(None)
             self.learn_toggle_button.text = 'Manual'
 
         # Condition to stop AI from learning
         elif self.learn_toggle_button.text == 'Manual':
             self.learn_flag = False
-            self.learn_lambda_flag = False
+            # self.learn_lambda_flag = False
             self.learn_toggle_button.text = 'Learn'
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
@@ -927,7 +945,7 @@ class RootWidgit(FloatLayout):
 
         self._setup_maze(self.maze1)
 
-    def _reset_character_q_learn_lambda(self):
+    def _reset_character(self):
         '''
         This function places the character in a completely new area
         to continue learning the maze
@@ -965,9 +983,11 @@ class RootWidgit(FloatLayout):
         # Set up callback and start continue learning
         self.callback_setup(None)
 
-        # Continue learning if already doing so
-        if self.learn_lambda_flag is True:
-            self.learn_q_learn_lambda(None)
+        # Continue learning with the appropriate learning method
+        if self.learn_method is LearnMethod.Q:
+            self.learn_q(None)
+        elif self.learn_method is LearnMethod.Q_lambda:
+            self.learn_q_lambda(None)
 
         print('Episodes -- {}'.format(self.episodes))
         print('Epsilon -- {}'.format(self.epsilon))
@@ -1005,6 +1025,22 @@ class RootWidgit(FloatLayout):
 
         Clock.schedule_once(self.callback_setup, 1)
 
+    def _toggle_learn_method(self, dt):
+        '''
+        Toggle learning methods in order
+        Q -> Q-lambda -> Q...
+        :param dt:
+        :return:
+        '''
+
+        if self.learn_method is LearnMethod.Q:
+            self.learn_method_button.text = 'Method:\nQ-lambda'
+            self.learn_method = LearnMethod.Q_lambda
+
+        elif self.learn_method is LearnMethod.Q_lambda:
+            self.learn_method_button.text = 'Method:\nQ'
+            self.learn_method = LearnMethod.Q
+
     def _toggle_speed(self, dt):
         '''
         Toggle speed in order
@@ -1028,11 +1064,10 @@ class RootWidgit(FloatLayout):
             self.character.set_speed_normal()
             self.character_speed = Speed.NORMAL
 
-
     def _update_value_board(self, valid_flag, current_row, current_col, action_index):
         '''
         This function updates the value board when the AI is being moved
-        manually
+        manually according to Q-lambda
 
         :param valid_flag: boolean
         :param current_row: int, AI's row he just moved from
@@ -1067,7 +1102,7 @@ class RootWidgit(FloatLayout):
         if self.character.current_row == self.END_ROW and \
            self.character.current_col == self.END_COL:
 
-                self._reset_character_q_learn_lambda()
+                self._reset_character()
 
     def _valid_move(self, current_row, current_col, direction):
         '''
