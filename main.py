@@ -60,11 +60,11 @@ class RootWidgit(FloatLayout):
         self.value_board = self.ids.value_board
 
         # Get Buttons from .kv file
-        self.start_button = self.ids.start_button
+        self.learn_button = self.ids.learn_button
         self.reset_button = self.ids.reset_button
 
         # Bind Buttons from .kv file
-        self.start_button.bind(on_press=self._start)
+        self.learn_button.bind(on_press=self._learn)
         self.reset_button.bind(on_press=self._reset)
 
         # Set up the keyboard and bind it
@@ -93,7 +93,7 @@ class RootWidgit(FloatLayout):
             self._add_TDSquare_children()
         self.td_children_flag = True
 
-    def learn(self, dt):
+    def learn_q_learn(self, dt):
         '''
         - This function should be continuously call for the character to slowly learn the maze.
         It is scheduled again in self._end_animation binding.
@@ -469,7 +469,7 @@ class RootWidgit(FloatLayout):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
         if self.learn_flag is True:
-            #self.learn(None)
+            #self.learn_q_learn(None)
             self.learn_q_learn_lambda(None)
 
     def _get_child_index_maze_board(self, row, col):
@@ -975,14 +975,14 @@ class RootWidgit(FloatLayout):
 
         Clock.schedule_once(self.callback_setup, 1)
 
-    def _start(self, dt):
+    def _learn(self, dt):
         '''
         This callback is binded to the start button to start learning
         :param dt:
         :return:
         '''
         self.learn_flag = True
-        # self.learn(None)
+        # self.learn_q_learn(None)
         self.learn_lambda_flag = True
         self.learn_q_learn_lambda(None)
 
