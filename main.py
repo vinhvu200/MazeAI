@@ -584,6 +584,11 @@ class RootWidgit(FloatLayout):
         # None: Character is now out of bound
         # NORTH CONDITION
         if keycode[1] == 'w':
+
+            if self.character.current_row == self.INITIAL_ROW and \
+               self.character.current_col == self.INITIAL_COL:
+                    return True
+
             animate_flag = True
             valid_move = self._valid_move(self.character.current_row, self.character.current_col,
                                 Direction.NORTH)

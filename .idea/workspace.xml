@@ -20,8 +20,8 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="318">
-              <caret line="952" column="0" lean-forward="false" selection-start-line="952" selection-start-column="0" selection-end-line="952" selection-end-column="26" />
+            <state relative-caret-position="-398">
+              <caret line="594" column="48" lean-forward="true" selection-start-line="594" selection-start-column="48" selection-end-line="594" selection-end-column="48" />
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
               </folding>
@@ -82,13 +82,13 @@
       <find>_on_keyboard</find>
       <find>_update_value_b</find>
       <find>_update_value_bo</find>
-      <find>_on_keyboard_down</find>
       <find>_on_ke</find>
       <find>_reset</find>
       <find>_reset_character</find>
       <find>learn_q_learn</find>
       <find>self.learn_flag</find>
       <find>_update_value_board</find>
+      <find>_on_keyboard_down</find>
     </findStrings>
     <replaceStrings>
       <replace>_populate_maze_board</replace>
@@ -736,8 +736,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="318">
-          <caret line="952" column="0" lean-forward="false" selection-start-line="952" selection-start-column="0" selection-end-line="952" selection-end-column="26" />
+        <state relative-caret-position="-398">
+          <caret line="594" column="48" lean-forward="true" selection-start-line="594" selection-start-column="48" selection-end-line="594" selection-end-column="48" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
           </folding>
