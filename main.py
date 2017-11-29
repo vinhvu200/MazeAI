@@ -550,15 +550,11 @@ class RootWidgit(FloatLayout):
         # Calculate the walk_length in y direction
         self.character.walk_length_y = y1 - y2
 
-    def _keyboard_closed(self):
-        print('My keyboard have been closed!')
-        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
-        self._keyboard = None
-
-    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+    def _handle_keyboard_action(self, keycode):
         '''
-        This function serves the purpose of handling keyboard events
-        to move the character based on the keys: w, a, s, d.
+        This function handles certain keys that user may press
+        :param keycode:
+        :return:
         '''
 
         # Make sure the actions are only completed if desired keys
@@ -571,12 +567,6 @@ class RootWidgit(FloatLayout):
         # The decision the AI will make
         action_index = 0
 
-        # AI's current row/col before moving
-        curr_row = self.character.current_row
-        curr_col = self.character.current_col
-
-        # animate_flag, valid_move, action_index = self._handle_keyboard_action()
-
         # Conditions to determine which direction to move character
         # Three options for validity of move: True, False, None
         # True: There are no walls; therefore, you can walk through
@@ -586,12 +576,12 @@ class RootWidgit(FloatLayout):
         if keycode[1] == 'w':
 
             if self.character.current_row == self.INITIAL_ROW and \
-               self.character.current_col == self.INITIAL_COL:
-                    return True
+                            self.character.current_col == self.INITIAL_COL:
+                return True
 
             animate_flag = True
             valid_move = self._valid_move(self.character.current_row, self.character.current_col,
-                                Direction.NORTH)
+                                          Direction.NORTH)
             action_index = Direction.NORTH.value
             if valid_move:
                 # Get animation for walking
@@ -635,6 +625,30 @@ class RootWidgit(FloatLayout):
             else:
                 # Get animation for wall_bump
                 self.animate = self.character.get_bump_wall_animation(Direction.EAST)
+
+        return animate_flag, valid_move, action_index
+
+    def _keyboard_closed(self):
+        print('My keyboard have been closed!')
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        '''
+        This function serves the purpose of handling keyboard events
+        to move the character based on the keys: w, a, s, d.
+        '''
+
+        # AI's current row/col before moving
+        curr_row = self.character.current_row
+        curr_col = self.character.current_col
+
+        # If AI is learning, make sure it won't be interrupted
+        if self.learn_lambda_flag is True or self.learn_flag is True:
+            return True
+
+        # handles keyboard action and receive variables to update keyboard
+        animate_flag, valid_move, action_index = self._handle_keyboard_action(keycode)
 
         # Only complete these commands if any of the desired keys are pressed
         if animate_flag is True:
