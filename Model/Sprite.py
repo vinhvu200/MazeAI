@@ -1,11 +1,13 @@
-from kivy.uix.image import Image
-from Direction import Direction
 from kivy.animation import Animation
+from kivy.uix.image import Image
+
+from Model.Enum.Direction import Direction
+from Model.Enum.Speed import Speed
 
 
 class Sprite(Image):
 
-    def __init__(self, current_row, current_col, **kwargs):
+    def __init__(self, current_row, current_col, speed, **kwargs):
         super(Sprite, self).__init__(**kwargs)
 
         # Declare the image path for sprite standing/walking
@@ -26,13 +28,19 @@ class Sprite(Image):
         self.walk_length_y = 0
         self.walk_length_x = 0
 
-        # How fast to animate the walking
-        # self.anim_delay = 0.025
-        # self.walk_duration = 1
-        # self.bump_wall_duration = 0.25
-        self.anim_delay = 0.001
-        self.walk_duration = 0.15
-        self.bump_wall_duration = 0.01
+        # Default variables to control how fast
+        # the walk animation is
+        self.anim_delay = 0.025
+        self.walk_duration = 1
+        self.bump_wall_duration = 0.25
+
+        # Determines which speed to set the character to
+        if speed == Speed.NORMAL:
+            self.set_speed_normal()
+        elif speed == Speed.FAST:
+            self.set_speed_fast()
+        elif speed == Speed.HYPER:
+            self.set_speed_hyper()
 
         # Setting the source defaultint to standing
         self.source = self.stand_source
@@ -120,6 +128,21 @@ class Sprite(Image):
         self.source = self.walk_source
 
         return animation
+
+    def set_speed_fast(self):
+        self.anim_delay = 0.0125
+        self.walk_duration = 0.5
+        self.bump_wall_duration = 0.125
+
+    def set_speed_hyper(self):
+        self.anim_delay = 0.001
+        self.walk_duration = 0.15
+        self.bump_wall_duration = 0.01
+
+    def set_speed_normal(self):
+        self.anim_delay = 0.025
+        self.walk_duration = 1
+        self.bump_wall_duration = 0.25
 
     def set_standing(self):
         self.source = self.stand_source

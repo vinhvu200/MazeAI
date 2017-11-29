@@ -1,20 +1,17 @@
+import random
+
 from kivy.app import App
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.button import Button
-from kivy.uix.image import Image
-from kivy.uix.widget import Widget
-from kivy.graphics import Rectangle, Color, Ellipse
-from kivy.uix.label import Label
 from kivy.clock import Clock
 from kivy.config import Config
-from kivy.animation import Animation
-from Model.Direction import Direction
-from Model.Sprite import Sprite
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.image import Image
+from Model.Enum.Direction import Direction
+from Model.Enum.Speed import Speed
 from Model.Path import Path
-from Model.TDSquare import TDSquare
+from Model.Sprite import Sprite
 from Model.TDIndicator import TDIndicator
-import time
-import random
+from Model.TDSquare import TDSquare
+
 Config.set('graphics', 'width', '1100')
 Config.set('graphics', 'height', '500')
 from kivy.core.window import Window
@@ -26,14 +23,12 @@ class RootWidgit(FloatLayout):
 
     ROWS = 0
     COLS = 0
-
     INITIAL_ROW = 0
     INITIAL_COL = 2
-
     END_ROW = 4
     END_COL = 2
-    walk_length = 0
 
+    character_speed = Speed.NORMAL
     learn_flag = False
     learn_lambda_flag = False
     td_children_flag = False
@@ -60,12 +55,14 @@ class RootWidgit(FloatLayout):
         self.value_board = self.ids.value_board
 
         # Get Buttons from .kv file
-        self.learn_button = self.ids.learn_button
+        self.learn_toggle_button = self.ids.learn_toggle_button
         self.reset_button = self.ids.reset_button
+        self.speed_button = self.ids.speed_button
 
         # Bind Buttons from .kv file
-        self.learn_button.bind(on_press=self._learn)
+        self.learn_toggle_button.bind(on_press=self._learn_toggle)
         self.reset_button.bind(on_press=self._reset)
+        self.speed_button.bind(on_press=self._toggle_speed)
 
         # Set up the keyboard and bind it
         self._keyboard = Window.request_keyboard(
@@ -74,7 +71,8 @@ class RootWidgit(FloatLayout):
 
         # Create main character
         self.character = Sprite(current_row=self.INITIAL_ROW,
-                                current_col=self.INITIAL_COL)
+                                current_col=self.INITIAL_COL,
+                                speed=self.character_speed)
 
         # Pass in the maze1.txt file to set up
         self._setup_maze(self.maze1)
@@ -577,7 +575,7 @@ class RootWidgit(FloatLayout):
 
             if self.character.current_row == self.INITIAL_ROW and \
                             self.character.current_col == self.INITIAL_COL:
-                return True
+                return False, False, False
 
             animate_flag = True
             valid_move = self._valid_move(self.character.current_row, self.character.current_col,
@@ -632,6 +630,28 @@ class RootWidgit(FloatLayout):
         print('My keyboard have been closed!')
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
         self._keyboard = None
+
+    def _learn_toggle(self, dt):
+        '''
+        This callback is toggles between having the AI learn
+        and stopping it so that the user can manually move
+        :param dt:
+        :return:
+        '''
+
+        # Condition to get AI to start learning
+        if self.learn_toggle_button.text == 'Learn':
+            self.learn_flag = True
+            # self.learn_q_learn(None)
+            self.learn_lambda_flag = True
+            self.learn_q_learn_lambda(None)
+            self.learn_toggle_button.text = 'Manual'
+
+        # Condition to stop AI from learning
+        elif self.learn_toggle_button.text == 'Manual':
+            self.learn_flag = False
+            self.learn_lambda_flag = False
+            self.learn_toggle_button.text = 'Learn'
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         '''
@@ -884,17 +904,26 @@ class RootWidgit(FloatLayout):
 
         # Stop character movement
         self.learn_flag = False
+        self.learn_lambda_flag = False
 
         # Clear the GridLayout of its childrens
         self.value_board.clear_widgets()
         self.maze_board.clear_widgets()
+
+        # Reset character speed
+        self.character_speed = Speed.NORMAL
+
+        # Reset Buttons
+        self.learn_toggle_button.text = 'Learn'
+        self.speed_button.text = 'Speed:\nNormal'
 
         # Remove character
         self.remove_widget(self.character)
 
         # Set character up at initial location
         self.character = Sprite(current_row=self.INITIAL_ROW,
-                                current_col=self.INITIAL_COL)
+                                current_col=self.INITIAL_COL,
+                                speed=self.character_speed)
 
         self._setup_maze(self.maze1)
 
@@ -930,7 +959,8 @@ class RootWidgit(FloatLayout):
 
         # Spawn new character at new location
         self.character = Sprite(current_row=row,
-                                current_col=col)
+                                current_col=col,
+                                speed=self.character_speed)
 
         # Set up callback and start continue learning
         self.callback_setup(None)
@@ -975,21 +1005,42 @@ class RootWidgit(FloatLayout):
 
         Clock.schedule_once(self.callback_setup, 1)
 
-    def _learn(self, dt):
+    def _toggle_speed(self, dt):
         '''
-        This callback is binded to the start button to start learning
+        Toggle speed in order
+        NORMAL -> FAST -> HYPER -> NORMAL...
         :param dt:
         :return:
         '''
-        self.learn_flag = True
-        # self.learn_q_learn(None)
-        self.learn_lambda_flag = True
-        self.learn_q_learn_lambda(None)
+
+        if self.character_speed is Speed.NORMAL:
+            self.speed_button.text = 'Speed:\nFast'
+            self.character.set_speed_fast()
+            self.character_speed = Speed.FAST
+
+        elif self.character_speed is Speed.FAST:
+            self.speed_button.text = 'Speed:\nHyper'
+            self.character.set_speed_hyper()
+            self.character_speed = Speed.HYPER
+
+        elif self.character_speed is Speed.HYPER:
+            self.speed_button.text = 'Speed:\nNormal'
+            self.character.set_speed_normal()
+            self.character_speed = Speed.NORMAL
+
 
     def _update_value_board(self, valid_flag, current_row, current_col, action_index):
+        '''
+        This function updates the value board when the AI is being moved
+        manually
 
-        print('current row/col -- {} / {}'.format(current_row, current_col))
-        print('new row/col -- {} / {}'.format(self.character.current_row, self.character.current_col))
+        :param valid_flag: boolean
+        :param current_row: int, AI's row he just moved from
+        :param current_col: int, AI's col he just moved from
+        :param action_index: int, which direction he will move in
+        :return:
+        '''
+
         # Get current td_square
         child_index = self._get_child_index_value_board(current_row,
                                                         current_col)
