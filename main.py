@@ -930,18 +930,11 @@ class RootWidgit(FloatLayout):
 
         # Stop character movement
         self.learn_flag = False
-        self.learn_lambda_flag = False
+        self.learn_toggle_button.text = 'Learn'
 
         # Clear the GridLayout of its childrens
         self.value_board.clear_widgets()
         self.maze_board.clear_widgets()
-
-        # Reset character speed
-        self.character_speed = Speed.NORMAL
-
-        # Reset Buttons
-        self.learn_toggle_button.text = 'Learn'
-        self.speed_button.text = 'Speed:\nNormal'
 
         # Remove character
         self.remove_widget(self.character)

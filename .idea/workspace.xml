@@ -20,8 +20,8 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="292">
-              <caret line="700" column="12" lean-forward="true" selection-start-line="700" selection-start-column="12" selection-end-line="700" selection-end-column="12" />
+            <state relative-caret-position="202">
+              <caret line="932" column="47" lean-forward="true" selection-start-line="932" selection-start-column="47" selection-end-line="932" selection-end-column="47" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -50,7 +50,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>maze1</find>
       <find>bump_wall_speed</find>
       <find>update</find>
       <find>_add_arrow</find>
@@ -80,6 +79,7 @@
       <find>_on_keyboard</find>
       <find>_on_keyboard_down</find>
       <find>_calculate_update</find>
+      <find>_update_value_board_q_lambda</find>
     </findStrings>
     <replaceStrings>
       <replace>_populate_maze_board</replace>
@@ -95,6 +95,7 @@
       <replace>learn_q</replace>
       <replace>learn_q_lambda</replace>
       <replace>_calculate_update_q</replace>
+      <replace>_update_value_board</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -749,8 +750,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="292">
-          <caret line="700" column="12" lean-forward="true" selection-start-line="700" selection-start-column="12" selection-end-line="700" selection-end-column="12" />
+        <state relative-caret-position="202">
+          <caret line="932" column="47" lean-forward="true" selection-start-line="932" selection-start-column="47" selection-end-line="932" selection-end-column="47" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>
