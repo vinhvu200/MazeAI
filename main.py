@@ -144,7 +144,7 @@ class RootWidgit(FloatLayout):
             new_td_square = self.value_board.children[child_index]
 
             # Calculate updates for the current_td_square
-            self._calculate_update(current_td_square, new_td_square, action_index, valid_flag)
+            self._calculate_update_q(current_td_square, new_td_square, action_index, valid_flag)
 
     def learn_q_lambda(self, dt):
         '''
@@ -375,7 +375,7 @@ class RootWidgit(FloatLayout):
 
         return q_val
 
-    def _calculate_update(self, current_td_square, new_td_square, index, valid_flag):
+    def _calculate_update_q(self, current_td_square, new_td_square, index, valid_flag):
         '''
         - Using Q-learning, the character updates its current td_square direction_values
         accordingly so that the next move can be chosen.
@@ -420,21 +420,29 @@ class RootWidgit(FloatLayout):
         :return:
         '''
 
+        # Check all td_squares in value board
         for td_square in self.value_board.children:
 
+            # Look at each direction of the td_square
             for direction in Direction:
 
+                # Grab the eligibility trace for specific direction
                 elig_trace_val = td_square.eligibility_trace[direction.value]
-                adjust_q_val = self.learning_rate * q_val * elig_trace_val
 
+                # adjust_q_val accordingly and add to the direction q_val
+                adjust_q_val = self.learning_rate * q_val * elig_trace_val
                 td_square.direction_values[direction.value] += adjust_q_val
 
+                # If selected action is "best" action, then decay it
                 if action_index == best_index:
                     adjust_elig_trace = self.discount * self._lambda * elig_trace_val
                     td_square.eligibility_trace[direction.value] = adjust_elig_trace
+
+                # If selected action is not "best" action, set it to 0
                 else:
                     td_square.eligibility_trace[direction.value] = 0
 
+                # Update td_square
                 td_square.update()
 
     def _determine_action(self, current_td_square):
@@ -682,7 +690,7 @@ class RootWidgit(FloatLayout):
         curr_col = self.character.current_col
 
         # If AI is learning, make sure it won't be interrupted
-        if self.learn_lambda_flag is True or self.learn_flag is True:
+        if self.learn_flag is True:
             return True
 
         # handles keyboard action and receive variables to update keyboard
@@ -690,7 +698,7 @@ class RootWidgit(FloatLayout):
 
         # Only complete these commands if any of the desired keys are pressed
         if animate_flag is True:
-
+            
             # Bind the animation
             self.animate.bind(on_complete=self._end_animation)
 
@@ -983,11 +991,13 @@ class RootWidgit(FloatLayout):
         # Set up callback and start continue learning
         self.callback_setup(None)
 
-        # Continue learning with the appropriate learning method
-        if self.learn_method is LearnMethod.Q:
-            self.learn_q(None)
-        elif self.learn_method is LearnMethod.Q_lambda:
-            self.learn_q_lambda(None)
+        # If the AI was learning, let it continue learning
+        if self.learn_flag is True:
+            # Continue learning with the appropriate learning method
+            if self.learn_method is LearnMethod.Q:
+                self.learn_q(None)
+            elif self.learn_method is LearnMethod.Q_lambda:
+                self.learn_q_lambda(None)
 
         print('Episodes -- {}'.format(self.episodes))
         print('Epsilon -- {}'.format(self.epsilon))
@@ -1089,16 +1099,20 @@ class RootWidgit(FloatLayout):
         # Get the best action index for that square
         _, best_action_index = self._determine_action(current_td_square)
 
-        # Calculate the q_value (valid_flag determines whether
-        # the AI hit the wall or not)
-        q_val = self._calculate_q_val(current_td_square, new_td_square, action_index, valid_flag)
+        if self.learn_method is LearnMethod.Q:
+            self._calculate_update_q(current_td_square, new_td_square, action_index, valid_flag)
+        elif self.learn_method is LearnMethod.Q_lambda:
+            # Calculate the q_value (valid_flag determines whether
+            # the AI hit the wall or not)
+            q_val = self._calculate_q_val(current_td_square, new_td_square, action_index, valid_flag)
 
-        # Increase eligibility trace
-        current_td_square.eligibility_trace[action_index] += 1
+            # Increase eligibility trace
+            current_td_square.eligibility_trace[action_index] += 1
 
-        # Update values in accordance to Q-lambda
-        self._calculate_update_lambda(q_val, action_index, action_index)
+            # Update values in accordance to Q-lambda
+            self._calculate_update_lambda(q_val, action_index, action_index)
 
+        # Reset character if they have reached the end
         if self.character.current_row == self.END_ROW and \
            self.character.current_col == self.END_COL:
 
