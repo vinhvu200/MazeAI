@@ -882,6 +882,11 @@ class RootWidgit(FloatLayout):
         self._setup_maze(self.maze1)
 
     def _reset_character_q_learn_lambda(self):
+        '''
+        This function places the character in a completely new area
+        to continue learning the maze
+        :return:
+        '''
 
         # Reset eligibility trace
         for td_square in self.value_board.children:
@@ -984,7 +989,7 @@ class RootWidgit(FloatLayout):
         current_td_square.eligibility_trace[action_index] += 1
 
         # Update values in accordance to Q-lambda
-        self._calculate_update_lambda(q_val, action_index, best_action_index)
+        self._calculate_update_lambda(q_val, action_index, action_index)
 
         if self.character.current_row == self.END_ROW and \
            self.character.current_col == self.END_COL:
