@@ -863,6 +863,9 @@ class RootWidgit(FloatLayout):
         :return: None
         '''
 
+        # Tells the callback_setup that the children widgets
+        # have not been added yet (These child widgets are
+        # the arrow Images)
         self.td_children_flag = False
 
         # Stop character movement
@@ -905,6 +908,11 @@ class RootWidgit(FloatLayout):
         # Generate new placement for character
         row = random.randint(0, self.ROWS - 1)
         col = random.randint(0, self.COLS - 1)
+
+        # Generate new placement for character
+        while row == self.END_ROW and col == self.END_COL:
+            row = random.randint(0, self.ROWS - 1)
+            col = random.randint(0, self.COLS - 1)
 
         # Spawn new character at new location
         self.character = Sprite(current_row=row,
@@ -1023,8 +1031,10 @@ class RootWidgit(FloatLayout):
 class MazeApp(App):
 
     def build(self):
+
         root = RootWidgit()
         return root
+
 
 if __name__ == "__main__":
     MazeApp().run()
