@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="813541fc-2551-4d15-a628-07c281ec43c3" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Maze/maze1.txt" afterPath="$PROJECT_DIR$/Maze/maze1.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Maze/maze2.txt" afterPath="$PROJECT_DIR$/Maze/maze2.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Model/Sprite.py" afterPath="$PROJECT_DIR$/Model/Sprite.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Model/TDSquare.py" afterPath="$PROJECT_DIR$/Model/TDSquare.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.py" afterPath="$PROJECT_DIR$/main.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/maze.kv" afterPath="$PROJECT_DIR$/maze.kv" />
     </list>
@@ -22,8 +25,8 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="363">
-              <caret line="1182" column="78" lean-forward="true" selection-start-line="1182" selection-start-column="78" selection-end-line="1182" selection-end-column="78" />
+            <state relative-caret-position="77">
+              <caret line="369" column="19" lean-forward="false" selection-start-line="369" selection-start-column="19" selection-end-line="369" selection-end-column="19" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -34,8 +37,48 @@
       <file leaf-file-name="maze.kv" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/maze.kv">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="273">
+            <state relative-caret-position="440">
               <caret line="36" column="39" lean-forward="true" selection-start-line="36" selection-start-column="39" selection-end-line="36" selection-end-column="39" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="maze1.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Maze/maze1.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="5" column="8" lean-forward="true" selection-start-line="5" selection-start-column="8" selection-end-line="5" selection-end-column="8" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TDSquare.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Model/TDSquare.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="199">
+              <caret line="16" column="46" lean-forward="true" selection-start-line="16" selection-start-column="46" selection-end-line="16" selection-end-column="46" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Sprite.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Model/Sprite.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="435">
+              <caret line="35" column="31" lean-forward="true" selection-start-line="35" selection-start-column="31" selection-end-line="35" selection-end-column="31" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="maze2.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Maze/maze2.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="210">
+              <caret line="14" column="7" lean-forward="true" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
               <folding />
             </state>
           </provider>
@@ -52,12 +95,9 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>_on_keyboard</find>
-      <find>_on_keyboard_down</find>
       <find>_calculate_update</find>
       <find>_update_value_board_q_lambda</find>
       <find>unbind</find>
-      <find>_reset</find>
       <find>def call</find>
       <find>def _build</find>
       <find>_build_matrix_walls</find>
@@ -68,13 +108,10 @@
       <find>END_ROW</find>
       <find>def _populate</find>
       <find>def _populate_value</find>
-      <find>print</find>
       <find>learn_lambda_flag</find>
       <find>def _reset_cha</find>
       <find>learn_flag</find>
       <find>self.state</find>
-      <find>def _reset_ch</find>
-      <find>def _reset</find>
       <find>character_speed</find>
       <find>learn_method</find>
       <find>self._setup_</find>
@@ -82,6 +119,12 @@
       <find>def _toggle</find>
       <find>def callback</find>
       <find>def _set_</find>
+      <find>def _reset</find>
+      <find>_reset</find>
+      <find>def _reset_ch</find>
+      <find>def _add</find>
+      <find>def _reset_c</find>
+      <find>print</find>
     </findStrings>
     <replaceStrings>
       <replace>_populate_maze_board</replace>
@@ -119,15 +162,16 @@
         <option value="$PROJECT_DIR$/Model/Enum/Direction.py" />
         <option value="$PROJECT_DIR$/Model/Enum/Speed.py" />
         <option value="$PROJECT_DIR$/Model/Enum/LearnMethod.py" />
-        <option value="$PROJECT_DIR$/Model/TDSquare.py" />
         <option value="$PROJECT_DIR$/util.py" />
         <option value="$PROJECT_DIR$/maze1.txt" />
         <option value="$PROJECT_DIR$/maze2.txt" />
-        <option value="$PROJECT_DIR$/Maze/maze2.txt" />
         <option value="$PROJECT_DIR$/Model/Enum/State.py" />
-        <option value="$PROJECT_DIR$/Model/Sprite.py" />
-        <option value="$PROJECT_DIR$/main.py" />
         <option value="$PROJECT_DIR$/maze.kv" />
+        <option value="$PROJECT_DIR$/Model/TDSquare.py" />
+        <option value="$PROJECT_DIR$/Model/Sprite.py" />
+        <option value="$PROJECT_DIR$/Maze/maze2.txt" />
+        <option value="$PROJECT_DIR$/Maze/maze1.txt" />
+        <option value="$PROJECT_DIR$/main.py" />
       </list>
     </option>
   </component>
@@ -193,6 +237,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="Enum" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MazeAI" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MazeAI" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Maze" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -388,7 +446,7 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2912088" sideWeight="0.50277776" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2637749" sideWeight="0.49722221" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2637749" sideWeight="0.49722221" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -685,14 +743,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Model/TDSquare.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="960">
-          <caret line="65" column="46" lean-forward="false" selection-start-line="65" selection-start-column="46" selection-end-line="65" selection-end-column="46" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Model/Enum/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -704,22 +754,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Maze/maze1.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="5" lean-forward="false" selection-start-line="3" selection-start-column="5" selection-end-line="3" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Maze/maze2.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="1" lean-forward="false" selection-start-line="2" selection-start-column="1" selection-end-line="2" selection-end-column="1" />
           <folding />
         </state>
       </provider>
@@ -756,28 +790,50 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Model/TDSquare.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="199">
+          <caret line="16" column="46" lean-forward="true" selection-start-line="16" selection-start-column="46" selection-end-line="16" selection-end-column="46" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Model/Sprite.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="34" column="31" lean-forward="true" selection-start-line="34" selection-start-column="31" selection-end-line="34" selection-end-column="31" />
-          <folding>
-            <element signature="e#0#36#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="435">
+          <caret line="35" column="31" lean-forward="true" selection-start-line="35" selection-start-column="31" selection-end-line="35" selection-end-column="31" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/maze.kv">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="273">
+        <state relative-caret-position="440">
           <caret line="36" column="39" lean-forward="true" selection-start-line="36" selection-start-column="39" selection-end-line="36" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Maze/maze2.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="14" column="7" lean-forward="true" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Maze/maze1.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="8" lean-forward="true" selection-start-line="5" selection-start-column="8" selection-end-line="5" selection-end-column="8" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="363">
-          <caret line="1182" column="78" lean-forward="true" selection-start-line="1182" selection-start-column="78" selection-end-line="1182" selection-end-column="78" />
+        <state relative-caret-position="77">
+          <caret line="369" column="19" lean-forward="false" selection-start-line="369" selection-start-column="19" selection-end-line="369" selection-end-column="19" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>

@@ -61,6 +61,13 @@ class RootWidgit(FloatLayout):
         self.maze_one_button = self.ids.maze_one_button
         self.maze_two_button = self.ids.maze_two_button
 
+        # Get Labels from .kv file
+        self.progress_label = self.ids.progress_label
+
+        # Set progress label text
+        self.progress_label.text = 'Episodes: {}\nEpsilon: {}'.format(self.episodes,
+                                                                      self.epsilon)
+
         # Set up the keyboard and bind it
         self._keyboard = Window.request_keyboard(
             self._keyboard_closed, self, 'text')
@@ -208,26 +215,37 @@ class RootWidgit(FloatLayout):
         :return:
         '''
 
-        # Add image to each of the child (Button) of the value_board
-        for children in self.value_board.children:
+        # Add image to each of the td_squares of the value_board
+        for td_square in self.value_board.children:
 
             # Create td_indicator to be added into children of value_board
-            td_indicator = TDIndicator(x=children.x, y=children.y,
-                                       size=children.size)
+            td_indicator = TDIndicator(x=td_square.x, y=td_square.y,
+                                       size=td_square.size)
 
             # The image source will show arrow of where it will move next
-            # image = Image(source='Images/arrow_north.png', x=children.x, y=children.y,
-            #               size=children.size)
-
-            image = Image(x=children.x, y=children.y,
-                          size=children.size, opacity=0)
+            image = Image(x=td_square.x, y=td_square.y,
+                          size=td_square.size, opacity=0)
 
             # Add the two widgets
-            children.add_widget(td_indicator)
-            children.add_widget(image)
+            td_square.add_widget(td_indicator)
+            td_square.add_widget(image)
 
-            # Draw out the indicator
-            td_indicator.draw()
+        # Remove td_indicator and images if it is a termination square
+        for x in xrange(len(self.END_REWARDS)):
+            child_index = self._get_child_index_value_board(self.END_ROWS[x],
+                                                            self.END_COLS[x])
+            td_square = self.value_board.children[child_index]
+
+            td_square.clear_widgets()
+
+            td_square.disabled_color = [0, 0, 0, 1]
+            td_square.halign = 'center'
+            td_square.font_size = '25sp'
+
+            if self.END_REWARDS[x] > 0:
+                td_square.text = '+{}'.format(self.END_REWARDS[x])
+            else:
+                td_square.text = '{}'.format(self.END_REWARDS[x])
 
     def _assign_rewards(self):
 
@@ -301,56 +319,6 @@ class RootWidgit(FloatLayout):
         self.animate.start(self.character)
         return valid_flag
 
-    def _build_matrix_walls(self, filename):
-        '''
-        This function serves the purpose of generating a 3D matrix
-        which tells where the walls are indicated for each square on
-        the board. The walls are NORTH, EAST, SOUTH, and WEST respectively.
-
-        EXAMPLE: [1, 0, 0, 1]
-        - This tells us there is a wall NORTH and SOUTH of the square
-
-        :return: matrix_walls, rows, cols
-        '''
-
-        # Open maze file
-        maze_file = open(filename, 'r')
-
-        # Read and split lines by space
-        line = maze_file.readline()
-        line_by_space = line.split(' ')
-
-        # First two values indicate rows and cols respectively
-        rows = int(line_by_space[0])
-        cols = int(line_by_space[1])
-
-        # Initialize matrix[ROWS][COLS][4]
-        # The number 4 is number of directions for walls: NORTH, EAST, SOUTH, WEST respectively
-        mat_walls = [[[0 for _ in xrange(4)] for _ in xrange(cols)] for _ in xrange(rows)]
-
-        # Loops through matrix to assign the wall direction
-        for x in range(int(rows)):
-            for y in range(int(cols)):
-
-                # Read line
-                line = maze_file.readline()
-
-                # If line is only a new line, then read onto next line
-                if line == '\n':
-                    line = maze_file.readline()
-
-                # split line by space
-                line_by_space = line.split(' ')
-
-                # Assign wall values for board position (x,y)
-                mat_walls[x][y][0] = int(line_by_space[0])
-                mat_walls[x][y][1] = int(line_by_space[1])
-                mat_walls[x][y][2] = int(line_by_space[2])
-                mat_walls[x][y][3] = int(line_by_space[3].rstrip())
-
-        # return matrix, rows, cols
-        return mat_walls, rows, cols
-
     def _calculate_q_val(self, current_td_square, new_td_square, action_index, valid_flag):
         '''
         This function calculates the Q_value.
@@ -365,7 +333,7 @@ class RootWidgit(FloatLayout):
         # learning_rate, discount, and cost
         lr = 0.5
         d = 1
-        cost = 0.04
+        cost = 0.01
 
         # Increase penalty for bumping into wall
         if valid_flag is False:
@@ -399,7 +367,7 @@ class RootWidgit(FloatLayout):
         # learning_rate, discount, and cost
         lr = 0.5
         d = 1
-        cost = 0.04
+        cost = 0.01
 
         # Increase penalty for bumping into wall
         if valid_flag is False:
@@ -950,6 +918,12 @@ class RootWidgit(FloatLayout):
         :return: None
         '''
 
+        # Reset episodes
+        self.episodes = 0
+        self.epsilon = 1.0
+        self.progress_label.text = 'Episodes: {}\nEpsilon: {}'.format(self.episodes,
+                                                                      self.epsilon)
+
         # Unbind Buttons from .kv file
         self.learn_toggle_button.unbind(on_press=self._learn_toggle)
         self.reset_button.unbind(on_press=self._reset)
@@ -999,12 +973,16 @@ class RootWidgit(FloatLayout):
         for td_square in self.value_board.children:
             td_square.reset_eligibility_trace()
 
-        # Decay epsilon
-        if self.epsilon < 1:
-            self.epsilon += 0.025
+        # Increase epsilon
+        if self.epsilon < 1.0:
+            self.epsilon += 0.05
 
         # Increment episodes
         self.episodes += 1
+
+        # Display updates
+        self.progress_label.text = 'Episodes: {}\nEpsilon: {}'.format(self.episodes,
+                                                                      self.epsilon)
 
         # Save current state
         state = self.character.state
@@ -1040,9 +1018,6 @@ class RootWidgit(FloatLayout):
                 self.learn_q(None)
             elif self.character.learn_method is LearnMethod.Q_lambda:
                 self.learn_q_lambda(None)
-
-        print('Episodes -- {}'.format(self.episodes))
-        print('Epsilon -- {}'.format(self.epsilon))
 
     def _set_maze_one(self, dt):
         self.current_maze = self.maze1

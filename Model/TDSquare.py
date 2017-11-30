@@ -56,15 +56,16 @@ class TDSquare(Button):
         #                            str(round(self.direction_values[2], 2)),
         #                            str(round(self.direction_values[3], 2)))
 
-        max_val = max(self.direction_values)
-        max_index = self.direction_values.index(max_val)
+        if len(self.children) > 0:
+            if self.children[0].opacity == 0:
+                self.children[0].opacity = 1
 
-        if self.children[0].opacity == 0:
-            self.children[0].opacity = 1
+            max_val = max(self.direction_values)
+            max_index = self.direction_values.index(max_val)
 
-        self.children[0].source = self.background_images[max_index]
-        self.children[1].set_strength(max_val)
-        self.children[1].draw()
+            self.children[0].source = self.background_images[max_index]
+            self.children[1].set_strength(max_val)
+            self.children[1].draw()
 
     def set_reward(self, reward):
         '''

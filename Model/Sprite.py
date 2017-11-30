@@ -42,9 +42,6 @@ class Sprite(Image):
         self.speed = speed
         self.learn_method = learn_method
 
-        print(speed)
-        print(self.speed)
-
         # Determines which speed to set the character to
         if speed == Speed.NORMAL:
             self.set_speed_normal()
