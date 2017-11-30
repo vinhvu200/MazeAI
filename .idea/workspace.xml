@@ -21,8 +21,8 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="395">
-              <caret line="1012" column="57" lean-forward="true" selection-start-line="1012" selection-start-column="57" selection-end-line="1012" selection-end-column="57" />
+            <state relative-caret-position="474">
+              <caret line="973" column="21" lean-forward="true" selection-start-line="973" selection-start-column="21" selection-end-line="973" selection-end-column="21" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -33,8 +33,8 @@
       <file leaf-file-name="Sprite.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Model/Sprite.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="690">
-              <caret line="46" column="26" lean-forward="true" selection-start-line="46" selection-start-column="26" selection-end-line="46" selection-end-column="26" />
+            <state relative-caret-position="24">
+              <caret line="26" column="38" lean-forward="true" selection-start-line="26" selection-start-column="38" selection-end-line="26" selection-end-column="38" />
               <folding>
                 <element signature="e#0#36#0" expanded="true" />
               </folding>
@@ -73,10 +73,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>_learn_toggle</find>
-      <find>_end_animation</find>
-      <find>self.learn_flag</find>
-      <find>_reset_character_q_learn_lambda</find>
       <find>learn_q_learn</find>
       <find>learn_q_learn_lambda</find>
       <find>_update_value_board</find>
@@ -85,7 +81,6 @@
       <find>_on_keyboard_down</find>
       <find>_calculate_update</find>
       <find>_update_value_board_q_lambda</find>
-      <find>def _reset</find>
       <find>unbind</find>
       <find>_reset</find>
       <find>def call</find>
@@ -101,8 +96,13 @@
       <find>print</find>
       <find>learn_lambda_flag</find>
       <find>def _reset_cha</find>
-      <find>character_speed</find>
       <find>learn_flag</find>
+      <find>self.state</find>
+      <find>def _reset_ch</find>
+      <find>def _reset</find>
+      <find>character_speed</find>
+      <find>learn_method</find>
+      <find>self._setup_</find>
     </findStrings>
     <replaceStrings>
       <replace>_populate_maze_board</replace>
@@ -729,14 +729,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/util.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="630">
-          <caret line="42" column="39" lean-forward="false" selection-start-line="42" selection-start-column="39" selection-end-line="42" selection-end-column="39" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Maze/maze3.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -787,18 +779,26 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Model/Sprite.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="690">
-          <caret line="46" column="26" lean-forward="true" selection-start-line="46" selection-start-column="26" selection-end-line="46" selection-end-column="26" />
+        <state relative-caret-position="24">
+          <caret line="26" column="38" lean-forward="true" selection-start-line="26" selection-start-column="38" selection-end-line="26" selection-end-column="38" />
           <folding>
             <element signature="e#0#36#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/util.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="34" column="17" lean-forward="true" selection-start-line="34" selection-start-column="17" selection-end-line="34" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="395">
-          <caret line="1012" column="57" lean-forward="true" selection-start-line="1012" selection-start-column="57" selection-end-line="1012" selection-end-column="57" />
+        <state relative-caret-position="474">
+          <caret line="973" column="21" lean-forward="true" selection-start-line="973" selection-start-column="21" selection-end-line="973" selection-end-column="21" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>

@@ -4,11 +4,13 @@ from kivy.uix.image import Image
 from Model.Enum.Direction import Direction
 from Model.Enum.Speed import Speed
 from Model.Enum.State import State
+from Model.Enum.LearnMethod import LearnMethod
 
 
 class Sprite(Image):
 
-    def __init__(self, current_row, current_col, speed, state=State.MANUAL, **kwargs):
+    def __init__(self, current_row, current_col, speed=Speed.NORMAL, state=State.MANUAL,
+                 learn_method=LearnMethod.Q, **kwargs):
         super(Sprite, self).__init__(**kwargs)
 
         # Declare the image path for sprite standing/walking
@@ -35,6 +37,14 @@ class Sprite(Image):
         self.walk_duration = 1
         self.bump_wall_duration = 0.25
 
+        # Determine the states the character is in
+        self.state = state
+        self.speed = speed
+        self.learn_method = learn_method
+
+        print(speed)
+        print(self.speed)
+
         # Determines which speed to set the character to
         if speed == Speed.NORMAL:
             self.set_speed_normal()
@@ -42,9 +52,6 @@ class Sprite(Image):
             self.set_speed_fast()
         elif speed == Speed.HYPER:
             self.set_speed_hyper()
-
-        # Determine the state the character is in
-        self.state = state
 
         # Setting the source defaultint to standing
         self.source = self.stand_source

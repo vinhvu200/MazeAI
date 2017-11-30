@@ -29,10 +29,7 @@ class RootWidgit(FloatLayout):
     END_ROWS = []
     END_COLS = []
 
-    character_speed = Speed.NORMAL
-    learn_method = LearnMethod.Q
-    state = State.LEARNING
-
+    character = None
     td_children_flag = False
     mat_walls = [[[]]]
 
@@ -67,8 +64,10 @@ class RootWidgit(FloatLayout):
             self._keyboard_closed, self, 'text')
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
-        # Pass in the maze1.txt file to set up
-        self._setup_maze(self.maze2)
+        self.current_maze = self.maze1
+
+        # Pass in the maze .txt file to set up
+        self._setup_maze(self.current_maze)
 
     def callback_setup(self, dt):
         '''
@@ -512,9 +511,9 @@ class RootWidgit(FloatLayout):
 
         # Continue learning if character's state is LEARNING
         if self.character.state is State.LEARNING:
-            if self.learn_method is LearnMethod.Q:
+            if self.character.learn_method is LearnMethod.Q:
                 self.learn_q(None)
-            elif self.learn_method is LearnMethod.Q_lambda:
+            elif self.character.learn_method is LearnMethod.Q_lambda:
                 self.learn_q_lambda(None)
 
     def _get_child_index_maze_board(self, row, col):
@@ -690,9 +689,9 @@ class RootWidgit(FloatLayout):
         if self.learn_toggle_button.text == 'Learn':
 
             self.character.state = State.LEARNING
-            if self.learn_method is LearnMethod.Q:
+            if self.character.learn_method is LearnMethod.Q:
                 self.learn_q(None)
-            elif self.learn_method is LearnMethod.Q_lambda:
+            elif self.character.learn_method is LearnMethod.Q_lambda:
                 self.learn_q_lambda(None)
             self.learn_toggle_button.text = 'Manual'
 
@@ -958,15 +957,22 @@ class RootWidgit(FloatLayout):
         self.value_board.clear_widgets()
         self.maze_board.clear_widgets()
 
+        # Save character's current state
+        state = self.character.state
+        speed = self.character.speed
+        learn_method = self.character.learn_method
+
         # Remove character
         self.remove_widget(self.character)
 
-        # Set character up at initial location
+        # Recreate character with the saved states
         self.character = Sprite(current_row=self.INITIAL_ROW,
                                 current_col=self.INITIAL_COL,
-                                speed=self.character_speed)
+                                state=state, speed=speed,
+                                learn_method=learn_method)
 
-        self._setup_maze(self.maze1)
+        # Set up maze
+        self._setup_maze(self.current_maze)
 
     def _reset_character(self):
         '''
@@ -988,6 +994,8 @@ class RootWidgit(FloatLayout):
 
         # Save current state
         state = self.character.state
+        speed = self.character.speed
+        learn_method = self.character.learn_method
 
         # Remove character
         self.remove_widget(self.character)
@@ -1001,11 +1009,11 @@ class RootWidgit(FloatLayout):
             row = random.randint(0, self.ROWS - 1)
             col = random.randint(0, self.COLS - 1)
 
-        # Spawn new character at new location
         self.character = Sprite(current_row=row,
                                 current_col=col,
-                                speed=self.character_speed,
-                                state=state)
+                                speed=speed,
+                                state=state,
+                                learn_method=learn_method)
 
         # Set up callback and start continue learning
         self.callback_setup(None)
@@ -1014,9 +1022,9 @@ class RootWidgit(FloatLayout):
         if self.character.state is State.LEARNING:
 
             # Continue learning with the appropriate learning method
-            if self.learn_method is LearnMethod.Q:
+            if self.character.learn_method is LearnMethod.Q:
                 self.learn_q(None)
-            elif self.learn_method is LearnMethod.Q_lambda:
+            elif self.character.learn_method is LearnMethod.Q_lambda:
                 self.learn_q_lambda(None)
 
         print('Episodes -- {}'.format(self.episodes))
@@ -1056,10 +1064,9 @@ class RootWidgit(FloatLayout):
         # Assign rewards to the appropriate td_squares
         self._assign_rewards()
 
-        # Create main character
-        self.character = Sprite(current_row=self.INITIAL_ROW,
-                                current_col=self.INITIAL_COL,
-                                speed=self.character_speed)
+        if self.character is None:
+            self.character = Sprite(current_row=self.INITIAL_ROW,
+                                    current_col=self.INITIAL_COL)
 
         # Do the callback setup in 1 second, when the boards have finished
         Clock.schedule_once(self.callback_setup, 1)
@@ -1072,13 +1079,13 @@ class RootWidgit(FloatLayout):
         :return:
         '''
 
-        if self.learn_method is LearnMethod.Q:
+        if self.character.learn_method is LearnMethod.Q:
             self.learn_method_button.text = 'Method:\nQ-lambda'
-            self.learn_method = LearnMethod.Q_lambda
+            self.character.learn_method = LearnMethod.Q_lambda
 
-        elif self.learn_method is LearnMethod.Q_lambda:
+        elif self.character.learn_method is LearnMethod.Q_lambda:
             self.learn_method_button.text = 'Method:\nQ'
-            self.learn_method = LearnMethod.Q
+            self.character.learn_method = LearnMethod.Q
 
     def _toggle_speed(self, dt):
         '''
@@ -1088,20 +1095,20 @@ class RootWidgit(FloatLayout):
         :return:
         '''
 
-        if self.character_speed is Speed.NORMAL:
+        if self.character.speed is Speed.NORMAL:
             self.speed_button.text = 'Speed:\nFast'
             self.character.set_speed_fast()
-            self.character_speed = Speed.FAST
+            self.character.speed = Speed.FAST
 
-        elif self.character_speed is Speed.FAST:
+        elif self.character.speed is Speed.FAST:
             self.speed_button.text = 'Speed:\nHyper'
             self.character.set_speed_hyper()
-            self.character_speed = Speed.HYPER
+            self.character.speed = Speed.HYPER
 
-        elif self.character_speed is Speed.HYPER:
+        elif self.character.speed is Speed.HYPER:
             self.speed_button.text = 'Speed:\nNormal'
             self.character.set_speed_normal()
-            self.character_speed = Speed.NORMAL
+            self.character.speed = Speed.NORMAL
 
     def _update_value_board(self, valid_flag, current_row, current_col, action_index):
         '''
@@ -1128,9 +1135,11 @@ class RootWidgit(FloatLayout):
         # Get the best action index for that square
         _, best_action_index = self._determine_action(current_td_square)
 
-        if self.learn_method is LearnMethod.Q:
+        # Check Learning method
+        if self.character.learn_method is LearnMethod.Q:
             self._calculate_update_q(current_td_square, new_td_square, action_index, valid_flag)
-        elif self.learn_method is LearnMethod.Q_lambda:
+
+        elif self.character.learn_method is LearnMethod.Q_lambda:
             # Calculate the q_value (valid_flag determines whether
             # the AI hit the wall or not)
             q_val = self._calculate_q_val(current_td_square, new_td_square, action_index, valid_flag)
