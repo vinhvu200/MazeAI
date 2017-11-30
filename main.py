@@ -759,6 +759,9 @@ class RootWidgit(FloatLayout):
         self.character.pos = [x, y]
         self.add_widget(self.character)
 
+    def _parse_maze_txt_file(self, maze_file):
+        pass
+
     def _populate_maze_board(self):
         '''
         This function serves the purpose of populating the GridLayouts set up in
