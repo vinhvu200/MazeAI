@@ -20,21 +20,18 @@ from kivy.core.window import Window
 
 class RootWidgit(FloatLayout):
 
-    maze1 = 'maze1.txt'
-    maze2 = 'maze2.txt'
+    maze1 = 'Maze/maze1.txt'
+    maze2 = 'Maze/maze2.txt'
 
     ROWS = 0
     COLS = 0
     END_ROWS = []
     END_COLS = []
-    END_ROW = 4
-    END_COL = 2
 
     character_speed = Speed.NORMAL
     learn_method = LearnMethod.Q
 
     learn_flag = False
-    learn_lambda_flag = False
     td_children_flag = False
     mat_walls = [[[]]]
 
@@ -70,7 +67,7 @@ class RootWidgit(FloatLayout):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
         # Pass in the maze1.txt file to set up
-        self._setup_maze(self.maze1)
+        self._setup_maze(self.maze2)
 
     def callback_setup(self, dt):
         '''
@@ -701,7 +698,6 @@ class RootWidgit(FloatLayout):
         # Condition to stop AI from learning
         elif self.learn_toggle_button.text == 'Manual':
             self.learn_flag = False
-            # self.learn_lambda_flag = False
             self.learn_toggle_button.text = 'Learn'
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
