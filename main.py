@@ -58,6 +58,8 @@ class RootWidgit(FloatLayout):
         self.reset_button = self.ids.reset_button
         self.speed_button = self.ids.speed_button
         self.learn_method_button = self.ids.learn_method_button
+        self.maze_one_button = self.ids.maze_one_button
+        self.maze_two_button = self.ids.maze_two_button
 
         # Set up the keyboard and bind it
         self._keyboard = Window.request_keyboard(
@@ -89,6 +91,8 @@ class RootWidgit(FloatLayout):
         self.reset_button.bind(on_press=self._reset)
         self.speed_button.bind(on_press=self._toggle_speed)
         self.learn_method_button.bind(on_press=self._toggle_learn_method)
+        self.maze_one_button.bind(on_press=self._set_maze_one)
+        self.maze_two_button.bind(on_press=self._set_maze_two)
 
     def learn_q(self, dt):
         '''
@@ -688,17 +692,25 @@ class RootWidgit(FloatLayout):
         # Condition to get AI to start learning
         if self.learn_toggle_button.text == 'Learn':
 
+            # Change states
             self.character.state = State.LEARNING
+
+            # Determine which learning to use
             if self.character.learn_method is LearnMethod.Q:
                 self.learn_q(None)
             elif self.character.learn_method is LearnMethod.Q_lambda:
                 self.learn_q_lambda(None)
+
+            # Change button name
             self.learn_toggle_button.text = 'Manual'
 
         # Condition to stop AI from learning
         elif self.learn_toggle_button.text == 'Manual':
 
+            # Change states
             self.character.state = State.MANUAL
+
+            # Change button name
             self.learn_toggle_button.text = 'Learn'
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
@@ -943,6 +955,8 @@ class RootWidgit(FloatLayout):
         self.reset_button.unbind(on_press=self._reset)
         self.speed_button.unbind(on_press=self._toggle_speed)
         self.learn_method_button.unbind(on_press=self._toggle_learn_method)
+        self.maze_one_button.unbind(on_press=self._set_maze_one)
+        self.maze_two_button.unbind(on_press=self._set_maze_two)
 
         # Tells the callback_setup that the children widgets
         # have not been added yet (These child widgets are
@@ -1030,6 +1044,14 @@ class RootWidgit(FloatLayout):
         print('Episodes -- {}'.format(self.episodes))
         print('Epsilon -- {}'.format(self.epsilon))
 
+    def _set_maze_one(self, dt):
+        self.current_maze = self.maze1
+        self._reset(None)
+
+    def _set_maze_two(self, dt):
+        self.current_maze = self.maze2
+        self._reset(None)
+
     def _setup_maze(self, maze):
         '''
         This function sets up the maze according to the .txt file
@@ -1079,10 +1101,16 @@ class RootWidgit(FloatLayout):
         :return:
         '''
 
+        # Switch from Q to Q-lambda
         if self.character.learn_method is LearnMethod.Q:
             self.learn_method_button.text = 'Method:\nQ-lambda'
             self.character.learn_method = LearnMethod.Q_lambda
 
+            # Reset eligibility trace
+            for td_square in self.value_board.children:
+                td_square.reset_eligibility_trace()
+
+        # Switch from Q-lambda to Q
         elif self.character.learn_method is LearnMethod.Q_lambda:
             self.learn_method_button.text = 'Method:\nQ'
             self.character.learn_method = LearnMethod.Q

@@ -25,10 +25,14 @@
             size_hint_x: .1
             canvas:
                 Color:
-                    rgba: 1, 0, 0, 0.25
+                    rgba: 1, 1, 1, 0.9
                 Rectangle:
                     pos: self.pos
                     size: self.size
+            Label:
+                font_size: '14sp'
+                color: 1, 0, 0, 1
+                text: 'Episodes: 0\nEpsilon: 0'
             Button:
                 id: learn_toggle_button
                 text: 'Learn'
@@ -44,10 +48,8 @@
                 text: 'Method:\nQ'
                 halign: 'center'
             Button:
-                id: map_one_button
+                id: maze_one_button
                 text: 'Map One'
             Button:
-                id: map_two_button
+                id: maze_two_button
                 text: 'Map Two'
-            Label:
-            Label:
