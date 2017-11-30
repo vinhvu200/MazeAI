@@ -25,8 +25,6 @@ class RootWidgit(FloatLayout):
 
     ROWS = 0
     COLS = 0
-    # INITIAL_ROW = 0
-    # INITIAL_COL = 2
     END_ROWS = []
     END_COLS = []
     END_ROW = 4
@@ -72,7 +70,7 @@ class RootWidgit(FloatLayout):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
         # Pass in the maze1.txt file to set up
-        self._setup_maze(self.maze2)
+        self._setup_maze(self.maze1)
 
     def callback_setup(self, dt):
         '''
@@ -107,14 +105,9 @@ class RootWidgit(FloatLayout):
         # Termination state: When character made it to the end.
         # Randomly place character onto new square, increment episodes
         # and increment epsilon
-
         if self._check_termination_square(self.character.current_row,
                                           self.character.current_col) is True:
             self._reset_character()
-
-        # if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
-        #
-        #     self._reset_character()
 
         # Otherwise, have it learn the maze
         else:
@@ -164,9 +157,6 @@ class RootWidgit(FloatLayout):
         if self._check_termination_square(self.character.current_row,
                                           self.character.current_col) is True:
             self._reset_character()
-
-        # if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
-        #     self._reset_character()
 
         else:
             # Get child_index to obtain the td_square from the value_board
@@ -237,6 +227,17 @@ class RootWidgit(FloatLayout):
 
             # Draw out the indicator
             td_indicator.draw()
+
+    def _assign_rewards(self):
+
+        for x in range(len(self.END_REWARDS)):
+            child_index = self._get_child_index_value_board(self.END_ROWS[x], self.END_COLS[x])
+            self.value_board.children[child_index].reward = self.END_REWARDS[x]
+
+            # Change value direction of value of initial square
+            # to negative so that it can't move up
+            child_index = self._get_child_index_value_board(self.INITIAL_ROW, self.INITIAL_COL)
+            self.value_board.children[child_index].direction_values[0] = -100
 
     def _animate(self, max_index):
         '''
@@ -875,16 +876,6 @@ class RootWidgit(FloatLayout):
                 # Add td_square to our value_board gridlayout
                 self.value_board.add_widget(td_square)
 
-        # Find the end square and set its reward to 1
-        child_index = self._get_child_index_value_board(self.END_ROW, self.END_COL)
-        self.value_board.children[child_index].reward = 1
-
-        # Change value direction of value of initial square
-        # to negative so that it can't move up
-        child_index = self._get_child_index_value_board(self.INITIAL_ROW, self.INITIAL_COL)
-        self.value_board.children[child_index].direction_values[0] = -100
-
-
     def _populate_walls(self):
         '''
         This function serves the purpose of populating walls and the
@@ -1005,10 +996,6 @@ class RootWidgit(FloatLayout):
         col = random.randint(0, self.COLS - 1)
 
         # Generate new placement for character
-        # while row == self.END_ROW and col == self.END_COL:
-        #     row = random.randint(0, self.ROWS - 1)
-        #     col = random.randint(0, self.COLS - 1)
-
         while self._check_termination_square(row, col) is True:
             row = random.randint(0, self.ROWS - 1)
             col = random.randint(0, self.COLS - 1)
@@ -1041,10 +1028,6 @@ class RootWidgit(FloatLayout):
         :return:
         '''
 
-        # Generate the 3D matrix containing the walls along with ROWS
-        # and COLS of the board
-        #self.mat_walls, self.ROWS, self.COLS = self._build_matrix_walls(maze)
-
         # Parse out the maze .txt file to get relevant information
         self.mat_walls, self.ROWS, self.COLS, self.INITIAL_ROW, self.INITIAL_COL, \
             self.END_ROWS, self.END_COLS, self.END_REWARDS = util.parse_maze_txt_file(maze)
@@ -1066,6 +1049,9 @@ class RootWidgit(FloatLayout):
 
         # Fill the walls in for maze_board
         self._populate_walls()
+
+        # Assign rewards to the appropriate td_squares
+        self._assign_rewards()
 
         # Create main character
         self.character = Sprite(current_row=self.INITIAL_ROW,
@@ -1152,15 +1138,7 @@ class RootWidgit(FloatLayout):
             # Update values in accordance to Q-lambda
             self._calculate_update_lambda(q_val, action_index, action_index)
 
-        # Reset character if they have reached the end
-        # if self.character.current_row == self.END_ROW and \
-        #    self.character.current_col == self.END_COL:
-        #
-        #         self._reset_character()
-
-        print('inside update value board')
-        print(self.character.current_row)
-        print(self.character.current_col)
+        # If character is in a terminating square, then reset its position
         if self._check_termination_square(self.character.current_row,
                                           self.character.current_col) is True:
 
