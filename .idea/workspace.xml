@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="813541fc-2551-4d15-a628-07c281ec43c3" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.py" afterPath="$PROJECT_DIR$/main.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -20,8 +21,8 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="202">
-              <caret line="932" column="47" lean-forward="true" selection-start-line="932" selection-start-column="47" selection-end-line="932" selection-end-column="47" />
+            <state relative-caret-position="214">
+              <caret line="62" column="49" lean-forward="true" selection-start-line="62" selection-start-column="49" selection-end-line="62" selection-end-column="49" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -39,6 +40,16 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="TDSquare.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Model/TDSquare.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="265">
+              <caret line="65" column="46" lean-forward="true" selection-start-line="65" selection-start-column="46" selection-end-line="65" selection-end-column="46" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -50,8 +61,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>bump_wall_speed</find>
-      <find>update</find>
       <find>_add_arrow</find>
       <find>eligibility_value</find>
       <find>direction_value</find>
@@ -60,7 +69,6 @@
       <find>_update_value_b</find>
       <find>_update_value_bo</find>
       <find>_on_ke</find>
-      <find>_reset</find>
       <find>learn</find>
       <find>_learn</find>
       <find>_start</find>
@@ -80,6 +88,9 @@
       <find>_on_keyboard_down</find>
       <find>_calculate_update</find>
       <find>_update_value_board_q_lambda</find>
+      <find>def _reset</find>
+      <find>unbind</find>
+      <find>_reset</find>
     </findStrings>
     <replaceStrings>
       <replace>_populate_maze_board</replace>
@@ -115,13 +126,13 @@
         <option value="$PROJECT_DIR$/Model/Path.py" />
         <option value="$PROJECT_DIR$/maze2.txt" />
         <option value="$PROJECT_DIR$/Model/TDIndicator.py" />
-        <option value="$PROJECT_DIR$/Model/TDSquare.py" />
         <option value="$PROJECT_DIR$/Model/Speed.py" />
         <option value="$PROJECT_DIR$/Model/Sprite.py" />
         <option value="$PROJECT_DIR$/Model/Enum/Direction.py" />
         <option value="$PROJECT_DIR$/Model/Enum/Speed.py" />
         <option value="$PROJECT_DIR$/Model/Enum/LearnMethod.py" />
         <option value="$PROJECT_DIR$/maze.kv" />
+        <option value="$PROJECT_DIR$/Model/TDSquare.py" />
         <option value="$PROJECT_DIR$/main.py" />
       </list>
     </option>
@@ -690,24 +701,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Model/TDIndicator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1365">
-          <caret line="93" column="45" lean-forward="false" selection-start-line="93" selection-start-column="45" selection-end-line="93" selection-end-column="45" />
-          <folding>
-            <element signature="e#0#34#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Model/TDSquare.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="383">
-          <caret line="32" column="45" lean-forward="true" selection-start-line="32" selection-start-column="45" selection-end-line="32" selection-end-column="45" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Model/Sprite.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="281">
@@ -748,10 +741,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Model/TDIndicator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="385">
+          <caret line="93" column="45" lean-forward="false" selection-start-line="93" selection-start-column="45" selection-end-line="93" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Model/TDSquare.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="265">
+          <caret line="65" column="46" lean-forward="true" selection-start-line="65" selection-start-column="46" selection-end-line="65" selection-end-column="46" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="202">
-          <caret line="932" column="47" lean-forward="true" selection-start-line="932" selection-start-column="47" selection-end-line="932" selection-end-column="47" />
+        <state relative-caret-position="214">
+          <caret line="62" column="49" lean-forward="true" selection-start-line="62" selection-start-column="49" selection-end-line="62" selection-end-column="49" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>

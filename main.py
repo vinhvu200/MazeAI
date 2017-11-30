@@ -63,12 +63,6 @@ class RootWidgit(FloatLayout):
         self.speed_button = self.ids.speed_button
         self.learn_method_button = self.ids.learn_method_button
 
-        # Bind Buttons from .kv file
-        self.learn_toggle_button.bind(on_press=self._learn_toggle)
-        self.reset_button.bind(on_press=self._reset)
-        self.speed_button.bind(on_press=self._toggle_speed)
-        self.learn_method_button.bind(on_press=self._toggle_learn_method)
-
         # Set up the keyboard and bind it
         self._keyboard = Window.request_keyboard(
             self._keyboard_closed, self, 'text')
@@ -90,11 +84,18 @@ class RootWidgit(FloatLayout):
         :param dt:
         :return:
         '''
+
         self._get_walk_length()
         self._place_character()
         if self.td_children_flag is False:
             self._add_TDSquare_children()
         self.td_children_flag = True
+
+        # Bind Buttons from .kv file
+        self.learn_toggle_button.bind(on_press=self._learn_toggle)
+        self.reset_button.bind(on_press=self._reset)
+        self.speed_button.bind(on_press=self._toggle_speed)
+        self.learn_method_button.bind(on_press=self._toggle_learn_method)
 
     def learn_q(self, dt):
         '''
@@ -922,6 +923,12 @@ class RootWidgit(FloatLayout):
         :param dt:
         :return: None
         '''
+
+        # Unbind Buttons from .kv file
+        self.learn_toggle_button.unbind(on_press=self._learn_toggle)
+        self.reset_button.unbind(on_press=self._reset)
+        self.speed_button.unbind(on_press=self._toggle_speed)
+        self.learn_method_button.unbind(on_press=self._toggle_learn_method)
 
         # Tells the callback_setup that the children widgets
         # have not been added yet (These child widgets are
