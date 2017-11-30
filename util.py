@@ -41,7 +41,6 @@ def get_end_points(maze_file):
     while end_points != 0:
         line = maze_file.readline()
         line_by_space = line.split(' ')
-        print(line)
         end_rows.append(int(line_by_space[0]))
         end_cols.append(int(line_by_space[1]))
         end_rewards.append(float(line_by_space[2].rstrip()))

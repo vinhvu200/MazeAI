@@ -1,5 +1,5 @@
 import random
-
+import util
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.config import Config
@@ -21,11 +21,14 @@ from kivy.core.window import Window
 class RootWidgit(FloatLayout):
 
     maze1 = 'maze1.txt'
+    maze2 = 'maze2.txt'
 
     ROWS = 0
     COLS = 0
-    INITIAL_ROW = 0
-    INITIAL_COL = 2
+    # INITIAL_ROW = 0
+    # INITIAL_COL = 2
+    END_ROWS = []
+    END_COLS = []
     END_ROW = 4
     END_COL = 2
 
@@ -68,13 +71,8 @@ class RootWidgit(FloatLayout):
             self._keyboard_closed, self, 'text')
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
-        # Create main character
-        self.character = Sprite(current_row=self.INITIAL_ROW,
-                                current_col=self.INITIAL_COL,
-                                speed=self.character_speed)
-
         # Pass in the maze1.txt file to set up
-        self._setup_maze(self.maze1)
+        self._setup_maze(self.maze2)
 
     def callback_setup(self, dt):
         '''
@@ -109,9 +107,14 @@ class RootWidgit(FloatLayout):
         # Termination state: When character made it to the end.
         # Randomly place character onto new square, increment episodes
         # and increment epsilon
-        if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
 
+        if self._check_termination_square(self.character.current_row,
+                                          self.character.current_col) is True:
             self._reset_character()
+
+        # if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
+        #
+        #     self._reset_character()
 
         # Otherwise, have it learn the maze
         else:
@@ -158,8 +161,12 @@ class RootWidgit(FloatLayout):
         # Termination state: When character made it to the end.
         # Randomly place character onto new square, increment episodes
         # and increment epsilon
-        if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
+        if self._check_termination_square(self.character.current_row,
+                                          self.character.current_col) is True:
             self._reset_character()
+
+        # if self.character.current_row == self.END_ROW and self.character.current_col == self.END_COL:
+        #     self._reset_character()
 
         else:
             # Get child_index to obtain the td_square from the value_board
@@ -445,6 +452,22 @@ class RootWidgit(FloatLayout):
 
                 # Update td_square
                 td_square.update()
+
+    def _check_termination_square(self, row, col):
+        '''
+        Check the row and column passed in to see if it lands on
+        a terminating square
+        :param row: int
+        :param col: int
+        :return:
+        '''
+
+        for x in xrange(len(self.END_ROWS)):
+
+            if row == self.END_ROWS[x] and col == self.END_COLS[x]:
+                    return True
+
+        return False
 
     def _determine_action(self, current_td_square):
         '''
@@ -982,7 +1005,11 @@ class RootWidgit(FloatLayout):
         col = random.randint(0, self.COLS - 1)
 
         # Generate new placement for character
-        while row == self.END_ROW and col == self.END_COL:
+        # while row == self.END_ROW and col == self.END_COL:
+        #     row = random.randint(0, self.ROWS - 1)
+        #     col = random.randint(0, self.COLS - 1)
+
+        while self._check_termination_square(row, col) is True:
             row = random.randint(0, self.ROWS - 1)
             col = random.randint(0, self.COLS - 1)
 
@@ -1016,7 +1043,11 @@ class RootWidgit(FloatLayout):
 
         # Generate the 3D matrix containing the walls along with ROWS
         # and COLS of the board
-        self.mat_walls, self.ROWS, self.COLS = self._build_matrix_walls(maze)
+        #self.mat_walls, self.ROWS, self.COLS = self._build_matrix_walls(maze)
+
+        # Parse out the maze .txt file to get relevant information
+        self.mat_walls, self.ROWS, self.COLS, self.INITIAL_ROW, self.INITIAL_COL, \
+            self.END_ROWS, self.END_COLS, self.END_REWARDS = util.parse_maze_txt_file(maze)
 
         # Readjust rows and columns to fit walls in between for the board rows
         self.MAZE_BOARD_ROWS = self.ROWS * 2 + 1
@@ -1036,6 +1067,12 @@ class RootWidgit(FloatLayout):
         # Fill the walls in for maze_board
         self._populate_walls()
 
+        # Create main character
+        self.character = Sprite(current_row=self.INITIAL_ROW,
+                                current_col=self.INITIAL_COL,
+                                speed=self.character_speed)
+
+        # Do the callback setup in 1 second, when the boards have finished
         Clock.schedule_once(self.callback_setup, 1)
 
     def _toggle_learn_method(self, dt):
@@ -1116,10 +1153,18 @@ class RootWidgit(FloatLayout):
             self._calculate_update_lambda(q_val, action_index, action_index)
 
         # Reset character if they have reached the end
-        if self.character.current_row == self.END_ROW and \
-           self.character.current_col == self.END_COL:
+        # if self.character.current_row == self.END_ROW and \
+        #    self.character.current_col == self.END_COL:
+        #
+        #         self._reset_character()
 
-                self._reset_character()
+        print('inside update value board')
+        print(self.character.current_row)
+        print(self.character.current_col)
+        if self._check_termination_square(self.character.current_row,
+                                          self.character.current_col) is True:
+
+            self._reset_character()
 
     def _valid_move(self, current_row, current_col, direction):
         '''
