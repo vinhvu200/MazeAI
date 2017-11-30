@@ -8,6 +8,7 @@ from kivy.uix.image import Image
 from Model.Enum.Direction import Direction
 from Model.Enum.Speed import Speed
 from Model.Enum.LearnMethod import LearnMethod
+from Model.Enum.State import State
 from Model.Path import Path
 from Model.Sprite import Sprite
 from Model.TDIndicator import TDIndicator
@@ -30,8 +31,8 @@ class RootWidgit(FloatLayout):
 
     character_speed = Speed.NORMAL
     learn_method = LearnMethod.Q
+    state = State.LEARNING
 
-    learn_flag = False
     td_children_flag = False
     mat_walls = [[[]]]
 
@@ -509,8 +510,8 @@ class RootWidgit(FloatLayout):
         # Bind keyboard again after animation is done
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
-        if self.learn_flag is True:
-
+        # Continue learning if character's state is LEARNING
+        if self.character.state is State.LEARNING:
             if self.learn_method is LearnMethod.Q:
                 self.learn_q(None)
             elif self.learn_method is LearnMethod.Q_lambda:
@@ -687,8 +688,8 @@ class RootWidgit(FloatLayout):
 
         # Condition to get AI to start learning
         if self.learn_toggle_button.text == 'Learn':
-            self.learn_flag = True
 
+            self.character.state = State.LEARNING
             if self.learn_method is LearnMethod.Q:
                 self.learn_q(None)
             elif self.learn_method is LearnMethod.Q_lambda:
@@ -697,7 +698,8 @@ class RootWidgit(FloatLayout):
 
         # Condition to stop AI from learning
         elif self.learn_toggle_button.text == 'Manual':
-            self.learn_flag = False
+
+            self.character.state = State.MANUAL
             self.learn_toggle_button.text = 'Learn'
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
@@ -711,7 +713,7 @@ class RootWidgit(FloatLayout):
         curr_col = self.character.current_col
 
         # If AI is learning, make sure it won't be interrupted
-        if self.learn_flag is True:
+        if self.character.state is State.LEARNING:
             return True
 
         # handles keyboard action and receive variables to update keyboard
@@ -949,7 +951,7 @@ class RootWidgit(FloatLayout):
         self.td_children_flag = False
 
         # Stop character movement
-        self.learn_flag = False
+        self.character.state = State.MANUAL
         self.learn_toggle_button.text = 'Learn'
 
         # Clear the GridLayout of its childrens
@@ -984,6 +986,9 @@ class RootWidgit(FloatLayout):
         # Increment episodes
         self.episodes += 1
 
+        # Save current state
+        state = self.character.state
+
         # Remove character
         self.remove_widget(self.character)
 
@@ -999,13 +1004,15 @@ class RootWidgit(FloatLayout):
         # Spawn new character at new location
         self.character = Sprite(current_row=row,
                                 current_col=col,
-                                speed=self.character_speed)
+                                speed=self.character_speed,
+                                state=state)
 
         # Set up callback and start continue learning
         self.callback_setup(None)
 
-        # If the AI was learning, let it continue learning
-        if self.learn_flag is True:
+        # If the AI is learning, let it continue learning
+        if self.character.state is State.LEARNING:
+
             # Continue learning with the appropriate learning method
             if self.learn_method is LearnMethod.Q:
                 self.learn_q(None)

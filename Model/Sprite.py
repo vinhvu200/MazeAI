@@ -3,11 +3,12 @@ from kivy.uix.image import Image
 
 from Model.Enum.Direction import Direction
 from Model.Enum.Speed import Speed
+from Model.Enum.State import State
 
 
 class Sprite(Image):
 
-    def __init__(self, current_row, current_col, speed, **kwargs):
+    def __init__(self, current_row, current_col, speed, state=State.MANUAL, **kwargs):
         super(Sprite, self).__init__(**kwargs)
 
         # Declare the image path for sprite standing/walking
@@ -41,6 +42,9 @@ class Sprite(Image):
             self.set_speed_fast()
         elif speed == Speed.HYPER:
             self.set_speed_hyper()
+
+        # Determine the state the character is in
+        self.state = state
 
         # Setting the source defaultint to standing
         self.source = self.stand_source
