@@ -204,7 +204,7 @@ class RootWidgit(FloatLayout):
             current_td_square.eligibility_trace[action_index] += 1
 
             # Update values in accordance to Q-lambda
-            self._calculate_update_lambda(q_val, action_index, best_action_index)
+            self._calculate_update_q_lambda(q_val, action_index, best_action_index)
 
     def _add_TDSquare_children(self):
         '''
@@ -244,8 +244,10 @@ class RootWidgit(FloatLayout):
 
             if self.END_REWARDS[x] > 0:
                 td_square.text = '+{}'.format(self.END_REWARDS[x])
+                td_square.background_color = [0, 1, 0, .75]
             else:
                 td_square.text = '{}'.format(self.END_REWARDS[x])
+                td_square.background_color = [1, 0, 0, .75]
 
     def _assign_rewards(self):
 
@@ -332,8 +334,8 @@ class RootWidgit(FloatLayout):
 
         # learning_rate, discount, and cost
         lr = 0.5
-        d = 1
-        cost = 0.01
+        d = 1.0
+        cost = 0.04
 
         # Increase penalty for bumping into wall
         if valid_flag is False:
@@ -366,7 +368,7 @@ class RootWidgit(FloatLayout):
 
         # learning_rate, discount, and cost
         lr = 0.5
-        d = 1
+        d = 1.0
         cost = 0.01
 
         # Increase penalty for bumping into wall
@@ -388,7 +390,7 @@ class RootWidgit(FloatLayout):
         # Update the value_board text to see what is happening
         current_td_square.update()
 
-    def _calculate_update_lambda(self, q_val, action_index, best_index):
+    def _calculate_update_q_lambda(self, q_val, action_index, best_index):
         '''
         This function upates all the td_square in the value_board following
         Q-lambda learning.
@@ -451,11 +453,11 @@ class RootWidgit(FloatLayout):
         # Generate random number to determine epsilon greedy
         rand_num = random.uniform(0, 1)
 
-        # Case where we take random move
+        # Case where we take "best" move
         if rand_num < self.epsilon:
             max_val = max(current_td_square.direction_values)
             action_index = current_td_square.direction_values.index(max_val)
-        # Case where we take "best" move
+        # Case where we take random move
         else:
             action_index = random.randint(0, 3)
 
@@ -920,9 +922,13 @@ class RootWidgit(FloatLayout):
 
         # Reset episodes
         self.episodes = 0
-        self.epsilon = 1.0
-        self.progress_label.text = 'Episodes: {}\nEpsilon: {}'.format(self.episodes,
-                                                                      self.epsilon)
+        self.progress_label.text = 'Episodes: {}'.format(self.episodes)
+
+        # Reset epsilon
+        if self.current_maze is self.maze1:
+            self.epsilon = 1.0
+        else:
+            self.epsilon = 0.1
 
         # Unbind Buttons from .kv file
         self.learn_toggle_button.unbind(on_press=self._learn_toggle)
@@ -973,16 +979,17 @@ class RootWidgit(FloatLayout):
         for td_square in self.value_board.children:
             td_square.reset_eligibility_trace()
 
-        # Increase epsilon
-        if self.epsilon < 1.0:
-            self.epsilon += 0.05
+        # Handle epsilon for separate mazes
+        if self.current_maze is self.maze2:
+            # Increase epsilon
+            if self.epsilon < 1.0:
+                self.epsilon += 0.025
 
         # Increment episodes
         self.episodes += 1
 
         # Display updates
-        self.progress_label.text = 'Episodes: {}\nEpsilon: {}'.format(self.episodes,
-                                                                      self.epsilon)
+        self.progress_label.text = 'Episodes: {}\nEpsilon: {}'.format(self.episodes, self.epsilon)
 
         # Save current state
         state = self.character.state
@@ -992,14 +999,21 @@ class RootWidgit(FloatLayout):
         # Remove character
         self.remove_widget(self.character)
 
-        # Generate new placement for character
-        row = random.randint(0, self.ROWS - 1)
-        col = random.randint(0, self.COLS - 1)
+        # if self.current_maze is self.maze2:
+        #     row = self.INITIAL_ROW
+        #     col = self.INITIAL_COL
+        # else:
+        #     # Generate new placement for character
+        #     row = random.randint(0, self.ROWS - 1)
+        #     col = random.randint(0, self.COLS - 1)
+        #
+        #     # Generate new placement for character
+        #     while self._check_termination_square(row, col) is True:
+        #         row = random.randint(0, self.ROWS - 1)
+        #         col = random.randint(0, self.COLS - 1)
 
-        # Generate new placement for character
-        while self._check_termination_square(row, col) is True:
-            row = random.randint(0, self.ROWS - 1)
-            col = random.randint(0, self.COLS - 1)
+        row = self.INITIAL_ROW
+        col = self.INITIAL_COL
 
         self.character = Sprite(current_row=row,
                                 current_col=col,
@@ -1082,8 +1096,8 @@ class RootWidgit(FloatLayout):
             self.character.learn_method = LearnMethod.Q_lambda
 
             # Reset eligibility trace
-            for td_square in self.value_board.children:
-                td_square.reset_eligibility_trace()
+            # for td_square in self.value_board.children:
+            #     td_square.reset_eligibility_trace()
 
         # Switch from Q-lambda to Q
         elif self.character.learn_method is LearnMethod.Q_lambda:
@@ -1151,7 +1165,7 @@ class RootWidgit(FloatLayout):
             current_td_square.eligibility_trace[action_index] += 1
 
             # Update values in accordance to Q-lambda
-            self._calculate_update_lambda(q_val, action_index, action_index)
+            self._calculate_update_q_lambda(q_val, action_index, action_index)
 
         # If character is in a terminating square, then reset its position
         if self._check_termination_square(self.character.current_row,

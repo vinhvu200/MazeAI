@@ -48,6 +48,7 @@ class TDSquare(Button):
         and direction values
         :return: None
         '''
+        # self.disabled_color = [1, 0, 0, 1]
         # self.text = 'N: {}\n' \
         #             'E: {}\n' \
         #             'S: {}\n' \
