@@ -41,9 +41,9 @@ class RootWidgit(FloatLayout):
 
     # RL parameters
     episodes = 0
-    epsilon = 1.0
+    epsilon = 0.1
     discount = 0.9
-    _lambda = 0.9
+    _lambda = 0.3
     learning_rate = 0.5
 
     def __init__(self, **kwargs):
@@ -333,8 +333,6 @@ class RootWidgit(FloatLayout):
         '''
 
         # learning_rate, discount, and cost
-        lr = 0.5
-        d = 1.0
         cost = 0.04
 
         # Increase penalty for bumping into wall
@@ -351,7 +349,7 @@ class RootWidgit(FloatLayout):
         new_max_val = max(new_td_square.direction_values)
 
         # Equation
-        q_val = lr * (reward + d*new_max_val - current_val - cost)
+        q_val = self.learning_rate * (reward + self.discount*new_max_val - current_val - cost)
 
         return q_val
 
@@ -367,9 +365,7 @@ class RootWidgit(FloatLayout):
         '''
 
         # learning_rate, discount, and cost
-        lr = 0.5
-        d = 1.0
-        cost = 0.01
+        cost = 0.04
 
         # Increase penalty for bumping into wall
         if valid_flag is False:
@@ -385,7 +381,8 @@ class RootWidgit(FloatLayout):
         new_max_val = max(new_td_square.direction_values)
 
         # Q-learning equation
-        current_td_square.direction_values[index] += lr * (reward + d*new_max_val - current_val - cost)
+        #current_td_square.direction_values[index] += lr * (reward + d*new_max_val - current_val - cost)
+        current_td_square.direction_values[index] += self.learning_rate * (reward + self.discount * new_max_val - current_val - cost)
 
         # Update the value_board text to see what is happening
         current_td_square.update()
@@ -453,13 +450,13 @@ class RootWidgit(FloatLayout):
         # Generate random number to determine epsilon greedy
         rand_num = random.uniform(0, 1)
 
-        # Case where we take "best" move
+        # Case where we take random move
         if rand_num < self.epsilon:
+            action_index = random.randint(0, 3)
+        # Case where we take "best" move
+        else:
             max_val = max(current_td_square.direction_values)
             action_index = current_td_square.direction_values.index(max_val)
-        # Case where we take random move
-        else:
-            action_index = random.randint(0, 3)
 
         # Max_index holds the "best" move
         max_val = max(current_td_square.direction_values)
@@ -922,13 +919,7 @@ class RootWidgit(FloatLayout):
 
         # Reset episodes
         self.episodes = 0
-        self.progress_label.text = 'Episodes: {}'.format(self.episodes)
-
-        # Reset epsilon
-        if self.current_maze is self.maze1:
-            self.epsilon = 1.0
-        else:
-            self.epsilon = 0.1
+        self.progress_label.text = 'Episodes: {}\nEpsilon: {}'.format(self.episodes, self.epsilon)
 
         # Unbind Buttons from .kv file
         self.learn_toggle_button.unbind(on_press=self._learn_toggle)
@@ -978,12 +969,6 @@ class RootWidgit(FloatLayout):
         # Reset eligibility trace
         for td_square in self.value_board.children:
             td_square.reset_eligibility_trace()
-
-        # Handle epsilon for separate mazes
-        if self.current_maze is self.maze2:
-            # Increase epsilon
-            if self.epsilon < 1.0:
-                self.epsilon += 0.025
 
         # Increment episodes
         self.episodes += 1
