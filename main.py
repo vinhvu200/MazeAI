@@ -44,7 +44,7 @@ class RootWidgit(FloatLayout):
     epsilon = 0.1
     discount = 0.9
     _lambda = 0.3
-    learning_rate = 0.5
+    learning_rate = 0.6
 
     def __init__(self, **kwargs):
         super(RootWidgit, self).__init__(**kwargs)
@@ -438,6 +438,12 @@ class RootWidgit(FloatLayout):
 
         return False
 
+    def _color_trace(self):
+
+        for x in range(self.ROWS):
+            for y in range(self.COLS):
+                self._set_color(x, y)
+
     def _determine_action(self, current_td_square):
         '''
         This function uses epsilon greedy to choose its next move.
@@ -487,6 +493,19 @@ class RootWidgit(FloatLayout):
             elif self.character.learn_method is LearnMethod.Q_lambda:
                 self.learn_q_lambda(None)
 
+    def _get_best_direction_index(self, row, col):
+        '''
+        This function gets the best direction_index and returns it.
+        Best direction_index is the one with highest Q-value
+        :param row:
+        :param col:
+        :return:
+        '''
+
+        td_square = self._get_td_square(row, col)
+        max_val = max(td_square.direction_values)
+        return td_square.direction_values.index(max_val)
+
     def _get_child_index_maze_board(self, row, col):
         '''
         - This function serves the purpose of getting the child_index for
@@ -533,6 +552,18 @@ class RootWidgit(FloatLayout):
 
         # return proper index
         return child_index
+
+    def _get_td_square(self, row, col):
+        '''
+        Given a row and column, this will return the correct
+        td_square from value board to be used
+        :param row: int
+        :param col: int
+        :return: TDSquare
+        '''
+
+        child_index = self._get_child_index_value_board(row, col)
+        return self.value_board.children[child_index]
 
     def _get_walk_length(self):
         '''
@@ -716,6 +747,33 @@ class RootWidgit(FloatLayout):
         # the system.
         return True
 
+    def _opposite_directions(self, direction_1, direction_2):
+        '''
+        Function takes two direction index and tells you if
+        they are opposite of each other
+        :param direction_1: int
+        :param direction_2: int
+        :return: boolean
+        '''
+
+        if direction_1 is Direction.NORTH.value and \
+           direction_2 is Direction.SOUTH.value:
+            return True
+
+        if direction_1 is Direction.EAST.value and \
+           direction_2 is Direction.WEST.value:
+            return True
+
+        if direction_1 is Direction.SOUTH.value and \
+           direction_2 is Direction.NORTH.value:
+            return True
+
+        if direction_1 is Direction.WEST.value and \
+           direction_2 is Direction.EAST.value:
+            return True
+
+        return False
+
     def _place_character(self):
         '''
         This callback serves the purpose of calculating the character's position
@@ -758,9 +816,6 @@ class RootWidgit(FloatLayout):
         self.character.size = [sprite_size_x, sprite_size_y]
         self.character.pos = [x, y]
         self.add_widget(self.character)
-
-    def _parse_maze_txt_file(self, maze_file):
-        pass
 
     def _populate_maze_board(self):
         '''
@@ -1017,6 +1072,37 @@ class RootWidgit(FloatLayout):
                 self.learn_q(None)
             elif self.character.learn_method is LearnMethod.Q_lambda:
                 self.learn_q_lambda(None)
+
+    def _set_color(self, originial_row, original_col):
+
+        row = originial_row
+        col = original_col
+
+        # child_index = self._get_child_index_value_board(row, col)
+        # current_td_square = self.value_board.children[child_index]
+        # max_val = max(current_td_square.direction_values)
+        # current_direction_index = current_td_square.direction_values.index(max_val)
+        current_direction_index = self._get_best_direction_index(row, col)
+
+        termination_flag = self._check_termination_square(row, col)
+        valid_move_flag = self._valid_move(row, col, current_direction_index)
+        last_direction_index = current_direction_index
+
+        while valid_move_flag is True and termination_flag is False:
+
+            row, col = self._change_position(row, col, current_direction_index)
+
+            current_direction_index = self._get_best_direction_index(row, col)
+
+            termination_flag = self._check_termination_square(row, col)
+            valid_move_flag = self._valid_move(row, col, current_direction_index)
+
+            if self._opposite_directions(current_direction_index, last_direction_index):
+                break
+
+        if termination_flag is True:
+            # fill color
+            pass
 
     def _set_maze_one(self, dt):
         self.current_maze = self.maze1

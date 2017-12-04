@@ -36,28 +36,28 @@ class TDIndicator(Widget):
 
         # Check the highest value decision of that square
         # in order to determine the strength of the indicator
+        # if highest_val < 0.1:
+        #     self.strength = 0
+        # elif highest_val < 0.2:
+        #     self.strength = 0.1
         if highest_val < 0.1:
             self.strength = 0
-        elif highest_val < 0.2:
-            self.strength = 0.1
-        elif highest_val < 0.3:
-            self.strength = 0.2
-        elif highest_val < 0.4:
-            self.strength = 0.3
-        elif highest_val < 0.5:
-            self.strength = 0.4
-        elif highest_val < 0.6:
-            self.strength = 0.5
-        elif highest_val < 0.7:
-            self.strength = 0.6
-        elif highest_val < 0.8:
-            self.strength = 0.7
-        elif highest_val < 0.9:
-            self.strength = 0.8
-        elif highest_val < 1:
-            self.strength = 0.9
+        elif highest_val < 0.11:
+            self.strength = 0.15
+        elif highest_val < 0.33:
+            self.strength = 0.25
+        elif highest_val < 0.44:
+            self.strength = 0.35
+        elif highest_val < 0.55:
+            self.strength = 0.45
+        elif highest_val < 0.66:
+            self.strength = 0.55
+        elif highest_val < 0.77:
+            self.strength = 0.65
+        elif highest_val < 0.88:
+            self.strength = 0.75
         else:
-            self.strength = 1
+            self.strength = 0.85
 
     def _draw(self, parent_size, parent_pos, strength, opacity, count):
 
