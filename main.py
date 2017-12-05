@@ -48,9 +48,9 @@ class RootWidgit(FloatLayout):
 
     # RL parameters
     episodes = 0
-    epsilon = 0.1
+    epsilon = 0.0
     discount = 0.9
-    _lambda = 0.9
+    _lambda = 0.3
     learning_rate = 0.6
 
     def __init__(self, **kwargs):
@@ -127,9 +127,8 @@ class RootWidgit(FloatLayout):
         # Otherwise, have it learn the maze
         else:
             # Get child_index to obtain the td_square from the value_board
-            child_index = self._get_child_index_value_board(self.character.current_row,
-                                                            self.character.current_col)
-            current_td_square = self.value_board.children[child_index]
+            current_td_square = self._get_td_square(self.character.current_row,
+                                                    self.character.current_col)
 
             # action_index is the index to be used while
             # best_action_index is the "best" move possible
@@ -151,12 +150,14 @@ class RootWidgit(FloatLayout):
             valid_flag = self._animate(action_index)
 
             # Get the new updated td_square
-            child_index = self._get_child_index_value_board(self.character.current_row,
-                                                            self.character.current_col)
-            new_td_square = self.value_board.children[child_index]
+            new_td_square = self._get_td_square(self.character.current_row,
+                                                self.character.current_col)
 
             # Calculate updates for the current_td_square
             self._calculate_update_q(current_td_square, new_td_square, action_index, valid_flag)
+
+            # Update the image and color
+            self._color_trace()
 
     def learn_q_lambda(self, dt):
         '''
@@ -175,9 +176,8 @@ class RootWidgit(FloatLayout):
 
         else:
             # Get child_index to obtain the td_square from the value_board
-            child_index = self._get_child_index_value_board(self.character.current_row,
-                                                            self.character.current_col)
-            current_td_square = self.value_board.children[child_index]
+            current_td_square = self._get_td_square(self.character.current_row,
+                                                    self.character.current_col)
 
             # action_index is the index to be used while
             # best_action_index is the "best" move possible
@@ -199,9 +199,8 @@ class RootWidgit(FloatLayout):
             valid_flag = self._animate(action_index)
 
             # Get the new updated td_square
-            child_index = self._get_child_index_value_board(self.character.current_row,
-                                                            self.character.current_col)
-            new_td_square = self.value_board.children[child_index]
+            new_td_square = self._get_td_square(self.character.current_row,
+                                                self.character.current_col)
 
             # Calculate the q_value (valid_flag determines whether
             # the AI hit the wall or not)
@@ -214,7 +213,7 @@ class RootWidgit(FloatLayout):
             self._calculate_update_q_lambda(q_val, action_index, best_action_index)
 
             # Update the image and color
-            #self._color_trace()
+            self._color_trace()
 
     def _add_TDSquare_children(self):
         '''
@@ -278,7 +277,9 @@ class RootWidgit(FloatLayout):
             # Assign reward and color to termination square
             td_square = self._get_td_square(self.END_ROWS[x], self.END_COLS[x])
             td_square.reward = self.END_REWARDS[x]
-            td_square.colour = self.END_COLOURS[x]
+
+            if td_square.reward > 0:
+                td_square.colour = self.END_COLOURS[x]
 
         # Change value direction of value of initial square
         # to negative so that it can't move up
@@ -406,11 +407,7 @@ class RootWidgit(FloatLayout):
         new_max_val = max(new_td_square.direction_values)
 
         # Q-learning equation
-        #current_td_square.direction_values[index] += lr * (reward + d*new_max_val - current_val - cost)
         current_td_square.direction_values[index] += self.learning_rate * (reward + self.discount * new_max_val - current_val - cost)
-
-        # Update the value_board text to see what is happening
-        current_td_square.update()
 
     def _calculate_update_q_lambda(self, q_val, action_index, best_index):
         '''
@@ -443,9 +440,6 @@ class RootWidgit(FloatLayout):
                 # If selected action is not "best" action, set it to 0
                 else:
                     td_square.eligibility_trace[direction.value] = 0
-
-                # Update td_square
-                td_square.update()
 
 
     def _change_position(self, row, col, current_direction):
@@ -1337,6 +1331,7 @@ class RootWidgit(FloatLayout):
             # Update values in accordance to Q-lambda
             self._calculate_update_q_lambda(q_val, action_index, action_index)
 
+            # Trace correct color and then update
             self._color_trace()
 
         # If character is in a terminating square, then reset its position

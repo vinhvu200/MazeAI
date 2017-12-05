@@ -17,11 +17,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-682">
-              <caret line="1259" column="26" lean-forward="false" selection-start-line="1259" selection-start-column="26" selection-end-line="1259" selection-end-column="26" />
+            <state relative-caret-position="348">
+              <caret line="152" column="75" lean-forward="true" selection-start-line="152" selection-start-column="75" selection-end-line="152" selection-end-column="75" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -41,11 +41,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TDSquare.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="TDSquare.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Model/TDSquare.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="127">
-              <caret line="76" column="55" lean-forward="true" selection-start-line="76" selection-start-column="55" selection-end-line="76" selection-end-column="55" />
+            <state relative-caret-position="1155">
+              <caret line="77" column="48" lean-forward="true" selection-start-line="77" selection-start-column="48" selection-end-line="77" selection-end-column="48" />
               <folding>
                 <element signature="e#0#34#0" expanded="true" />
               </folding>
@@ -94,7 +94,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>def _toggle</find>
       <find>def callback</find>
       <find>def _set_</find>
       <find>_reset</find>
@@ -120,10 +119,11 @@
       <find>self._get_best_direction_index</find>
       <find>_get_best_direction_index</find>
       <find>def _color_trace</find>
-      <find>strength</find>
       <find>print(</find>
       <find>print</find>
       <find>def _trace</find>
+      <find>strength</find>
+      <find>.update()</find>
     </findStrings>
     <replaceStrings>
       <replace>_populate_maze_board</replace>
@@ -459,6 +459,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
           <caret line="6" column="37" lean-forward="true" selection-start-line="6" selection-start-column="37" selection-end-line="6" selection-end-column="37" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -762,6 +763,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="435">
           <caret line="35" column="31" lean-forward="true" selection-start-line="35" selection-start-column="31" selection-end-line="35" selection-end-column="31" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -799,22 +801,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
+    <entry file="file://$PROJECT_DIR$/Model/TDSquare.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-682">
-          <caret line="1259" column="26" lean-forward="false" selection-start-line="1259" selection-start-column="26" selection-end-line="1259" selection-end-column="26" />
+        <state relative-caret-position="1155">
+          <caret line="77" column="48" lean-forward="true" selection-start-line="77" selection-start-column="48" selection-end-line="77" selection-end-column="48" />
           <folding>
-            <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#0#34#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Model/TDSquare.py">
+    <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="127">
-          <caret line="76" column="55" lean-forward="true" selection-start-line="76" selection-start-column="55" selection-end-line="76" selection-end-column="55" />
+        <state relative-caret-position="348">
+          <caret line="152" column="75" lean-forward="true" selection-start-line="152" selection-start-column="75" selection-end-line="152" selection-end-column="75" />
           <folding>
-            <element signature="e#0#34#0" expanded="true" />
+            <element signature="e#0#13#0" expanded="true" />
           </folding>
         </state>
       </provider>
