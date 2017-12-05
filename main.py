@@ -1,10 +1,12 @@
 import random
 import util
+import time
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.config import Config
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
+from kivy.graphics import Color
 from Model.Enum.Direction import Direction
 from Model.Enum.Speed import Speed
 from Model.Enum.LearnMethod import LearnMethod
@@ -29,6 +31,11 @@ class RootWidgit(FloatLayout):
     END_ROWS = []
     END_COLS = []
 
+    END_COLOURS = [Color(0, 1, 0),
+                  Color(1, 1, 0),
+                  Color(0, 0, 1),
+                  Color(1, 1, 0)]
+
     character = None
     td_children_flag = False
     mat_walls = [[[]]]
@@ -43,7 +50,7 @@ class RootWidgit(FloatLayout):
     episodes = 0
     epsilon = 0.1
     discount = 0.9
-    _lambda = 0.3
+    _lambda = 0.9
     learning_rate = 0.6
 
     def __init__(self, **kwargs):
@@ -100,30 +107,6 @@ class RootWidgit(FloatLayout):
         self.learn_method_button.bind(on_press=self._toggle_learn_method)
         self.maze_one_button.bind(on_press=self._set_maze_one)
         self.maze_two_button.bind(on_press=self._set_maze_two)
-
-    def _change_position(self, row, col, current_direction_index):
-        '''
-        This function changes the row or column based on the direction
-        it is trying to go.
-        :param row: int
-        :param col: int
-        :param current_direction_index: int
-        :return: row, col (int, int)
-        '''
-
-        if current_direction_index is Direction.NORTH.value:
-            return row-1, col
-
-        if current_direction_index is Direction.EAST.value:
-            return row, col+1
-
-        if current_direction_index is Direction.SOUTH.value:
-            return row+1, col
-
-        if current_direction_index is Direction.WEST.value:
-            return row, col-1
-
-        return row, col
 
     def learn_q(self, dt):
         '''
@@ -230,6 +213,9 @@ class RootWidgit(FloatLayout):
             # Update values in accordance to Q-lambda
             self._calculate_update_q_lambda(q_val, action_index, best_action_index)
 
+            # Update the image and color
+            #self._color_trace()
+
     def _add_TDSquare_children(self):
         '''
         This function adds an Image widget to each button to represent arrows of
@@ -256,33 +242,48 @@ class RootWidgit(FloatLayout):
 
         # Remove td_indicator and images if it is a termination square
         for x in xrange(len(self.END_REWARDS)):
-            child_index = self._get_child_index_value_board(self.END_ROWS[x],
-                                                            self.END_COLS[x])
-            td_square = self.value_board.children[child_index]
 
+            # Clear all its children
+            td_square = self._get_td_square(self.END_ROWS[x],
+                                            self.END_COLS[x])
             td_square.clear_widgets()
 
+            # Set the text color and size
             td_square.disabled_color = [0, 0, 0, 1]
             td_square.halign = 'center'
             td_square.font_size = '25sp'
 
+            # Change background of td_square based on whether it is
+            # positive or negative
             if self.END_REWARDS[x] > 0:
                 td_square.text = '+{}'.format(self.END_REWARDS[x])
                 td_square.background_color = [0, 1, 0, .75]
+                end_colour = self.END_COLOURS[x].rgb
+                end_colour.append(0.75)
+                td_square.background_color = end_colour
             else:
                 td_square.text = '{}'.format(self.END_REWARDS[x])
                 td_square.background_color = [1, 0, 0, .75]
 
     def _assign_rewards(self):
+        '''
+        - This function assigns rewards and colors of the termination square
+        - Assign a high negative Q-value NORTH of the entrance so that the
+            AI won't move off the map
+        :return:
+        '''
 
         for x in range(len(self.END_REWARDS)):
-            child_index = self._get_child_index_value_board(self.END_ROWS[x], self.END_COLS[x])
-            self.value_board.children[child_index].reward = self.END_REWARDS[x]
 
-            # Change value direction of value of initial square
-            # to negative so that it can't move up
-            child_index = self._get_child_index_value_board(self.INITIAL_ROW, self.INITIAL_COL)
-            self.value_board.children[child_index].direction_values[0] = -100
+            # Assign reward and color to termination square
+            td_square = self._get_td_square(self.END_ROWS[x], self.END_COLS[x])
+            td_square.reward = self.END_REWARDS[x]
+            td_square.colour = self.END_COLOURS[x]
+
+        # Change value direction of value of initial square
+        # to negative so that it can't move up
+        td_square = self._get_td_square(self.INITIAL_ROW, self.INITIAL_COL)
+        td_square.direction_values[Direction.NORTH.value] = -100
 
     def _animate(self, max_index):
         '''
@@ -446,6 +447,31 @@ class RootWidgit(FloatLayout):
                 # Update td_square
                 td_square.update()
 
+
+    def _change_position(self, row, col, current_direction):
+        '''
+        This function changes the row or column based on the direction
+        it is trying to go.
+        :param row: int
+        :param col: int
+        :param current_direction_index: Direction (enum)
+        :return: row, col (int, int)
+        '''
+
+        if current_direction is Direction.NORTH:
+            return row-1, col
+
+        if current_direction is Direction.EAST:
+            return row, col+1
+
+        if current_direction is Direction.SOUTH:
+            return row+1, col
+
+        if current_direction is Direction.WEST:
+            return row, col-1
+
+        return row, col
+
     def _check_termination_square(self, row, col):
         '''
         Check the row and column passed in to see if it lands on
@@ -463,12 +489,26 @@ class RootWidgit(FloatLayout):
         return False
 
     def _color_trace(self):
+        '''
+        This function iterates through all the td_squares
+        and set its color based on where the arrows will
+        take it.
+        :return:
+        '''
 
         for row in range(self.ROWS):
             for col in range(self.COLS):
+
+                # Trace each td_square to find the termination color
                 color = self._trace(row, col)
+
+                # Get and set color of current td_square
                 td_square = self._get_td_square(row, col)
-                self._set_color(td_square, color)
+                td_square.colour = color
+                td_square.set_TDIndicator_color(color)
+
+                # Update the td_square to show the changes
+                td_square.update()
 
     def _determine_action(self, current_td_square):
         '''
@@ -519,7 +559,7 @@ class RootWidgit(FloatLayout):
             elif self.character.learn_method is LearnMethod.Q_lambda:
                 self.learn_q_lambda(None)
 
-    def _get_best_direction_index(self, row, col):
+    def _get_best_direction(self, row, col):
         '''
         This function gets the best direction_index and returns it.
         Best direction_index is the one with highest Q-value
@@ -530,7 +570,16 @@ class RootWidgit(FloatLayout):
 
         td_square = self._get_td_square(row, col)
         max_val = max(td_square.direction_values)
-        return td_square.direction_values.index(max_val)
+        index  = td_square.direction_values.index(max_val)
+
+        if index == Direction.NORTH.value:
+            return Direction.NORTH
+        if index == Direction.EAST.value:
+            return Direction.EAST
+        if index == Direction.SOUTH.value:
+            return Direction.SOUTH
+        if index == Direction.WEST.value:
+            return Direction.WEST
 
     def _get_child_index_maze_board(self, row, col):
         '''
@@ -777,25 +826,25 @@ class RootWidgit(FloatLayout):
         '''
         Function takes two direction index and tells you if
         they are opposite of each other
-        :param direction_1: int
-        :param direction_2: int
+        :param direction_1: Direction (enum)
+        :param direction_2: Direction (enum)
         :return: boolean
         '''
 
-        if direction_1 is Direction.NORTH.value and \
-           direction_2 is Direction.SOUTH.value:
+        if direction_1 is Direction.NORTH and \
+           direction_2 is Direction.SOUTH:
             return True
 
-        if direction_1 is Direction.EAST.value and \
-           direction_2 is Direction.WEST.value:
+        if direction_1 is Direction.EAST and \
+           direction_2 is Direction.WEST:
             return True
 
-        if direction_1 is Direction.SOUTH.value and \
-           direction_2 is Direction.NORTH.value:
+        if direction_1 is Direction.SOUTH and \
+           direction_2 is Direction.NORTH:
             return True
 
-        if direction_1 is Direction.WEST.value and \
-           direction_2 is Direction.EAST.value:
+        if direction_1 is Direction.WEST and \
+           direction_2 is Direction.EAST:
             return True
 
         return False
@@ -1194,32 +1243,58 @@ class RootWidgit(FloatLayout):
             self.character.speed = Speed.NORMAL
 
     def _trace(self, originial_row, original_col):
+        '''
+        - Given a row and column, this function finds associates it
+        to the correct td_square and then follows it until it
+        finds a terminating square. It then returns the terminating
+        square's color.
+        - If it does not find a terminating square, it will return
+        the default white color
+        :param originial_row:
+        :param original_col:
+        :return: Color(rgb)
+        '''
 
+        # Keep track of the original row and col
         row = originial_row
         col = original_col
 
-        current_direction_index = self._get_best_direction_index(row, col)
-        termination_flag = self._check_termination_square(row, col)
-        valid_move_flag = self._valid_move(row, col, current_direction_index)
-        last_direction_index = current_direction_index
+        # Find the best direction
+        current_direction = self._get_best_direction(row, col)
 
+        # Check if the current square is a terminating square
+        termination_flag = self._check_termination_square(row, col)
+
+        # Check if the direction it is moving in is valid
+        valid_move_flag = self._valid_move(row, col, current_direction)
+
+        # Update the row and col while keeping track of last_direction
+        # Continue following same steps as above
+        # BREAK CONDITIONS:
+        #   - if the move from current square is invalid
+        #   - if it is on a termination flag
+        #   - if the current_direction and last_direction are opposite
         while valid_move_flag is True and termination_flag is False:
 
-            row, col = self._change_position(row, col, current_direction_index)
+            row, col = self._change_position(row, col, current_direction)
+            last_direction = current_direction
 
-            current_direction_index = self._get_best_direction_index(row, col)
-
+            current_direction = self._get_best_direction(row, col)
             termination_flag = self._check_termination_square(row, col)
-            valid_move_flag = self._valid_move(row, col, current_direction_index)
+            valid_move_flag = self._valid_move(row, col, current_direction)
 
-            if self._opposite_directions(current_direction_index, last_direction_index):
+            if self._opposite_directions(current_direction, last_direction):
                 break
 
-        color = [1, 1, 1, 1]
+        # Default white color
+        color = Color(1, 1, 1)
+
+        # Get the termination square_color if it lands on it
         if termination_flag is True:
             td_square = self._get_td_square(row, col)
-            color = self._get_td_square_color(td_square)
+            color = td_square.colour
 
+        # return color
         return color
 
     def _update_value_board(self, valid_flag, current_row, current_col, action_index):
@@ -1261,6 +1336,8 @@ class RootWidgit(FloatLayout):
 
             # Update values in accordance to Q-lambda
             self._calculate_update_q_lambda(q_val, action_index, action_index)
+
+            self._color_trace()
 
         # If character is in a terminating square, then reset its position
         if self._check_termination_square(self.character.current_row,
