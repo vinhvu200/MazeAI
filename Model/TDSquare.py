@@ -1,5 +1,6 @@
 from kivy.uix.button import Button
 from kivy.uix.image import Image
+from kivy.graphics import Color
 
 
 class TDSquare(Button):
@@ -34,6 +35,11 @@ class TDSquare(Button):
 
         # Set reward and text
         self.reward = 0
+
+        # Set default rgb color
+        self.colour = Color(0, 1, 0)
+
+
         # self.text = 'N: {}\n' \
         #             'E: {}\n' \
         #             'S: {}\n' \
@@ -69,8 +75,12 @@ class TDSquare(Button):
 
             self.children[0].source = self.background_images[max_index]
             #self.children[1].set_strength(max_val * 3)
+            self.children[1].color = self.colour
             self.children[1].set_strength((max_val - second_max_val) * 3)
             self.children[1].draw()
+
+    def set_TDIndicator_color(self, color):
+        self.colour = color
 
     def set_reward(self, reward):
         '''

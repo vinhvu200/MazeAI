@@ -101,6 +101,30 @@ class RootWidgit(FloatLayout):
         self.maze_one_button.bind(on_press=self._set_maze_one)
         self.maze_two_button.bind(on_press=self._set_maze_two)
 
+    def _change_position(self, row, col, current_direction_index):
+        '''
+        This function changes the row or column based on the direction
+        it is trying to go.
+        :param row: int
+        :param col: int
+        :param current_direction_index: int
+        :return: row, col (int, int)
+        '''
+
+        if current_direction_index is Direction.NORTH.value:
+            return row-1, col
+
+        if current_direction_index is Direction.EAST.value:
+            return row, col+1
+
+        if current_direction_index is Direction.SOUTH.value:
+            return row+1, col
+
+        if current_direction_index is Direction.WEST.value:
+            return row, col-1
+
+        return row, col
+
     def learn_q(self, dt):
         '''
         - This function should be continuously call for the character to slowly learn the maze.
@@ -440,9 +464,11 @@ class RootWidgit(FloatLayout):
 
     def _color_trace(self):
 
-        for x in range(self.ROWS):
-            for y in range(self.COLS):
-                self._set_color(x, y)
+        for row in range(self.ROWS):
+            for col in range(self.COLS):
+                color = self._trace(row, col)
+                td_square = self._get_td_square(row, col)
+                self._set_color(td_square, color)
 
     def _determine_action(self, current_td_square):
         '''
@@ -1073,37 +1099,6 @@ class RootWidgit(FloatLayout):
             elif self.character.learn_method is LearnMethod.Q_lambda:
                 self.learn_q_lambda(None)
 
-    def _set_color(self, originial_row, original_col):
-
-        row = originial_row
-        col = original_col
-
-        # child_index = self._get_child_index_value_board(row, col)
-        # current_td_square = self.value_board.children[child_index]
-        # max_val = max(current_td_square.direction_values)
-        # current_direction_index = current_td_square.direction_values.index(max_val)
-        current_direction_index = self._get_best_direction_index(row, col)
-
-        termination_flag = self._check_termination_square(row, col)
-        valid_move_flag = self._valid_move(row, col, current_direction_index)
-        last_direction_index = current_direction_index
-
-        while valid_move_flag is True and termination_flag is False:
-
-            row, col = self._change_position(row, col, current_direction_index)
-
-            current_direction_index = self._get_best_direction_index(row, col)
-
-            termination_flag = self._check_termination_square(row, col)
-            valid_move_flag = self._valid_move(row, col, current_direction_index)
-
-            if self._opposite_directions(current_direction_index, last_direction_index):
-                break
-
-        if termination_flag is True:
-            # fill color
-            pass
-
     def _set_maze_one(self, dt):
         self.current_maze = self.maze1
         self._reset(None)
@@ -1197,6 +1192,35 @@ class RootWidgit(FloatLayout):
             self.speed_button.text = 'Speed:\nNormal'
             self.character.set_speed_normal()
             self.character.speed = Speed.NORMAL
+
+    def _trace(self, originial_row, original_col):
+
+        row = originial_row
+        col = original_col
+
+        current_direction_index = self._get_best_direction_index(row, col)
+        termination_flag = self._check_termination_square(row, col)
+        valid_move_flag = self._valid_move(row, col, current_direction_index)
+        last_direction_index = current_direction_index
+
+        while valid_move_flag is True and termination_flag is False:
+
+            row, col = self._change_position(row, col, current_direction_index)
+
+            current_direction_index = self._get_best_direction_index(row, col)
+
+            termination_flag = self._check_termination_square(row, col)
+            valid_move_flag = self._valid_move(row, col, current_direction_index)
+
+            if self._opposite_directions(current_direction_index, last_direction_index):
+                break
+
+        color = [1, 1, 1, 1]
+        if termination_flag is True:
+            td_square = self._get_td_square(row, col)
+            color = self._get_td_square_color(td_square)
+
+        return color
 
     def _update_value_board(self, valid_flag, current_row, current_col, action_index):
         '''

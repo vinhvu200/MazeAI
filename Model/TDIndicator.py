@@ -1,14 +1,16 @@
 from kivy.uix.widget import Widget
 from kivy.graphics import Color, Rectangle, Ellipse
 from kivy.graphics.instructions import InstructionGroup
+from kivy.graphics import Color
 
 
 class TDIndicator(Widget):
 
     def __init__(self, **kwargs):
         super(TDIndicator, self).__init__(**kwargs)
-        self.color = [0, 1, 0, 0.65]
-        self.rgb_color = [0, 1, 0, 0.65]
+        #self.color = Color(0, 1, 0, 0.65)
+        self.color = Color(0, 1, 0)
+        #self.rgb_color = [0, 1, 0, 0.65]
         self.strength = 0.0
 
     def draw(self):
@@ -36,10 +38,6 @@ class TDIndicator(Widget):
 
         # Check the highest value decision of that square
         # in order to determine the strength of the indicator
-        # if highest_val < 0.1:
-        #     self.strength = 0
-        # elif highest_val < 0.2:
-        #     self.strength = 0.1
         if highest_val < 0.1:
             self.strength = 0
         elif highest_val < 0.11:
@@ -90,7 +88,11 @@ class TDIndicator(Widget):
 
         # Create the ring Instruction Group
         ring = InstructionGroup()
-        ring.add(Color(0, 1, 0, opacity))
+        # ring.add(Color(0, 1, 0, opacity))
+
+        color = Color(self.color.r, self.color.g,
+                       self.color.b, opacity)
+        ring.add(color)
         ring.add(Ellipse(pos=pos, size=size))
         self.canvas.add(ring)
 
