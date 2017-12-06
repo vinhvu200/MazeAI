@@ -21,7 +21,7 @@
                     size: self.size
         GridLayout:
             padding: 5, 5, 5, 5
-            rows: 9
+            rows: 11
             size_hint_x: .1
             canvas:
                 Color:
@@ -29,27 +29,124 @@
                 Rectangle:
                     pos: self.pos
                     size: self.size
-            Label:
-                id: progress_label
-                font_size: '14sp'
-                color: 0, 0, 0, 1
+
+            GridLayout:
+                size_hint_y: 0.2
+                rows: 5
+                padding: 0, 0, 0, 5
+                GridLayout:
+                    cols: 2
+                    Label:
+                        id: progress_label
+                        text: 'Episodes'
+                        color: 0, 0, 0, 1
+                        font_size: '13sp'
+                    Label:
+                        text: '0'
+                        color: 0, 0, 0, 1
+                GridLayout:
+                    cols: 2
+                    Label:
+                        id: progress_label
+                        text: 'ε'
+                        color: 0, 0, 0, 1
+                    Label:
+                        text: '0.0'
+                        color: 0, 0, 0, 1
+                GridLayout:
+                    cols: 2
+                    Label:
+                        id: progress_label
+                        text: 'α'
+                        color: 0, 0, 0, 1
+                    Label:
+                        text: '0.0'
+                        color: 0, 0, 0, 1
+                GridLayout:
+                    cols: 2
+                    Label:
+                        id: progress_label
+                        text: 'λ'
+                        color: 0, 0, 0, 1
+                    Label:
+                        text: '0.0'
+                        color: 0, 0, 0, 1
+                GridLayout:
+                    cols: 2
+                    Label:
+                        id: progress_label
+                        text: 'γ'
+                        color: 0, 0, 0, 1
+                    Label:
+                        text: '0.0'
+                        color: 0, 0, 0, 1
             Button:
+                size_hint_y: 0.08
                 id: learn_toggle_button
                 text: 'Learn'
             Button:
+                size_hint_y: 0.08
                 id: reset_button
                 text: 'Reset'
             Button:
+                size_hint_y: 0.08
                 id: speed_button
                 text: 'Speed:\nNormal'
                 halign: 'center'
             Button:
+                size_hint_y: 0.08
                 id: learn_method_button
                 text: 'Method:\nQ'
                 halign: 'center'
             Button:
+                size_hint_y: 0.08
                 id: maze_one_button
                 text: 'Map One'
             Button:
+                size_hint_y: 0.08
                 id: maze_two_button
                 text: 'Map Two'
+            GridLayout:
+                size_hint_y: 0.08
+                cols: 3
+                Label:
+                    text: 'ε'
+                    color: 0, 0, 0, 1
+                    halign: 'center'
+                Button:
+                    text: '+'
+                Button:
+                    text: '-'
+            GridLayout:
+                size_hint_y: 0.08
+                cols: 3
+                Label:
+                    text: 'α'
+                    color: 0, 0, 0, 1
+                    halign: 'center'
+                Button:
+                    text: '+'
+                Button:
+                    text: '-'
+            GridLayout:
+                size_hint_y: 0.08
+                cols: 3
+                Label:
+                    text: 'λ'
+                    color: 0, 0, 0, 1
+                    halign: 'center'
+                Button:
+                    text: '+'
+                Button:
+                    text: '-'
+            GridLayout:
+                size_hint_y: 0.08
+                cols: 3
+                Label:
+                    text: 'γ'
+                    color: 0, 0, 0, 1
+                    halign: 'center'
+                Button:
+                    text: '+'
+                Button:
+                    text: '-'

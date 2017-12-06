@@ -16,7 +16,7 @@ from Model.Sprite import Sprite
 from Model.TDIndicator import TDIndicator
 from Model.TDSquare import TDSquare
 
-Config.set('graphics', 'width', '1100')
+Config.set('graphics', 'width', '1250')
 Config.set('graphics', 'height', '500')
 from kivy.core.window import Window
 
@@ -73,8 +73,8 @@ class RootWidgit(FloatLayout):
         self.progress_label = self.ids.progress_label
 
         # Set progress label text
-        self.progress_label.text = 'Episodes: {}\nEpsilon: {}'.format(self.episodes,
-                                                                      self.epsilon)
+        # self.progress_label.text = 'Episodes: {}\nOp1-Epsilon: {}'.format(self.episodes,
+        #                                                               self.epsilon)
 
         # Set up the keyboard and bind it
         self._keyboard = Window.request_keyboard(
