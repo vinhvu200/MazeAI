@@ -16,7 +16,7 @@ from Model.Sprite import Sprite
 from Model.TDIndicator import TDIndicator
 from Model.TDSquare import TDSquare
 
-Config.set('graphics', 'width', '1250')
+Config.set('graphics', 'width', '1200')
 Config.set('graphics', 'height', '500')
 from kivy.core.window import Window
 
@@ -537,23 +537,31 @@ class RootWidgit(FloatLayout):
                 td_square.update()
 
     def _decrease_discount(self, dt):
-        if self.discount > 0.0:
+        if self.discount > 0.11:
             self.discount -= 0.1
+        else:
+            self.discount = 0.0
         self.discount_label.text = str(self.discount)
 
     def _decrease_epsilon(self, dt):
-        if self.epsilon > 0.0:
+        if self.epsilon > 0.051:
             self.epsilon -= 0.05
+        else:
+            self.epsilon = 0.0
         self.epsilon_label.text = str(self.epsilon)
 
     def _decrease_lambda(self, dt):
-        if self._lambda > 0.0:
+        if self._lambda > 0.11:
             self._lambda -= 0.1
+        else:
+            self._lambda = 0.0
         self.lambda_label.text = str(self._lambda)
 
     def _decrease_learning_rate(self, dt):
-        if self.learning_rate > 0.0:
+        if self.learning_rate > 0.11:
             self.learning_rate -= 0.1
+        else:
+            self.learning_rate = 0.0
         self.learning_rate_label.text = str(self.learning_rate)
 
     def _determine_action(self, current_td_square):
@@ -796,27 +804,26 @@ class RootWidgit(FloatLayout):
         return animate_flag, valid_move, action_index
 
     def _increase_discount(self, dt):
-        if self.discount < 1.0:
+        if self.discount < 0.99:
             self.discount += 0.1
         self.discount_label.text = str(self.discount)
 
     def _increase_epsilon(self, dt):
-        if self.epsilon < 1.0:
+        if self.epsilon < 0.99:
             self.epsilon += 0.05
         self.epsilon_label.text = str(self.epsilon)
 
     def _increase_lambda(self, dt):
-        if self._lambda < 1.0:
+        if self._lambda < 0.99:
             self._lambda += 0.1
         self.lambda_label.text = str(self._lambda)
 
     def _increase_learning_rate(self, dt):
-        if self.learning_rate < 1.0:
+        if self.learning_rate < 0.99:
             self.learning_rate += 0.1
         self.learning_rate_label.text = str(self.learning_rate)
 
     def _keyboard_closed(self):
-        print('My keyboard have been closed!')
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
         self._keyboard = None
 
@@ -1280,8 +1287,8 @@ class RootWidgit(FloatLayout):
             self.character.learn_method = LearnMethod.Q_lambda
 
             # Reset eligibility trace
-            # for td_square in self.value_board.children:
-            #     td_square.reset_eligibility_trace()
+            for td_square in self.value_board.children:
+                td_square.reset_eligibility_trace()
 
         # Switch from Q-lambda to Q
         elif self.character.learn_method is LearnMethod.Q_lambda:
