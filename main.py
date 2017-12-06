@@ -835,29 +835,23 @@ class RootWidgit(FloatLayout):
         :return:
         '''
 
-        # Condition to get AI to start learning
-        if self.learn_toggle_button.text == 'Learn':
+        if self.character.state == State.LEARNING:
 
-            # Change states
+            # Change states and bg color
+            self.character.state = State.MANUAL
+            self.learn_toggle_button.background_color = [1, 1, 1, 1]
+
+        elif self.character.state == State.MANUAL:
+
+            # Change states and bg color
             self.character.state = State.LEARNING
+            self.learn_toggle_button.background_color = [0, 0, 1, 1]
 
             # Determine which learning to use
             if self.character.learn_method is LearnMethod.Q:
                 self.learn_q(None)
             elif self.character.learn_method is LearnMethod.Q_lambda:
                 self.learn_q_lambda(None)
-
-            # Change button name
-            self.learn_toggle_button.text = 'Manual'
-
-        # Condition to stop AI from learning
-        elif self.learn_toggle_button.text == 'Manual':
-
-            # Change states
-            self.character.state = State.MANUAL
-
-            # Change button name
-            self.learn_toggle_button.text = 'Learn'
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         '''
@@ -1134,6 +1128,9 @@ class RootWidgit(FloatLayout):
         self.learn_method_button.unbind(on_press=self._toggle_learn_method)
         self.maze_one_button.unbind(on_press=self._set_maze_one)
         self.maze_two_button.unbind(on_press=self._set_maze_two)
+
+        # Set Default colors for buttons
+        self.learn_toggle_button.background_color = [1, 1, 1, 1]
 
         # Tells the callback_setup that the children widgets
         # have not been added yet (These child widgets are
