@@ -70,11 +70,10 @@ class RootWidgit(FloatLayout):
         self.maze_two_button = self.ids.maze_two_button
 
         # Get Labels from .kv file
-        self.progress_label = self.ids.progress_label
+        self.episode_label = self.ids.episode_label
 
         # Set progress label text
-        # self.progress_label.text = 'Episodes: {}\nOp1-Epsilon: {}'.format(self.episodes,
-        #                                                               self.epsilon)
+        self.episode_label.text = str(self.episodes)
 
         # Set up the keyboard and bind it
         self._keyboard = Window.request_keyboard(
@@ -1052,7 +1051,7 @@ class RootWidgit(FloatLayout):
 
         # Reset episodes
         self.episodes = 0
-        self.progress_label.text = 'Episodes: {}\nEpsilon: {}'.format(self.episodes, self.epsilon)
+        self.episode_label.text = str(self.episodes)
 
         # Unbind Buttons from .kv file
         self.learn_toggle_button.unbind(on_press=self._learn_toggle)
@@ -1107,7 +1106,7 @@ class RootWidgit(FloatLayout):
         self.episodes += 1
 
         # Display updates
-        self.progress_label.text = 'Episodes: {}\nEpsilon: {}'.format(self.episodes, self.epsilon)
+        self.episode_label.text = str(self.episodes)
 
         # Save current state
         state = self.character.state

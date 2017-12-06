@@ -77,7 +77,7 @@ class TDSquare(Button):
             self.children[1].set_strength(max_val * 3)
             self.children[1].color = self.colour
 
-            if self.colour is not Color(1, 1, 1):
+            if self.colour.rgb != [1.0, 1.0, 1.0]:
                 self.children[1].draw()
 
     def set_TDIndicator_color(self, color):
