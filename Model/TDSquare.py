@@ -74,9 +74,9 @@ class TDSquare(Button):
 
 
             self.children[0].source = self.background_images[max_index]
-            #self.children[1].set_strength(max_val * 3)
+            self.children[1].set_strength(max_val * 3)
             self.children[1].color = self.colour
-            self.children[1].set_strength((max_val - second_max_val) * 3)
+            #self.children[1].set_strength((max_val - second_max_val) * 3)
             self.children[1].draw()
 
     def set_TDIndicator_color(self, color):

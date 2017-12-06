@@ -50,8 +50,9 @@ class RootWidgit(FloatLayout):
     episodes = 0
     epsilon = 0.0
     discount = 0.9
-    _lambda = 0.3
+    _lambda = 0.9
     learning_rate = 0.6
+    move_cost = 0.05
 
     def __init__(self, **kwargs):
         super(RootWidgit, self).__init__(**kwargs)
@@ -286,6 +287,27 @@ class RootWidgit(FloatLayout):
         td_square = self._get_td_square(self.INITIAL_ROW, self.INITIAL_COL)
         td_square.direction_values[Direction.NORTH.value] = -100
 
+        for row in range(self.ROWS):
+            for col in range(self.COLS):
+                valid_flag_north = self._valid_move(row, col, Direction.NORTH)
+                valid_flag_east = self._valid_move(row, col, Direction.EAST)
+                valid_flag_south = self._valid_move(row, col, Direction.SOUTH)
+                valid_flag_west = self._valid_move(row, col, Direction.WEST)
+
+                td_square = self._get_td_square(row, col)
+
+                if valid_flag_north is False:
+                    td_square.direction_values[Direction.NORTH.value] = -100
+
+                if valid_flag_east is False:
+                    td_square.direction_values[Direction.EAST.value] = -100
+
+                if valid_flag_south is False:
+                    td_square.direction_values[Direction.SOUTH.value] = -100
+
+                if valid_flag_west is False:
+                    td_square.direction_values[Direction.WEST.value] = -100
+
     def _animate(self, max_index):
         '''
         - This function takes the max_index which is the "best" move
@@ -358,13 +380,6 @@ class RootWidgit(FloatLayout):
         :return:
         '''
 
-        # learning_rate, discount, and cost
-        cost = 0.04
-
-        # Increase penalty for bumping into wall
-        if valid_flag is False:
-            cost *= 10
-
         # Current td_square value of the "best" move grabbed from the current_max_index
         current_val = current_td_square.direction_values[action_index]
 
@@ -375,7 +390,7 @@ class RootWidgit(FloatLayout):
         new_max_val = max(new_td_square.direction_values)
 
         # Equation
-        q_val = self.learning_rate * (reward + self.discount*new_max_val - current_val - cost)
+        q_val = self.learning_rate * (reward + self.discount*new_max_val - current_val - self.move_cost)
 
         return q_val
 
@@ -390,13 +405,6 @@ class RootWidgit(FloatLayout):
         :return:
         '''
 
-        # learning_rate, discount, and cost
-        cost = 0.04
-
-        # Increase penalty for bumping into wall
-        if valid_flag is False:
-            cost *= 10
-
         # Current td_square value of the "best" move grabbed from the current_max_index
         current_val = current_td_square.direction_values[index]
 
@@ -407,7 +415,8 @@ class RootWidgit(FloatLayout):
         new_max_val = max(new_td_square.direction_values)
 
         # Q-learning equation
-        current_td_square.direction_values[index] += self.learning_rate * (reward + self.discount * new_max_val - current_val - cost)
+        current_td_square.direction_values[index] += \
+            self.learning_rate * (reward + self.discount * new_max_val - current_val - self.move_cost)
 
     def _calculate_update_q_lambda(self, q_val, action_index, best_index):
         '''
