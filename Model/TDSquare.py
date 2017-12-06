@@ -70,9 +70,6 @@ class TDSquare(Button):
             max_val = max(self.direction_values)
             max_index = self.direction_values.index(max_val)
 
-            second_max_val = sorted(self.direction_values)[-2]
-
-
             self.children[0].source = self.background_images[max_index]
             self.children[1].set_strength(max_val * 3)
             self.children[1].color = self.colour

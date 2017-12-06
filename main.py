@@ -68,17 +68,28 @@ class RootWidgit(FloatLayout):
         self.learn_method_button = self.ids.learn_method_button
         self.maze_one_button = self.ids.maze_one_button
         self.maze_two_button = self.ids.maze_two_button
+        self.epsilon_increase_button = self.ids.epsilon_increase_button
+        self.epsilon_decrease_button = self.ids.epsilon_decrease_button
+        self.learning_rate_increase_button = self.ids.learning_rate_increase_button
+        self.learning_rate_decrease_button = self.ids.learning_rate_decrease_button
+        self.lambda_increase_button = self.ids.lambda_increase_button
+        self.lambda_decrease_button = self.ids.lambda_decrease_button
+        self.discount_increase_button = self.ids.discount_increase_button
+        self.discount_decrease_button = self.ids.discount_decrease_button
 
         # Get Labels from .kv file
         self.episode_label = self.ids.episode_label
+        self.epsilon_label = self.ids.epsilon_label
+        self.learning_rate_label = self.ids.learning_rate_label
+        self.lambda_label = self.ids.lambda_label
+        self.discount_label = self.ids.discount_label
 
         # Set progress label text
         self.episode_label.text = str(self.episodes)
-
-        # Set up the keyboard and bind it
-        self._keyboard = Window.request_keyboard(
-            self._keyboard_closed, self, 'text')
-        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        self.epsilon_label.text = str(self.epsilon)
+        self.learning_rate_label.text = str(self.learning_rate)
+        self.lambda_label.text = str(self._lambda)
+        self.discount_label.text = str(self.discount)
 
         self.current_maze = self.maze1
 
@@ -100,6 +111,11 @@ class RootWidgit(FloatLayout):
             self._add_TDSquare_children()
         self.td_children_flag = True
 
+        # Set up the keyboard and bind it
+        self._keyboard = Window.request_keyboard(
+            self._keyboard_closed, self, 'text')
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+
         # Bind Buttons from .kv file
         self.learn_toggle_button.bind(on_press=self._learn_toggle)
         self.reset_button.bind(on_press=self._reset)
@@ -107,6 +123,14 @@ class RootWidgit(FloatLayout):
         self.learn_method_button.bind(on_press=self._toggle_learn_method)
         self.maze_one_button.bind(on_press=self._set_maze_one)
         self.maze_two_button.bind(on_press=self._set_maze_two)
+        self.epsilon_increase_button.bind(on_press=self._increase_epsilon)
+        self.epsilon_decrease_button.bind(on_press=self._decrease_epsilon)
+        self.learning_rate_increase_button.bind(on_press=self._increase_learning_rate)
+        self.learning_rate_decrease_button.bind(on_press=self._decrease_learning_rate)
+        self.lambda_increase_button.bind(on_press=self._increase_lambda)
+        self.lambda_decrease_button.bind(on_press=self._decrease_lambda)
+        self.discount_increase_button.bind(on_press=self._increase_discount)
+        self.discount_decrease_button.bind(on_press=self._decrease_discount)
 
     def learn_q(self, dt):
         '''
@@ -512,6 +536,26 @@ class RootWidgit(FloatLayout):
                 # Update the td_square to show the changes
                 td_square.update()
 
+    def _decrease_discount(self, dt):
+        if self.discount > 0.0:
+            self.discount -= 0.1
+        self.discount_label.text = str(self.discount)
+
+    def _decrease_epsilon(self, dt):
+        if self.epsilon > 0.0:
+            self.epsilon -= 0.05
+        self.epsilon_label.text = str(self.epsilon)
+
+    def _decrease_lambda(self, dt):
+        if self._lambda > 0.0:
+            self._lambda -= 0.1
+        self.lambda_label.text = str(self._lambda)
+
+    def _decrease_learning_rate(self, dt):
+        if self.learning_rate > 0.0:
+            self.learning_rate -= 0.1
+        self.learning_rate_label.text = str(self.learning_rate)
+
     def _determine_action(self, current_td_square):
         '''
         This function uses epsilon greedy to choose its next move.
@@ -750,6 +794,26 @@ class RootWidgit(FloatLayout):
                 self.animate = self.character.get_bump_wall_animation(Direction.EAST)
 
         return animate_flag, valid_move, action_index
+
+    def _increase_discount(self, dt):
+        if self.discount < 1.0:
+            self.discount += 0.1
+        self.discount_label.text = str(self.discount)
+
+    def _increase_epsilon(self, dt):
+        if self.epsilon < 1.0:
+            self.epsilon += 0.05
+        self.epsilon_label.text = str(self.epsilon)
+
+    def _increase_lambda(self, dt):
+        if self._lambda < 1.0:
+            self._lambda += 0.1
+        self.lambda_label.text = str(self._lambda)
+
+    def _increase_learning_rate(self, dt):
+        if self.learning_rate < 1.0:
+            self.learning_rate += 0.1
+        self.learning_rate_label.text = str(self.learning_rate)
 
     def _keyboard_closed(self):
         print('My keyboard have been closed!')
@@ -1052,6 +1116,9 @@ class RootWidgit(FloatLayout):
         # Reset episodes
         self.episodes = 0
         self.episode_label.text = str(self.episodes)
+
+        # Unbind keyboard
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
 
         # Unbind Buttons from .kv file
         self.learn_toggle_button.unbind(on_press=self._learn_toggle)
