@@ -10,7 +10,7 @@ from Model.Enum.LearnMethod import LearnMethod
 class Sprite(Image):
 
     def __init__(self, current_row, current_col, speed=Speed.NORMAL, state=State.MANUAL,
-                 learn_method=LearnMethod.Q, **kwargs):
+                 **kwargs):
         super(Sprite, self).__init__(**kwargs)
 
         # Declare the image path for sprite standing/walking
@@ -40,7 +40,7 @@ class Sprite(Image):
         # Determine the states the character is in
         self.state = state
         self.speed = speed
-        self.learn_method = learn_method
+        self.learn_method = LearnMethod.Q_lambda
 
         # Determines which speed to set the character to
         if speed == Speed.NORMAL:

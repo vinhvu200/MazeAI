@@ -65,7 +65,6 @@ class RootWidgit(FloatLayout):
         self.learn_toggle_button = self.ids.learn_toggle_button
         self.reset_button = self.ids.reset_button
         self.speed_button = self.ids.speed_button
-        self.learn_method_button = self.ids.learn_method_button
         self.maze_one_button = self.ids.maze_one_button
         self.maze_two_button = self.ids.maze_two_button
         self.epsilon_increase_button = self.ids.epsilon_increase_button
@@ -90,7 +89,6 @@ class RootWidgit(FloatLayout):
         self.learning_rate_label.text = str(self.learning_rate)
         self.lambda_label.text = str(self._lambda)
         self.discount_label.text = str(self.discount)
-
         self.current_maze = self.maze1
 
         # Pass in the maze .txt file to set up
@@ -120,7 +118,6 @@ class RootWidgit(FloatLayout):
         self.learn_toggle_button.bind(on_press=self._learn_toggle)
         self.reset_button.bind(on_press=self._reset)
         self.speed_button.bind(on_press=self._toggle_speed)
-        self.learn_method_button.bind(on_press=self._toggle_learn_method)
         self.maze_one_button.bind(on_press=self._set_maze_one)
         self.maze_two_button.bind(on_press=self._set_maze_two)
         self.epsilon_increase_button.bind(on_press=self._increase_epsilon)
@@ -1125,7 +1122,6 @@ class RootWidgit(FloatLayout):
         self.learn_toggle_button.unbind(on_press=self._learn_toggle)
         self.reset_button.unbind(on_press=self._reset)
         self.speed_button.unbind(on_press=self._toggle_speed)
-        self.learn_method_button.unbind(on_press=self._toggle_learn_method)
         self.maze_one_button.unbind(on_press=self._set_maze_one)
         self.maze_two_button.unbind(on_press=self._set_maze_two)
 
@@ -1144,16 +1140,12 @@ class RootWidgit(FloatLayout):
         self.value_board.clear_widgets()
         self.maze_board.clear_widgets()
 
-        # Save character's current state
-        learn_method = self.character.learn_method
-
         # Remove character
         self.remove_widget(self.character)
 
         # Recreate character with the saved states
         self.character = Sprite(current_row=self.INITIAL_ROW,
-                                current_col=self.INITIAL_COL,
-                                learn_method=learn_method)
+                                current_col=self.INITIAL_COL)
 
         # Set up maze
         self._setup_maze(self.current_maze)
@@ -1178,7 +1170,6 @@ class RootWidgit(FloatLayout):
         # Save current state
         state = self.character.state
         speed = self.character.speed
-        learn_method = self.character.learn_method
 
         # Remove character
         self.remove_widget(self.character)
@@ -1202,8 +1193,7 @@ class RootWidgit(FloatLayout):
         self.character = Sprite(current_row=row,
                                 current_col=col,
                                 speed=speed,
-                                state=state,
-                                learn_method=learn_method)
+                                state=state)
 
         # Set up callback and start continue learning
         self.callback_setup(None)
@@ -1265,28 +1255,6 @@ class RootWidgit(FloatLayout):
 
         # Do the callback setup in 1 second, when the boards have finished
         Clock.schedule_once(self.callback_setup, 1)
-
-    def _toggle_learn_method(self, dt):
-        '''
-        Toggle learning methods in order
-        Q -> Q-lambda -> Q...
-        :param dt:
-        :return:
-        '''
-
-        # Switch from Q to Q-lambda
-        if self.character.learn_method is LearnMethod.Q:
-            self.learn_method_button.text = 'Method:\nQ-lambda'
-            self.character.learn_method = LearnMethod.Q_lambda
-
-            # Reset eligibility trace
-            for td_square in self.value_board.children:
-                td_square.reset_eligibility_trace()
-
-        # Switch from Q-lambda to Q
-        elif self.character.learn_method is LearnMethod.Q_lambda:
-            self.learn_method_button.text = 'Method:\nQ'
-            self.character.learn_method = LearnMethod.Q
 
     def _toggle_speed(self, dt):
         '''
@@ -1382,14 +1350,11 @@ class RootWidgit(FloatLayout):
         '''
 
         # Get current td_square
-        child_index = self._get_child_index_value_board(current_row,
-                                                        current_col)
-        current_td_square = self.value_board.children[child_index]
+        current_td_square = self._get_td_square(current_row, current_col)
 
         # Get new td_square
-        child_index = self._get_child_index_value_board(self.character.current_row,
-                                                        self.character.current_col)
-        new_td_square = self.value_board.children[child_index]
+        new_td_square = self._get_td_square(self.character.current_row,
+                                            self.character.current_col)
 
         # Get the best action index for that square
         _, best_action_index = self._determine_action(current_td_square)
@@ -1415,7 +1380,6 @@ class RootWidgit(FloatLayout):
         # If character is in a terminating square, then reset its position
         if self._check_termination_square(self.character.current_row,
                                           self.character.current_col) is True:
-
             self._reset_character()
 
     def _valid_move(self, current_row, current_col, direction):

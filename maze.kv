@@ -21,7 +21,7 @@
                     size: self.size
         GridLayout:
             padding: 5, 5, 5, 5
-            rows: 11
+            rows: 10
             size_hint_x: .1
             canvas:
                 Color:
@@ -81,34 +81,28 @@
                         text: '0.0'
                         color: 0, 0, 0, 1
             Button:
-                size_hint_y: 0.08
+                size_hint_y: 0.09
                 id: learn_toggle_button
                 text: 'Learn'
             Button:
-                size_hint_y: 0.08
+                size_hint_y: 0.09
                 id: reset_button
                 text: 'Reset'
             Button:
-                size_hint_y: 0.08
+                size_hint_y: 0.09
                 id: speed_button
                 text: 'Speed: 1'
                 halign: 'center'
             Button:
-                size_hint_y: 0.08
-                id: learn_method_button
-                padding_y: 30
-                text: 'Method:\nQ'
-                halign: 'center'
-            Button:
-                size_hint_y: 0.08
+                size_hint_y: 0.09
                 id: maze_one_button
                 text: 'Map One'
             Button:
-                size_hint_y: 0.08
+                size_hint_y: 0.09
                 id: maze_two_button
                 text: 'Map Two'
             GridLayout:
-                size_hint_y: 0.08
+                size_hint_y: 0.09
                 cols: 3
                 Label:
                     text: 'ε'
@@ -121,7 +115,7 @@
                     id: epsilon_decrease_button
                     text: '-'
             GridLayout:
-                size_hint_y: 0.08
+                size_hint_y: 0.09
                 cols: 3
                 Label:
                     text: 'α'
@@ -134,7 +128,7 @@
                     id: learning_rate_decrease_button
                     text: '-'
             GridLayout:
-                size_hint_y: 0.08
+                size_hint_y: 0.09
                 cols: 3
                 Label:
                     text: 'λ'
@@ -147,7 +141,7 @@
                     id: lambda_decrease_button
                     text: '-'
             GridLayout:
-                size_hint_y: 0.08
+                size_hint_y: 0.09
                 cols: 3
                 Label:
                     text: 'γ'
