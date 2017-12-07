@@ -1,10 +1,8 @@
 from kivy.animation import Animation
 from kivy.uix.image import Image
-
 from Model.Enum.Direction import Direction
 from Model.Enum.Speed import Speed
 from Model.Enum.State import State
-from Model.Enum.LearnMethod import LearnMethod
 
 
 class Sprite(Image):
@@ -40,7 +38,6 @@ class Sprite(Image):
         # Determine the states the character is in
         self.state = state
         self.speed = speed
-        self.learn_method = LearnMethod.Q_lambda
 
         # Determines which speed to set the character to
         if speed == Speed.NORMAL:

@@ -9,7 +9,6 @@ from kivy.uix.image import Image
 from kivy.graphics import Color
 from Model.Enum.Direction import Direction
 from Model.Enum.Speed import Speed
-from Model.Enum.LearnMethod import LearnMethod
 from Model.Enum.State import State
 from Model.Path import Path
 from Model.Sprite import Sprite
@@ -605,10 +604,7 @@ class RootWidgit(FloatLayout):
 
         # Continue learning if character's state is LEARNING
         if self.character.state is State.LEARNING:
-            if self.character.learn_method is LearnMethod.Q:
-                self.learn_q(None)
-            elif self.character.learn_method is LearnMethod.Q_lambda:
-                self.learn_q_lambda(None)
+            self.learn_q_lambda(None)
 
     def _get_best_direction(self, row, col):
         '''
@@ -844,11 +840,8 @@ class RootWidgit(FloatLayout):
             self.character.state = State.LEARNING
             self.learn_toggle_button.background_color = [0, 0, 1, 1]
 
-            # Determine which learning to use
-            if self.character.learn_method is LearnMethod.Q:
-                self.learn_q(None)
-            elif self.character.learn_method is LearnMethod.Q_lambda:
-                self.learn_q_lambda(None)
+            # Start Learning
+            self.learn_q_lambda(None)
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         '''
@@ -1200,12 +1193,7 @@ class RootWidgit(FloatLayout):
 
         # If the AI is learning, let it continue learning
         if self.character.state is State.LEARNING:
-
-            # Continue learning with the appropriate learning method
-            if self.character.learn_method is LearnMethod.Q:
-                self.learn_q(None)
-            elif self.character.learn_method is LearnMethod.Q_lambda:
-                self.learn_q_lambda(None)
+            self.learn_q_lambda(None)
 
     def _set_maze_one(self, dt):
         self.current_maze = self.maze1
@@ -1359,23 +1347,18 @@ class RootWidgit(FloatLayout):
         # Get the best action index for that square
         _, best_action_index = self._determine_action(current_td_square)
 
-        # Check Learning method
-        if self.character.learn_method is LearnMethod.Q:
-            self._calculate_update_q(current_td_square, new_td_square, action_index, valid_flag)
+        # Calculate the q_value (valid_flag determines whether
+        # the AI hit the wall or not)
+        q_val = self._calculate_q_val(current_td_square, new_td_square, action_index, valid_flag)
 
-        elif self.character.learn_method is LearnMethod.Q_lambda:
-            # Calculate the q_value (valid_flag determines whether
-            # the AI hit the wall or not)
-            q_val = self._calculate_q_val(current_td_square, new_td_square, action_index, valid_flag)
+        # Increase eligibility trace
+        current_td_square.eligibility_trace[action_index] += 1
 
-            # Increase eligibility trace
-            current_td_square.eligibility_trace[action_index] += 1
+        # Update values in accordance to Q-lambda
+        self._calculate_update_q_lambda(q_val, action_index, action_index)
 
-            # Update values in accordance to Q-lambda
-            self._calculate_update_q_lambda(q_val, action_index, action_index)
-
-            # Trace correct color and then update
-            self._color_trace()
+        # Trace correct color and then update
+        self._color_trace()
 
         # If character is in a terminating square, then reset its position
         if self._check_termination_square(self.character.current_row,

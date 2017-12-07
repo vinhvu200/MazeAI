@@ -1,5 +1,4 @@
 from kivy.uix.button import Button
-from kivy.uix.image import Image
 from kivy.graphics import Color
 
 
