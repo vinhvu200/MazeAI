@@ -1132,22 +1132,19 @@ class RootWidgit(FloatLayout):
         # Set Default colors for buttons
         self.learn_toggle_button.background_color = [1, 1, 1, 1]
 
+        # Set default speed
+        self.speed_button.text = 'Speed: 1'
+
         # Tells the callback_setup that the children widgets
         # have not been added yet (These child widgets are
         # the arrow Images)
         self.td_children_flag = False
-
-        # Stop character movement
-        self.character.state = State.MANUAL
-        self.learn_toggle_button.text = 'Learn'
 
         # Clear the GridLayout of its childrens
         self.value_board.clear_widgets()
         self.maze_board.clear_widgets()
 
         # Save character's current state
-        state = self.character.state
-        speed = self.character.speed
         learn_method = self.character.learn_method
 
         # Remove character
@@ -1156,7 +1153,6 @@ class RootWidgit(FloatLayout):
         # Recreate character with the saved states
         self.character = Sprite(current_row=self.INITIAL_ROW,
                                 current_col=self.INITIAL_COL,
-                                state=state, speed=speed,
                                 learn_method=learn_method)
 
         # Set up maze
@@ -1301,17 +1297,20 @@ class RootWidgit(FloatLayout):
         '''
 
         if self.character.speed is Speed.NORMAL:
-            self.speed_button.text = 'Speed:\nFast'
+            # self.speed_button.text = 'Speed:\nFast'
+            self.speed_button.text = 'Speed: 2'
             self.character.set_speed_fast()
             self.character.speed = Speed.FAST
 
         elif self.character.speed is Speed.FAST:
-            self.speed_button.text = 'Speed:\nHyper'
+            # self.speed_button.text = 'Speed:\nHyper'
+            self.speed_button.text = 'Speed: 3'
             self.character.set_speed_hyper()
             self.character.speed = Speed.HYPER
 
         elif self.character.speed is Speed.HYPER:
-            self.speed_button.text = 'Speed:\nNormal'
+            # self.speed_button.text = 'Speed:\nNormal'
+            self.speed_button.text = 'Speed: 1'
             self.character.set_speed_normal()
             self.character.speed = Speed.NORMAL
 
