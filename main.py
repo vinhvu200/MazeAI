@@ -128,57 +128,6 @@ class RootWidgit(FloatLayout):
         self.discount_increase_button.bind(on_press=self._increase_discount)
         self.discount_decrease_button.bind(on_press=self._decrease_discount)
 
-    def learn_q(self, dt):
-        '''
-        - This function should be continuously call for the character to slowly learn the maze.
-        It is scheduled again in self._end_animation binding.
-        - If the character made it to the end, shuffle it around to another square
-        :param dt:
-        :return: None
-        '''
-
-        # Termination state: When character made it to the end.
-        # Randomly place character onto new square, increment episodes
-        # and increment epsilon
-        if self._check_termination_square(self.character.current_row,
-                                          self.character.current_col) is True:
-            self._reset_character()
-
-        # Otherwise, have it learn the maze
-        else:
-            # Get child_index to obtain the td_square from the value_board
-            current_td_square = self._get_td_square(self.character.current_row,
-                                                    self.character.current_col)
-
-            # action_index is the index to be used while
-            # best_action_index is the "best" move possible
-            action_index, best_action_index = self._determine_action(current_td_square)
-
-            # SPECIAL CASE
-            # If character is in the initial position, it cannot move upward
-            # otherwise it will cause an error
-            if self.character.current_row == self.INITIAL_ROW and \
-                self.character.current_col == self.INITIAL_COL and \
-                action_index == Direction.NORTH.value:
-
-                while action_index == Direction.NORTH.value:
-                    action_index = random.randint(0, 3)
-
-            # Choose appropriate animation based on index
-            # IMPORTANT: After this is called, the character will
-            # have updated its rows and columns
-            valid_flag = self._animate(action_index)
-
-            # Get the new updated td_square
-            new_td_square = self._get_td_square(self.character.current_row,
-                                                self.character.current_col)
-
-            # Calculate updates for the current_td_square
-            self._calculate_update_q(current_td_square, new_td_square, action_index, valid_flag)
-
-            # Update the image and color
-            self._color_trace()
-
     def learn_q_lambda(self, dt):
         '''
         Have character learn through Q-learn-lambda with
