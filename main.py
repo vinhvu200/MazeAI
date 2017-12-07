@@ -26,15 +26,15 @@ class RootWidgit(FloatLayout):
              'Maze/maze2.txt']
     current_maze_index = 0
 
+    END_COLOURS = [Color(0, 1, 0),
+                   Color(1, 1, 0),
+                   Color(0, 0, 1),
+                   Color(1, 1, 0)]
+
     ROWS = 0
     COLS = 0
     END_ROWS = []
     END_COLS = []
-
-    END_COLOURS = [Color(0, 1, 0),
-                  Color(1, 1, 0),
-                  Color(0, 0, 1),
-                  Color(1, 1, 0)]
 
     character = None
     td_children_flag = False
@@ -48,7 +48,7 @@ class RootWidgit(FloatLayout):
 
     # RL parameters
     episodes = 0
-    epsilon = 0.0
+    epsilon = 0.2
     discount = 0.9
     _lambda = 0.9
     learning_rate = 0.5
@@ -153,22 +153,23 @@ class RootWidgit(FloatLayout):
             # have already updated its rows and columns
             valid_flag = self._animate(action_index)
 
-            # Get the new updated td_square
-            new_td_square = self._get_td_square(self.character.current_row,
-                                                self.character.current_col)
+            if valid_flag is True:
+                # Get the new updated td_square
+                new_td_square = self._get_td_square(self.character.current_row,
+                                                    self.character.current_col)
 
-            # Calculate the q_value (valid_flag determines whether
-            # the AI hit the wall or not)
-            q_val = self._calculate_q_val(current_td_square, new_td_square, action_index, valid_flag)
+                # Calculate the q_value (valid_flag determines whether
+                # the AI hit the wall or not)
+                q_val = self._calculate_q_val(current_td_square, new_td_square, action_index, valid_flag)
 
-            # Increase eligibility trace
-            current_td_square.eligibility_trace[action_index] += 1
+                # Increase eligibility trace
+                current_td_square.eligibility_trace[action_index] += 1
 
-            # Update values in accordance to Q-lambda
-            self._calculate_update_q_lambda(q_val, action_index, best_action_index)
+                # Update values in accordance to Q-lambda
+                self._calculate_update_q_lambda(q_val, action_index, best_action_index)
 
-            # Update the image and color
-            self._color_trace()
+                # Update the image and color
+                self._color_trace()
 
     def _add_TDSquare_children(self):
         '''
@@ -776,8 +777,9 @@ class RootWidgit(FloatLayout):
             # Unbind keyboard to stop action in middle of animation
             self._keyboard.unbind(on_key_down=self._on_keyboard_down)
 
-            # Update the value_board accordingly
-            self._update_value_board(valid_move, curr_row, curr_col, action_index)
+            if valid_move is True:
+                # Update the value_board accordingly
+                self._update_value_board(valid_move, curr_row, curr_col, action_index)
 
         # Return True to accept the key. Otherwise, it will be used by
         # the system.
