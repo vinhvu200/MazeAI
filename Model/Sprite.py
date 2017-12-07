@@ -3,12 +3,13 @@ from kivy.uix.image import Image
 from Model.Enum.Direction import Direction
 from Model.Enum.Speed import Speed
 from Model.Enum.State import State
+from Model.Enum. RespawnState import RespawnState
 
 
 class Sprite(Image):
 
     def __init__(self, current_row, current_col, speed=Speed.NORMAL, state=State.MANUAL,
-                 **kwargs):
+                 respawn_state=RespawnState.NORMAL, **kwargs):
         super(Sprite, self).__init__(**kwargs)
 
         # Declare the image path for sprite standing/walking
@@ -38,6 +39,7 @@ class Sprite(Image):
         # Determine the states the character is in
         self.state = state
         self.speed = speed
+        self.respawn_state = respawn_state
 
         # Determines which speed to set the character to
         if speed == Speed.NORMAL:

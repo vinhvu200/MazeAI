@@ -1,6 +1,5 @@
 import random
 import util
-import time
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.config import Config
@@ -10,6 +9,7 @@ from kivy.graphics import Color
 from Model.Enum.Direction import Direction
 from Model.Enum.Speed import Speed
 from Model.Enum.State import State
+from Model.Enum.RespawnState import RespawnState
 from Model.Path import Path
 from Model.Sprite import Sprite
 from Model.TDIndicator import TDIndicator
@@ -31,6 +31,8 @@ class RootWidgit(FloatLayout):
                    Color(0, 0, 1),
                    Color(1, 1, 0)]
 
+    respawn_state = RespawnState.NORMAL
+
     ROWS = 0
     COLS = 0
     END_ROWS = []
@@ -48,7 +50,7 @@ class RootWidgit(FloatLayout):
 
     # RL parameters
     episodes = 0
-    epsilon = 0.2
+    epsilon = 0.1
     discount = 0.9
     _lambda = 0.9
     learning_rate = 0.5
@@ -66,6 +68,7 @@ class RootWidgit(FloatLayout):
         self.reset_button = self.ids.reset_button
         self.speed_button = self.ids.speed_button
         self.next_maze_button = self.ids.next_maze_button
+        self.random_respawn_button = self.ids.random_respawn_button
         self.lambda_increase_button = self.ids.lambda_increase_button
         self.lambda_decrease_button = self.ids.lambda_decrease_button
 
@@ -111,6 +114,7 @@ class RootWidgit(FloatLayout):
         self.reset_button.bind(on_press=self._reset)
         self.speed_button.bind(on_press=self._toggle_speed)
         self.next_maze_button.bind(on_press=self._next_maze)
+        self.random_respawn_button.bind(on_press=self._toggle_respawn_state)
         self.lambda_increase_button.bind(on_press=self._increase_lambda)
         self.lambda_decrease_button.bind(on_press=self._decrease_lambda)
 
@@ -1026,12 +1030,13 @@ class RootWidgit(FloatLayout):
         # Set Default colors for buttons
         self.learn_toggle_button.background_color = [1, 1, 1, 1]
 
-        # Save current speed state
+        # Save current states
         speed = self.character.speed
+        respawn_state = self.character.respawn_state
 
         # Tells the callback_setup that the children widgets
         # have not been added yet (These child widgets are
-        # the arrow Images)
+        # the arrow Images, and TDIndicators)
         self.td_children_flag = False
 
         # Clear the GridLayout of its childrens
@@ -1044,7 +1049,8 @@ class RootWidgit(FloatLayout):
         # Recreate character with the saved states
         self.character = Sprite(current_row=self.INITIAL_ROW,
                                 current_col=self.INITIAL_COL,
-                                speed=speed)
+                                speed=speed,
+                                respawn_state=respawn_state)
 
         # Set up maze
         self._setup_maze(self.mazes[self.current_maze_index])
@@ -1069,30 +1075,33 @@ class RootWidgit(FloatLayout):
         # Save current state
         state = self.character.state
         speed = self.character.speed
+        respawn_state = self.character.respawn_state
 
         # Remove character
         self.remove_widget(self.character)
 
-        # if self.current_maze is self.maze2:
-        #     row = self.INITIAL_ROW
-        #     col = self.INITIAL_COL
-        # else:
-        #     # Generate new placement for character
-        #     row = random.randint(0, self.ROWS - 1)
-        #     col = random.randint(0, self.COLS - 1)
-        #
-        #     # Generate new placement for character
-        #     while self._check_termination_square(row, col) is True:
-        #         row = random.randint(0, self.ROWS - 1)
-        #         col = random.randint(0, self.COLS - 1)
-
         row = self.INITIAL_ROW
         col = self.INITIAL_COL
 
+        if self.character.respawn_state is RespawnState.RANDOM:
+
+            print('inside')
+
+            # Generate new placement for character
+            row = random.randint(0, self.ROWS - 1)
+            col = random.randint(0, self.COLS - 1)
+
+            # Generate new placement for character
+            while self._check_termination_square(row, col) is True:
+                row = random.randint(0, self.ROWS - 1)
+                col = random.randint(0, self.COLS - 1)
+
+        # Respawn AI with previous states and new row/col
         self.character = Sprite(current_row=row,
                                 current_col=col,
                                 speed=speed,
-                                state=state)
+                                state=state,
+                                respawn_state=respawn_state)
 
         # Set up callback and start continue learning
         self.callback_setup(None)
@@ -1141,6 +1150,24 @@ class RootWidgit(FloatLayout):
 
         # Do the callback setup in 1 second, when the boards have finished
         Clock.schedule_once(self.callback_setup, 1)
+
+    def _toggle_respawn_state(self, dt):
+        '''
+        Toggle between RespawnState.NORMAL and RespawnState.RANDOM
+        :param dt:
+        :return:
+        '''
+
+        # Toggle from NORMAL to RANDOM and change background_color
+        # to indicate so
+        if self.character.respawn_state is RespawnState.NORMAL:
+            self.random_respawn_button.background_color = [0, 0, 1, 1]
+            self.character.respawn_state = RespawnState.RANDOM
+
+        # Same as above but reverse
+        elif self.character.respawn_state is RespawnState.RANDOM:
+            self.random_respawn_button.background_color = [1, 1, 1, 1]
+            self.character.respawn_state = RespawnState.NORMAL
 
     def _toggle_speed(self, dt):
         '''
