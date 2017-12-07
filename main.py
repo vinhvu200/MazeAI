@@ -22,9 +22,6 @@ from kivy.core.window import Window
 
 class RootWidgit(FloatLayout):
 
-    maze1 = 'Maze/maze1.txt'
-    maze2 = 'Maze/maze2.txt'
-
     mazes = ['Maze/maze1.txt',
              'Maze/maze2.txt']
     current_maze_index = 0
@@ -68,8 +65,6 @@ class RootWidgit(FloatLayout):
         self.learn_toggle_button = self.ids.learn_toggle_button
         self.reset_button = self.ids.reset_button
         self.speed_button = self.ids.speed_button
-        self.maze_one_button = self.ids.maze_one_button
-        self.maze_two_button = self.ids.maze_two_button
         self.next_maze_button = self.ids.next_maze_button
         self.lambda_increase_button = self.ids.lambda_increase_button
         self.lambda_decrease_button = self.ids.lambda_decrease_button
@@ -87,8 +82,6 @@ class RootWidgit(FloatLayout):
         self.discount_label.text = str(self.discount)
         self.lambda_label.text = str(self._lambda)
         self.learning_rate_label.text = str(self.learning_rate)
-
-        # self.current_maze = self.maze1
 
         # Pass in the maze .txt file to set up
         self._setup_maze(self.mazes[self.current_maze_index])
@@ -117,8 +110,6 @@ class RootWidgit(FloatLayout):
         self.learn_toggle_button.bind(on_press=self._learn_toggle)
         self.reset_button.bind(on_press=self._reset)
         self.speed_button.bind(on_press=self._toggle_speed)
-        self.maze_one_button.bind(on_press=self._set_maze_one)
-        self.maze_two_button.bind(on_press=self._set_maze_two)
         self.next_maze_button.bind(on_press=self._next_maze)
         self.lambda_increase_button.bind(on_press=self._increase_lambda)
         self.lambda_decrease_button.bind(on_press=self._decrease_lambda)
@@ -1028,15 +1019,13 @@ class RootWidgit(FloatLayout):
         self.learn_toggle_button.unbind(on_press=self._learn_toggle)
         self.reset_button.unbind(on_press=self._reset)
         self.speed_button.unbind(on_press=self._toggle_speed)
-        self.maze_one_button.unbind(on_press=self._set_maze_one)
-        self.maze_two_button.unbind(on_press=self._set_maze_two)
         self.next_maze_button.unbind(on_press=self._next_maze)
 
         # Set Default colors for buttons
         self.learn_toggle_button.background_color = [1, 1, 1, 1]
 
-        # Set default speed
-        self.speed_button.text = 'Speed: 1'
+        # Save current speed state
+        speed = self.character.speed
 
         # Tells the callback_setup that the children widgets
         # have not been added yet (These child widgets are
@@ -1052,7 +1041,8 @@ class RootWidgit(FloatLayout):
 
         # Recreate character with the saved states
         self.character = Sprite(current_row=self.INITIAL_ROW,
-                                current_col=self.INITIAL_COL)
+                                current_col=self.INITIAL_COL,
+                                speed=speed)
 
         # Set up maze
         self._setup_maze(self.mazes[self.current_maze_index])
@@ -1108,14 +1098,6 @@ class RootWidgit(FloatLayout):
         # If the AI is learning, let it continue learning
         if self.character.state is State.LEARNING:
             self.learn_q_lambda(None)
-
-    def _set_maze_one(self, dt):
-        self.current_maze = self.maze1
-        self._reset(None)
-
-    def _set_maze_two(self, dt):
-        self.current_maze = self.maze2
-        self._reset(None)
 
     def _setup_maze(self, maze):
         '''
