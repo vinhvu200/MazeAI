@@ -25,6 +25,10 @@ class RootWidgit(FloatLayout):
     maze1 = 'Maze/maze1.txt'
     maze2 = 'Maze/maze2.txt'
 
+    mazes = ['Maze/maze1.txt',
+             'Maze/maze2.txt']
+    current_maze_index = 0
+
     ROWS = 0
     COLS = 0
     END_ROWS = []
@@ -66,6 +70,7 @@ class RootWidgit(FloatLayout):
         self.speed_button = self.ids.speed_button
         self.maze_one_button = self.ids.maze_one_button
         self.maze_two_button = self.ids.maze_two_button
+        self.next_maze_button = self.ids.next_maze_button
         self.lambda_increase_button = self.ids.lambda_increase_button
         self.lambda_decrease_button = self.ids.lambda_decrease_button
 
@@ -83,10 +88,10 @@ class RootWidgit(FloatLayout):
         self.lambda_label.text = str(self._lambda)
         self.learning_rate_label.text = str(self.learning_rate)
 
-        self.current_maze = self.maze1
+        # self.current_maze = self.maze1
 
         # Pass in the maze .txt file to set up
-        self._setup_maze(self.current_maze)
+        self._setup_maze(self.mazes[self.current_maze_index])
 
     def callback_setup(self, dt):
         '''
@@ -114,6 +119,7 @@ class RootWidgit(FloatLayout):
         self.speed_button.bind(on_press=self._toggle_speed)
         self.maze_one_button.bind(on_press=self._set_maze_one)
         self.maze_two_button.bind(on_press=self._set_maze_two)
+        self.next_maze_button.bind(on_press=self._next_maze)
         self.lambda_increase_button.bind(on_press=self._increase_lambda)
         self.lambda_decrease_button.bind(on_press=self._decrease_lambda)
 
@@ -745,6 +751,11 @@ class RootWidgit(FloatLayout):
             # Start Learning
             self.learn_q_lambda(None)
 
+    def _next_maze(self, dt):
+        self.current_maze_index += 1
+        self.current_maze_index %= len(self.mazes)
+        self._reset(None)
+
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         '''
         This function serves the purpose of handling keyboard events
@@ -1019,6 +1030,7 @@ class RootWidgit(FloatLayout):
         self.speed_button.unbind(on_press=self._toggle_speed)
         self.maze_one_button.unbind(on_press=self._set_maze_one)
         self.maze_two_button.unbind(on_press=self._set_maze_two)
+        self.next_maze_button.unbind(on_press=self._next_maze)
 
         # Set Default colors for buttons
         self.learn_toggle_button.background_color = [1, 1, 1, 1]
@@ -1043,7 +1055,7 @@ class RootWidgit(FloatLayout):
                                 current_col=self.INITIAL_COL)
 
         # Set up maze
-        self._setup_maze(self.current_maze)
+        self._setup_maze(self.mazes[self.current_maze_index])
 
     def _reset_character(self):
         '''

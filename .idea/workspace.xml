@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="813541fc-2551-4d15-a628-07c281ec43c3" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.py" afterPath="$PROJECT_DIR$/main.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/maze.kv" afterPath="$PROJECT_DIR$/maze.kv" />
     </list>
@@ -19,11 +18,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="236">
-              <caret line="81" column="53" lean-forward="true" selection-start-line="81" selection-start-column="53" selection-end-line="81" selection-end-column="53" />
+            <state relative-caret-position="266">
+              <caret line="1032" column="62" lean-forward="true" selection-start-line="1032" selection-start-column="62" selection-end-line="1032" selection-end-column="62" />
               <folding />
             </state>
           </provider>
@@ -63,11 +62,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="maze.kv" pinned="false" current-in-tab="false">
+      <file leaf-file-name="maze.kv" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/maze.kv">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="853">
-              <caret line="102" column="31" lean-forward="false" selection-start-line="102" selection-start-column="31" selection-end-line="102" selection-end-column="31" />
+            <state relative-caret-position="278">
+              <caret line="104" column="33" lean-forward="true" selection-start-line="104" selection-start-column="33" selection-end-line="104" selection-end-column="33" />
               <folding />
             </state>
           </provider>
@@ -84,8 +83,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>def _setup</find>
-      <find>def _color</find>
       <find>self._calculate_update_q_lambda</find>
       <find>self._get_best_direction_index</find>
       <find>_get_best_direction_index</find>
@@ -107,13 +104,15 @@
       <find>padding</find>
       <find>def _learn</find>
       <find>self.learn_method_button</find>
-      <find>def _reset</find>
       <find>learn_method</find>
       <find>LearnMethod</find>
       <find>strength</find>
       <find>learn_q</find>
       <find>discount_label</find>
       <find>def _decrease</find>
+      <find>_set_maze_one</find>
+      <find>current_maze</find>
+      <find>def _reset</find>
     </findStrings>
     <replaceStrings>
       <replace>_populate_maze_board</replace>
@@ -162,8 +161,8 @@
         <option value="$PROJECT_DIR$/Model/TDIndicator.py" />
         <option value="$PROJECT_DIR$/Model/TDSquare.py" />
         <option value="$PROJECT_DIR$/Model/Sprite.py" />
-        <option value="$PROJECT_DIR$/maze.kv" />
         <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/maze.kv" />
       </list>
     </option>
   </component>
@@ -424,7 +423,7 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15972222" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2912088" sideWeight="0.50277776" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30363423" sideWeight="0.49722221" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30363423" sideWeight="0.49722221" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -751,14 +750,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Model/TDSquare.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="34" lean-forward="false" selection-start-line="0" selection-start-column="34" selection-end-line="0" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Model/Sprite.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1050">
@@ -779,18 +770,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/maze.kv">
+    <entry file="file://$PROJECT_DIR$/Model/TDSquare.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="853">
-          <caret line="102" column="31" lean-forward="false" selection-start-line="102" selection-start-column="31" selection-end-line="102" selection-end-column="31" />
+        <state relative-caret-position="0">
+          <caret line="0" column="34" lean-forward="false" selection-start-line="0" selection-start-column="34" selection-end-line="0" selection-end-column="34" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="236">
-          <caret line="81" column="53" lean-forward="true" selection-start-line="81" selection-start-column="53" selection-end-line="81" selection-end-column="53" />
+        <state relative-caret-position="266">
+          <caret line="1032" column="62" lean-forward="true" selection-start-line="1032" selection-start-column="62" selection-end-line="1032" selection-end-column="62" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/maze.kv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="278">
+          <caret line="104" column="33" lean-forward="true" selection-start-line="104" selection-start-column="33" selection-end-line="104" selection-end-column="33" />
           <folding />
         </state>
       </provider>
