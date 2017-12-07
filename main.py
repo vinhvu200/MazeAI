@@ -50,7 +50,7 @@ class RootWidgit(FloatLayout):
     epsilon = 0.0
     discount = 0.9
     _lambda = 0.9
-    learning_rate = 0.6
+    learning_rate = 0.5
     move_cost = 0.05
 
     def __init__(self, **kwargs):
@@ -66,28 +66,23 @@ class RootWidgit(FloatLayout):
         self.speed_button = self.ids.speed_button
         self.maze_one_button = self.ids.maze_one_button
         self.maze_two_button = self.ids.maze_two_button
-        self.epsilon_increase_button = self.ids.epsilon_increase_button
-        self.epsilon_decrease_button = self.ids.epsilon_decrease_button
-        self.learning_rate_increase_button = self.ids.learning_rate_increase_button
-        self.learning_rate_decrease_button = self.ids.learning_rate_decrease_button
         self.lambda_increase_button = self.ids.lambda_increase_button
         self.lambda_decrease_button = self.ids.lambda_decrease_button
-        self.discount_increase_button = self.ids.discount_increase_button
-        self.discount_decrease_button = self.ids.discount_decrease_button
 
         # Get Labels from .kv file
         self.episode_label = self.ids.episode_label
         self.epsilon_label = self.ids.epsilon_label
-        self.learning_rate_label = self.ids.learning_rate_label
         self.lambda_label = self.ids.lambda_label
         self.discount_label = self.ids.discount_label
+        self.learning_rate_label = self.ids.learning_rate_label
 
         # Set progress label text
         self.episode_label.text = str(self.episodes)
         self.epsilon_label.text = str(self.epsilon)
-        self.learning_rate_label.text = str(self.learning_rate)
-        self.lambda_label.text = str(self._lambda)
         self.discount_label.text = str(self.discount)
+        self.lambda_label.text = str(self._lambda)
+        self.learning_rate_label.text = str(self.learning_rate)
+
         self.current_maze = self.maze1
 
         # Pass in the maze .txt file to set up
@@ -119,14 +114,8 @@ class RootWidgit(FloatLayout):
         self.speed_button.bind(on_press=self._toggle_speed)
         self.maze_one_button.bind(on_press=self._set_maze_one)
         self.maze_two_button.bind(on_press=self._set_maze_two)
-        self.epsilon_increase_button.bind(on_press=self._increase_epsilon)
-        self.epsilon_decrease_button.bind(on_press=self._decrease_epsilon)
-        self.learning_rate_increase_button.bind(on_press=self._increase_learning_rate)
-        self.learning_rate_decrease_button.bind(on_press=self._decrease_learning_rate)
         self.lambda_increase_button.bind(on_press=self._increase_lambda)
         self.lambda_decrease_button.bind(on_press=self._decrease_lambda)
-        self.discount_increase_button.bind(on_press=self._increase_discount)
-        self.discount_decrease_button.bind(on_press=self._decrease_discount)
 
     def learn_q_lambda(self, dt):
         '''
@@ -481,33 +470,12 @@ class RootWidgit(FloatLayout):
                 # Update the td_square to show the changes
                 td_square.update()
 
-    def _decrease_discount(self, dt):
-        if self.discount > 0.11:
-            self.discount -= 0.1
-        else:
-            self.discount = 0.0
-        self.discount_label.text = str(self.discount)
-
-    def _decrease_epsilon(self, dt):
-        if self.epsilon > 0.051:
-            self.epsilon -= 0.05
-        else:
-            self.epsilon = 0.0
-        self.epsilon_label.text = str(self.epsilon)
-
     def _decrease_lambda(self, dt):
         if self._lambda > 0.11:
             self._lambda -= 0.1
         else:
             self._lambda = 0.0
         self.lambda_label.text = str(self._lambda)
-
-    def _decrease_learning_rate(self, dt):
-        if self.learning_rate > 0.11:
-            self.learning_rate -= 0.1
-        else:
-            self.learning_rate = 0.0
-        self.learning_rate_label.text = str(self.learning_rate)
 
     def _determine_action(self, current_td_square):
         '''
@@ -745,25 +713,10 @@ class RootWidgit(FloatLayout):
 
         return animate_flag, valid_move, action_index
 
-    def _increase_discount(self, dt):
-        if self.discount < 0.99:
-            self.discount += 0.1
-        self.discount_label.text = str(self.discount)
-
-    def _increase_epsilon(self, dt):
-        if self.epsilon < 0.99:
-            self.epsilon += 0.05
-        self.epsilon_label.text = str(self.epsilon)
-
     def _increase_lambda(self, dt):
         if self._lambda < 0.99:
             self._lambda += 0.1
         self.lambda_label.text = str(self._lambda)
-
-    def _increase_learning_rate(self, dt):
-        if self.learning_rate < 0.99:
-            self.learning_rate += 0.1
-        self.learning_rate_label.text = str(self.learning_rate)
 
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
