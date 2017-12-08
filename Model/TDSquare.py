@@ -70,7 +70,7 @@ class TDSquare(Button):
             max_index = self.direction_values.index(max_val)
 
             self.children[0].source = self.background_images[max_index]
-            self.children[1].set_strength(max_val * 3)
+            self.children[1].set_strength(max_val * 4)
             self.children[1].color = self.colour
 
             if self.colour.rgb != [1.0, 1.0, 1.0]:

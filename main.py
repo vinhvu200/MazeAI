@@ -53,7 +53,7 @@ class RootWidgit(FloatLayout):
     epsilon = 0.1
     discount = 0.9
     _lambda = 0.9
-    learning_rate = 0.5
+    learning_rate = 0.1
     move_cost = 0.05
 
     def __init__(self, **kwargs):
@@ -141,16 +141,6 @@ class RootWidgit(FloatLayout):
             # action_index is the index to be used while
             # best_action_index is the "best" move possible
             action_index, best_action_index = self._determine_action(current_td_square)
-
-            # SPECIAL CASE
-            # If character is in the initial position, it cannot move upward
-            # otherwise it will cause an error
-            if self.character.current_row == self.INITIAL_ROW and \
-                            self.character.current_col == self.INITIAL_COL and \
-                            action_index == Direction.NORTH.value:
-
-                while action_index == Direction.NORTH.value:
-                    action_index = random.randint(0, 3)
 
             # Choose appropriate animation based on index
             # IMPORTANT: After this is called, the character will
@@ -479,7 +469,7 @@ class RootWidgit(FloatLayout):
             self._lambda = 0.0
         self.lambda_label.text = str(self._lambda)
 
-    def _determine_action(self, current_td_square):
+    def __determine_action(self, current_td_square):
         '''
         This function uses epsilon greedy to choose its next move.
         The action_index is the move chosen while best_action_index
@@ -504,6 +494,47 @@ class RootWidgit(FloatLayout):
         best_action_index = current_td_square.direction_values.index(max_val)
 
         # return indices
+        return action_index, best_action_index
+
+    def _determine_action(self, current_td_square):
+        '''
+        This function uses epsilon greedy to choose its next move.
+        The action_index is the move chosen while best_action_index
+        is the "best" move at the moment
+        :param current_td_square: TDSquare
+        :return:
+        '''
+
+        # These are all the Q-values of the state (N,E,S,W)
+        direction_values = current_td_square.direction_values
+
+        # Get the max value
+        max_val = max(direction_values)
+
+        # This number will be used for picking a move following
+        # epsilon-greedy
+        rand_num = random.uniform(0, 1)
+
+        # Case where we take random move
+        if rand_num < self.epsilon:
+            action_index = random.randint(0, 3)
+        # Case where we take "best" move
+        else:
+
+            # Initially, all valid moves start at 0, but we want
+            # to still pick a move randomly.
+            choices = []
+
+            for x in range(len(direction_values)):
+                if direction_values[x] == max_val:
+                    choices.append(x)
+
+            action_index = choices[random.randint(0, len(choices)-1)]
+
+        if direction_values[action_index] == max_val:
+            return action_index, action_index
+
+        best_action_index = direction_values.index(max_val)
         return action_index, best_action_index
 
     def _end_animation(self, widget, item):
@@ -1085,8 +1116,6 @@ class RootWidgit(FloatLayout):
 
         if self.character.respawn_state is RespawnState.RANDOM:
 
-            print('inside')
-
             # Generate new placement for character
             row = random.randint(0, self.ROWS - 1)
             col = random.randint(0, self.COLS - 1)
@@ -1227,8 +1256,9 @@ class RootWidgit(FloatLayout):
         #   - if the move from current square is invalid
         #   - if it is on a termination flag
         #   - if the current_direction and last_direction are opposite
+        move_count = 0
         while valid_move_flag is True and termination_flag is False:
-
+            move_count += 1
             row, col = self._change_position(row, col, current_direction)
             last_direction = current_direction
 
@@ -1237,6 +1267,9 @@ class RootWidgit(FloatLayout):
             valid_move_flag = self._valid_move(row, col, current_direction)
 
             if self._opposite_directions(current_direction, last_direction):
+                break
+
+            if move_count > 10:
                 break
 
         # Default white color
