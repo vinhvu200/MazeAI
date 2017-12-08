@@ -23,7 +23,8 @@ from kivy.core.window import Window
 class RootWidgit(FloatLayout):
 
     mazes = ['Maze/maze1.txt',
-             'Maze/maze2.txt']
+             'Maze/maze2.txt',
+             'Maze/maze3.txt']
     current_maze_index = 0
 
     END_COLOURS = [Color(0, 1, 0),
@@ -53,7 +54,7 @@ class RootWidgit(FloatLayout):
     epsilon = 0.1
     discount = 0.9
     _lambda = 0.9
-    learning_rate = 0.1
+    learning_rate = 0.5
     move_cost = 0.05
 
     def __init__(self, **kwargs):
@@ -141,6 +142,16 @@ class RootWidgit(FloatLayout):
             # action_index is the index to be used while
             # best_action_index is the "best" move possible
             action_index, best_action_index = self._determine_action(current_td_square)
+
+            # SPECIAL CASE
+            # If character is in the initial position, it cannot move upward
+            # otherwise it will cause an error
+            if self.character.current_row == self.INITIAL_ROW and \
+                            self.character.current_col == self.INITIAL_COL and \
+                            action_index == Direction.NORTH.value:
+
+                while action_index == Direction.NORTH.value:
+                    action_index = random.randint(0, 3)
 
             # Choose appropriate animation based on index
             # IMPORTANT: After this is called, the character will
