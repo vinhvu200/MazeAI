@@ -47,6 +47,15 @@
                 GridLayout:
                     cols: 2
                     Label:
+                        text: 'γ'
+                        color: 0, 0, 0, 1
+                    Label:
+                        id: discount_label
+                        text: '0.0'
+                        color: 0, 0, 0, 1
+                GridLayout:
+                    cols: 2
+                    Label:
                         text: 'ε'
                         color: 0, 0, 0, 1
                     Label:
@@ -69,15 +78,6 @@
                         color: 0, 0, 0, 1
                     Label:
                         id: lambda_label
-                        text: '0.0'
-                        color: 0, 0, 0, 1
-                GridLayout:
-                    cols: 2
-                    Label:
-                        text: 'γ'
-                        color: 0, 0, 0, 1
-                    Label:
-                        id: discount_label
                         text: '0.0'
                         color: 0, 0, 0, 1
             Button:
@@ -105,19 +105,6 @@
                 size_hint_y: 0.09
                 cols: 3
                 Label:
-                    text: 'λ'
-                    color: 0, 0, 0, 1
-                    halign: 'center'
-                Button:
-                    id: lambda_increase_button
-                    text: '+'
-                Button:
-                    id: lambda_decrease_button
-                    text: '-'
-            GridLayout:
-                size_hint_y: 0.09
-                cols: 3
-                Label:
                     text: 'α'
                     color: 0, 0, 0, 1
                     halign: 'center'
@@ -126,4 +113,17 @@
                     text: '+'
                 Button:
                     id: learning_rate_decrease_button
+                    text: '-'
+            GridLayout:
+                size_hint_y: 0.09
+                cols: 3
+                Label:
+                    text: 'λ'
+                    color: 0, 0, 0, 1
+                    halign: 'center'
+                Button:
+                    id: lambda_increase_button
+                    text: '+'
+                Button:
+                    id: lambda_decrease_button
                     text: '-'

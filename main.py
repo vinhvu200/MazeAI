@@ -72,6 +72,8 @@ class RootWidgit(FloatLayout):
         self.random_respawn_button = self.ids.random_respawn_button
         self.lambda_increase_button = self.ids.lambda_increase_button
         self.lambda_decrease_button = self.ids.lambda_decrease_button
+        self.learning_rate_increase_button = self.ids.learning_rate_increase_button
+        self.learning_rate_decrease_button = self.ids.learning_rate_decrease_button
 
         # Get Labels from .kv file
         self.episode_label = self.ids.episode_label
@@ -118,6 +120,8 @@ class RootWidgit(FloatLayout):
         self.random_respawn_button.bind(on_press=self._toggle_respawn_state)
         self.lambda_increase_button.bind(on_press=self._increase_lambda)
         self.lambda_decrease_button.bind(on_press=self._decrease_lambda)
+        self.learning_rate_increase_button.bind(on_press=self._increase_learning_rate)
+        self.learning_rate_decrease_button.bind(on_press=self._decrease_learning_rate)
 
     def learn_q_lambda(self, dt):
         '''
@@ -480,6 +484,13 @@ class RootWidgit(FloatLayout):
             self._lambda = 0.0
         self.lambda_label.text = str(self._lambda)
 
+    def _decrease_learning_rate(self, dt):
+        if self.learning_rate > 0.12:
+            self.learning_rate -= 0.1
+        else:
+            self._learning_rate = 0.0
+        self.learning_rate_label.text = str(self.learning_rate)
+
     def __determine_action(self, current_td_square):
         '''
         This function uses epsilon greedy to choose its next move.
@@ -761,6 +772,11 @@ class RootWidgit(FloatLayout):
         if self._lambda < 0.99:
             self._lambda += 0.1
         self.lambda_label.text = str(self._lambda)
+
+    def _increase_learning_rate(self, dt):
+        if self.learning_rate < 0.99:
+            self.learning_rate += 0.1
+        self.learning_rate_label.text = str(self.learning_rate)
 
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
@@ -1218,19 +1234,16 @@ class RootWidgit(FloatLayout):
         '''
 
         if self.character.speed is Speed.NORMAL:
-            # self.speed_button.text = 'Speed:\nFast'
             self.speed_button.text = 'Speed: 2'
             self.character.set_speed_fast()
             self.character.speed = Speed.FAST
 
         elif self.character.speed is Speed.FAST:
-            # self.speed_button.text = 'Speed:\nHyper'
             self.speed_button.text = 'Speed: 3'
             self.character.set_speed_hyper()
             self.character.speed = Speed.HYPER
 
         elif self.character.speed is Speed.HYPER:
-            # self.speed_button.text = 'Speed:\nNormal'
             self.speed_button.text = 'Speed: 1'
             self.character.set_speed_normal()
             self.character.speed = Speed.NORMAL
