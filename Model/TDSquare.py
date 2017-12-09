@@ -38,29 +38,12 @@ class TDSquare(Button):
         # Set default rgb color
         self.colour = Color(1, 1, 1)
 
-
-        # self.text = 'N: {}\n' \
-        #             'E: {}\n' \
-        #             'S: {}\n' \
-        #             'W: {}'.format(str(round(self.direction_values[0], 2)),
-        #                            str(round(self.direction_values[1], 2)),
-        #                            str(round(self.direction_values[2], 2)),
-        #                            str(round(self.direction_values[3], 2)))
-
     def update(self):
         '''
         This function updates the Button image with the reward,
         and direction values
         :return: None
         '''
-        # self.disabled_color = [1, 0, 0, 1]
-        # self.text = 'N: {}\n' \
-        #             'E: {}\n' \
-        #             'S: {}\n' \
-        #             'W: {}'.format(str(round(self.direction_values[0], 2)),
-        #                            str(round(self.direction_values[1], 2)),
-        #                            str(round(self.direction_values[2], 2)),
-        #                            str(round(self.direction_values[3], 2)))
 
         if len(self.children) > 0:
             if self.children[0].opacity == 0:

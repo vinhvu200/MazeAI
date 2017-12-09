@@ -8,9 +8,7 @@ class TDIndicator(Widget):
 
     def __init__(self, **kwargs):
         super(TDIndicator, self).__init__(**kwargs)
-        #self.color = Color(0, 1, 0, 0.65)
         self.color = Color(0, 1, 0)
-        #self.rgb_color = [0, 1, 0, 0.65]
         self.strength = 0.0
 
     def draw(self):

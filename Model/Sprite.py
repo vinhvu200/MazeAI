@@ -69,9 +69,10 @@ class Sprite(Image):
 
         # Adjust the walk_length to make the character walk
         # far enough to "bump" into a wall
-        ratio = .1
-        adjusted_walk_length_x = ratio * self.walk_length_x
-        adjusted_walk_length_y = ratio * self.walk_length_y
+        ratio_x = .2
+        ratio_y = .1
+        adjusted_walk_length_x = ratio_x * self.walk_length_x
+        adjusted_walk_length_y = ratio_y * self.walk_length_y
 
         # Conditions to determine how the attempted position will
         # be changed based on Direction
