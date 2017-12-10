@@ -808,6 +808,7 @@ class RootWidgit(FloatLayout):
     def _next_maze(self, dt):
         self.current_maze_index += 1
         self.current_maze_index %= len(self.mazes)
+        self.next_maze_button.text = 'Maze: {}'.format(self.current_maze_index + 1)
         self._reset(None)
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
