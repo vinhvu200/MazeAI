@@ -1,7 +1,10 @@
 # MazeAI
 
 I have been learning about Reinforcement Learning lately so I decided to put some of that knowlege to practice. Here, I created a tool to visually represent what is happening during the learning process of Q(λ). Users can observe how certain parameter affects the learning by watching the AI learn the maze or manually move the AI itself to see the results. 
-** Note: This is a backward view implementation of Q(λ) using eligibility trace
+
+- Note 1: This is a backward view implementation of Q(λ) using eligibility trace
+
+- Note 2: Requires kivy 1.9.1
 
 # Screenshots
 

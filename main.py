@@ -1,5 +1,7 @@
 import random
 import util
+import kivy
+kivy.require("1.9.1")
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.config import Config
@@ -14,6 +16,7 @@ from Model.Path import Path
 from Model.Sprite import Sprite
 from Model.TDIndicator import TDIndicator
 from Model.TDSquare import TDSquare
+
 
 Config.set('graphics', 'width', '1200')
 Config.set('graphics', 'height', '500')
