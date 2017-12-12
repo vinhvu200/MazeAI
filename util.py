@@ -48,6 +48,7 @@ def get_end_points(maze_file):
 
     return end_rows, end_cols, end_rewards
 
+
 def parse_maze_txt_file(maze_file):
     # Open maze file
     maze_file = open(maze_file, 'r')
@@ -77,3 +78,7 @@ def parse_maze_txt_file(maze_file):
     # return matrix, rows, cols
     return mat_walls, rows, cols, initial_row, initial_col, end_rows, \
                 end_cols, end_rewards
+
+
+def isclose(a, b, rel_tol=1e-09, abs_tol=0.0):
+    return abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
