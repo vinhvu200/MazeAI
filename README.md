@@ -2,8 +2,7 @@
 
 I have been learning about Reinforcement Learning lately so I decided to put some of that knowlege to practice. Here, I created a tool to visually represent what is happening during the learning process of Q(λ). Users can observe how certain parameter affects the learning by watching the AI learn the maze or manually move the AI itself to see the results. 
 
-- Note 1: This is a backward view implementation of Q(λ) using eligibility trace
-- Note 2: Requires kivy 1.9.1 and Python 2.7
+![Image 1](https://media.giphy.com/media/l3mZft8CytWihcKk0/giphy.gif "Image 1")
 
 # Screenshots
 
@@ -13,27 +12,27 @@ I have been learning about Reinforcement Learning lately so I decided to put som
 
 ![Image 2](https://github.com/vinhvu200/MazeAI/raw/master/DemoImage/overview.png "Image 2")
 
-- Left Board
+- **Left Board**
   - This is the actual maze that the AI will be solving on
   - You will be able to watch it walk around the maze while updating the board on the right
-- Right Board
+- **Right Board**
   - This board shows all the termination squares with a point value assigned to them
     - Postive squares are ones you want to go to, while negatives are to be avoided
   - For the empty squares, these will show the moves AI will take when landing on it
   - There are circular indicators on each of these squares to show how "sure" it is of the move
-- Symbols
-  - γ: Discount value
-  - ε: Epsilon-greedy policy
-  - α: Learning rate
-  - λ: Lambda (trace decay parameter)
-- Buttons
-  - Learn: toggle button for AI to start learning
+- **Symbols**
+  - **γ**: Discount value
+  - **ε**: Epsilon-greedy policy
+  - **α**: Learning rate
+  - **λ**: Lambda (trace decay parameter)
+- **Buttons**
+  - **Learn**: toggle button for AI to start learning
     - When this is off, user may use 'W', 'A', 'S', 'D' to move
-  - Reset: Restart the maze to the beginning before the AI has learned anything
-  - Speed: toggle between speed 1, 2, or 3
-  - Maze: toggle between maze 1, 2, or 3
-  - α : Set the learning rate [0, 1]
-  - λ : Set the lambda value [0, 1]
+  - **Reset**: Restart the maze to the beginning before the AI has learned anything
+  - **Speed**: toggle between speed 1, 2, or 3
+  - **Maze**: toggle between maze 1, 2, or 3
+  - **α** : Set the learning rate [0, 1]
+  - **λ** : Set the lambda value [0, 1]
 # Lambda Comparison
 ![Image 3](https://github.com/vinhvu200/MazeAI/raw/master/DemoImage/low_lambda.png "Image 3")
 ![Image 4](https://github.com/vinhvu200/MazeAI/raw/master/DemoImage/high_lambda.png "Image 4")
@@ -47,3 +46,11 @@ I have been learning about Reinforcement Learning lately so I decided to put som
 ![Image 5](https://github.com/vinhvu200/MazeAI/raw/master/DemoImage/challenge.png "Image 5")
 
 With the settings above, the AI will often converge to +0.5 square instead of +1.0 square. Why does this happen and what setting should be changed to fix this? 
+
+# Implementation
+
+- Requires kivy 1.9.1
+- Requires python 2.7
+- This is a backward view implementation of Q(λ) using eligibility trace
+- Calculations are not done when the AI bumps into a wall because it adds a lot of eligibility trace to the square which gives it an exaggerated reward
+- The Q-value of bumping into a wall is a big negative number so that the state-action pair will never be chosen; therefore, a square with 3 walls around it will already have a set action.
