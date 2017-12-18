@@ -53,4 +53,5 @@ With the settings above, the AI will often converge to +0.5 square instead of +1
 - Requires python 2.7
 - This is a backward view implementation of Q(λ) using eligibility trace
 - Calculations are not done when the AI bumps into a wall because it adds a lot of eligibility trace to the square which gives it an exaggerated reward
-- The Q-value of bumping into a wall is a big negative number so that the state-action pair will never be chosen; therefore, a square with 3 walls around it will already have a set action.
+- Arrows are only shown on the right board if it there exists only one Q-value bigger than the rest
+- The move cost is 0.01
