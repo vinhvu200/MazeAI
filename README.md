@@ -8,6 +8,8 @@ I have been learning about Reinforcement Learning lately so I decided to put som
 
 ![Image 1](https://github.com/vinhvu200/MazeAI/raw/master/DemoImage/screenshots.png "Image 1")
 
+- Video Demo: https://www.youtube.com/watch?v=nx3vup21GGE&list=PLBIuAa0EnvW3OI1gMzEZr-1OHt4lPUz0F&index=1
+
 # Overview
 
 ![Image 2](https://github.com/vinhvu200/MazeAI/raw/master/DemoImage/overview.png "Image 2")
@@ -52,6 +54,5 @@ With the settings above, the AI will often converge to +0.5 square instead of +1
 - Requires kivy 1.9.1
 - Requires python 2.7
 - This is a backward view implementation of Q(λ) using eligibility trace
-- Calculations are not done when the AI bumps into a wall because it adds a lot of eligibility trace to the square which gives it an exaggerated reward
 - Arrows are only shown on the right board if it there exists only one Q-value bigger than the rest
 - The move cost is 0.01
