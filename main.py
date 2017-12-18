@@ -165,23 +165,23 @@ class RootWidgit(FloatLayout):
             # have already updated its rows and columns
             valid_flag = self._animate(action_index)
 
-            if valid_flag is True:
-                # Get the new updated td_square
-                new_td_square = self._get_td_square(self.character.current_row,
-                                                    self.character.current_col)
+            # if valid_flag is True:
+            # Get the new updated td_square
+            new_td_square = self._get_td_square(self.character.current_row,
+                                                self.character.current_col)
 
-                # Calculate the q_value (valid_flag determines whether
-                # the AI hit the wall or not)
-                q_val = self._calculate_q_val(current_td_square, new_td_square, action_index, valid_flag)
+            # Calculate the q_value (valid_flag determines whether
+            # the AI hit the wall or not)
+            q_val = self._calculate_q_val(current_td_square, new_td_square, action_index, valid_flag)
 
-                # Increase eligibility trace
-                current_td_square.eligibility_trace[action_index] += 1
+            # Increase eligibility trace
+            current_td_square.eligibility_trace[action_index] += 1
 
-                # Update values in accordance to Q-lambda
-                self._calculate_update_q_lambda(q_val, action_index, best_action_index)
+            # Update values in accordance to Q-lambda
+            self._calculate_update_q_lambda(q_val, action_index, best_action_index)
 
-                # Update the image and color
-                self._color_trace()
+            # Update the image and color
+            self._color_trace()
 
     def _add_TDSquare_children(self):
         '''
@@ -253,27 +253,6 @@ class RootWidgit(FloatLayout):
         # to negative so that it can't move up
         td_square = self._get_td_square(self.INITIAL_ROW, self.INITIAL_COL)
         td_square.direction_values[Direction.NORTH.value] = -100
-
-        for row in range(self.ROWS):
-            for col in range(self.COLS):
-                valid_flag_north = self._valid_move(row, col, Direction.NORTH)
-                valid_flag_east = self._valid_move(row, col, Direction.EAST)
-                valid_flag_south = self._valid_move(row, col, Direction.SOUTH)
-                valid_flag_west = self._valid_move(row, col, Direction.WEST)
-
-                td_square = self._get_td_square(row, col)
-
-                if valid_flag_north is False:
-                    td_square.direction_values[Direction.NORTH.value] = -100
-
-                if valid_flag_east is False:
-                    td_square.direction_values[Direction.EAST.value] = -100
-
-                if valid_flag_south is False:
-                    td_square.direction_values[Direction.SOUTH.value] = -100
-
-                if valid_flag_west is False:
-                    td_square.direction_values[Direction.WEST.value] = -100
 
     def _animate(self, max_index):
         '''
