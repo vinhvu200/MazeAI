@@ -1,14 +1,14 @@
 # MazeAI
 
-I have been learning about Reinforcement Learning lately so I decided to put some of that knowlege to practice. Here, I created a tool to visually represent what is happening during the learning process of Q(λ). Users can observe how certain parameter affects the learning by watching the AI learn the maze or manually move the AI itself to see the results. 
+I have been learning about Reinforcement Learning lately so I decided to put some of that knowlege to practice. Here, I created a tool to visually represent what is happening during the learning process of Q(λ). Users can observe how certain parameter affects the learning by watching the bot learn the maze or manually move the bot itself to see the results. 
+
+- Video Demo: https://www.youtube.com/watch?v=nx3vup21GGE&list=PLBIuAa0EnvW3OI1gMzEZr-1OHt4lPUz0F&index=1
 
 ![Image 1](https://media.giphy.com/media/l3mZft8CytWihcKk0/giphy.gif "Image 1")
 
 # Screenshots
 
 ![Image 1](https://github.com/vinhvu200/MazeAI/raw/master/DemoImage/screenshots.png "Image 1")
-
-- Video Demo: https://www.youtube.com/watch?v=nx3vup21GGE&list=PLBIuAa0EnvW3OI1gMzEZr-1OHt4lPUz0F&index=1
 
 # Overview
 
