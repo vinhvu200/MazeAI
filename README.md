@@ -3,7 +3,7 @@
 I have been learning about Reinforcement Learning lately so I decided to put some of that knowlege to practice. Here, I created a tool to visually represent what is happening during the learning process of Q(λ). Users can observe how certain parameter affects the learning by watching the bot learn the maze or manually move the bot itself to see the results. 
 
 Videos of the bot solving the mazes from start to finish:
-- https://www.youtube.com/watch?v=nx3vup21GGE&list=PLBIuAa0EnvW3OI1gMzEZr-1OHt4lPUz0F&index=1
+- https://www.youtube.com/watch?v=sV-BAEK6WZo
 
 ![Image 1](https://media.giphy.com/media/l3mZft8CytWihcKk0/giphy.gif "Image 1")
 
